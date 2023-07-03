@@ -1,0 +1,8 @@
+{
+  "name": "@optimics/dataform-utm-source-filter",
+  "version": "0.2.0",
+  "private": true,
+  "dependencies": {
+    "@dataform/core": "2.4.2"
+  }
+}
