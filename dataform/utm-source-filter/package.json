@@ -1,7 +1,7 @@
 {
   "name": "@optimics/dataform-utm-source-filter",
   "version": "0.2.0",
-  "private": true,
+  "files": ["*.js"],
   "dependencies": {
     "@dataform/core": "2.4.2"
   }
