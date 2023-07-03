@@ -5,6 +5,7 @@
   "author": "Pavel Žák <pavel.zak@optimics.cz>",
   "license": "MIT",
   "workspaces": [
+    "browser/*",
     "dataform/*"
   ],
   "scripts": {
