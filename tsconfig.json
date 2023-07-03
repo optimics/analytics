@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "inlineSourceMap": true,
+    "lib": ["es2022", "dom"],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "es6",
+    "types": ["jest", "@types/jest"],
+    "useUnknownInCatchVariables": false
+  },
+  "exclude": [
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/__tests__/**",
+    "node_modules",
+    "../../node_modules"
+  ]
+}
