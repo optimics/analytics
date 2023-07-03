@@ -1,0 +1,13 @@
+{
+  "name": "@optimics/analytics",
+  "version": "0.1.0",
+  "description": "Frequently used analytics tools",
+  "author": "Pavel Žák <pavel.zak@optimics.cz>",
+  "license": "MIT",
+  "workspaces": [
+    "dataform/*"
+  ],
+  "devDependencies": {
+    "@optimics/repo": "^0.6.0"
+  }
+}
