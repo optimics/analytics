@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/optimics/analytics/compare/v0.2.1...v0.2.2) (2023-07-03)
+
+
+### Bug Fixes
+
+* bundle in declaration files ([57b774c](https://github.com/optimics/analytics/commit/57b774ca9b7c0f330ea53ffe22bfa44c85eed9f8))
+
+
+
+
+
 ## 0.2.1 (2023-07-03)
 
 
