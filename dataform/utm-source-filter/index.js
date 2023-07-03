@@ -26,13 +26,18 @@ function getHistoricalTableName(daysAgo) {
  * @param config.ga4Dataset The Fully Qualified dataset name prefixed with GCP project name
  * @example 'my-domain.cz'
  * @param config.utmSource The UTM Source, as it is received from URL
+ * @param config.rangeCap How many days into the past should we download
  * @example 'my-project.my-dataset'
  * @return string
  */
-function createIntradayTable({ ga4Dataset, minDayDistance = 2, utmSource }) {
-  const baseTable = getHistoricalTableName(minDayDistance)
-  const midRangeTable = getHistoricalTableName(minDayDistance + 1)
-  const longRangeTable= getHistoricalTableName(minDayDistance + 14)
+function createIntradayTable({
+  ga4Dataset,
+  rangeCap = 30,
+  utmSource,
+}) {
+  const yesterdayTable = getHistoricalTableName(1)
+  const twoDaysAgoTable = getHistoricalTableName(2)
+  const rangeCapTable = getHistoricalTableName(rangeCap)
 
   function ref(sourceName) {
     return `${ga4Dataset}.${sourceName}`
@@ -48,7 +53,7 @@ WITH
     (select value.string_value from unnest(event_params) where key = 'source') AS source,
   FROM \`${ga4Dataset}.events_*\`
   WHERE
-    _table_suffix between '${longRangeTable}' and '${midRangeTable}'
+    _table_suffix between '${rangeCapTable}' and '${twoDaysAgoTable}'
     AND
     (select value.string_value from unnest(event_params) where key = 'source') = '${utmSource}'
   GROUP BY user_pseudo_id, source
@@ -59,7 +64,7 @@ WITH
     DISTINCT(user_pseudo_id),
     MAX(event_timestamp) last_timestamp,
     (select value.string_value from unnest(event_params) where key = 'source') AS source,
-  FROM ${ref(baseTable)}
+  FROM ${ref(yesterdayTable)}
   WHERE
     (select value.string_value from unnest(event_params) where key = 'source') = '${utmSource}'
   GROUP BY user_pseudo_id, source
@@ -94,7 +99,7 @@ ecommerce_data AS (
     price,
     quantity
 FROM 
-    ${ref(baseTable)}, UNNEST(items)
+    ${ref(yesterdayTable)}, UNNEST(items)
 WHERE
     event_name = 'purchase'
 ORDER BY event_timestamp
