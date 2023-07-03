@@ -1,20 +1,26 @@
+function formatDate(date) {
+  return String(date.getFullYear() * 1e4 + (date.getMonth() + 1) * 100 + date.getDate())
+}
+
 /** Get date from n-days ago and return it in numeric format without time.
  * @example 20230603
  */
 function getNumericDateFormat(daysAgo) {
-    let date = new Date();
-    date.setDate(date.getDate() + daysAgo);
-    return date.getFullYear() * 1e4 + (date.getMonth() +1) * 100 + date.getDate() + ''
+  const date = new Date()
+  date.setDate(date.getDate() - daysAgo)
+  return formatDate(date)
 }
 
-const timeDiff = 2
-const formatedDateThirtyDays = getNumericDateFormat(-(timeDiff + 14));
-const formatedDateTwoDays = getNumericDateFormat(-(timeDiff + 1))
-const formatedDateOneDays = getNumericDateFormat(-timeDiff)
-
-const GA4_TABLE_THIRTYDAYS_AGO = formatedDateThirtyDays;
-const GA4_TABLE_TWODAYS_AGO = formatedDateTwoDays;
-const GA4_TABLE_ONEDAY_AGO = 'events_' + (timeDiff == 1 ? 'intraday_' : '' ) + formatedDateOneDays;
+/** Construct GA4 table name based on the date
+ * @param {number} daysAgo
+ * @returns string
+ */
+function getHistoricalTableName(daysAgo) {
+  const prefix_universal = 'events_'
+  const prefix_intraday = (daysAgo === 1 ? 'intraday_' : '')
+  const formattedDate = getNumericDateFormat(daysAgo)
+  return `${prefix_universal}${prefix_intraday}${formattedDate}`
+}
 
 /** Return intraday table specific for utm source customers as a string
  * @param config.ga4Dataset The Fully Qualified dataset name prefixed with GCP project name
@@ -23,12 +29,16 @@ const GA4_TABLE_ONEDAY_AGO = 'events_' + (timeDiff == 1 ? 'intraday_' : '' ) + f
  * @example 'my-project.my-dataset'
  * @return string
  */
-function createIntradayTable({ ga4Dataset, utmSource }) {
+function createIntradayTable({ ga4Dataset, minDayDistance = 2, utmSource }) {
+  const baseTable = getHistoricalTableName(minDayDistance)
+  const midRangeTable = getHistoricalTableName(minDayDistance + 1)
+  const longRangeTable= getHistoricalTableName(minDayDistance + 14)
+
   function ref(sourceName) {
     return `${ga4Dataset}.${sourceName}`
   }
 
-    return `
+  return `
     /* Nápočet posledního znamého souce během posledních 30 dní */
 WITH 
   last_sources AS (
@@ -38,7 +48,7 @@ WITH
     (select value.string_value from unnest(event_params) where key = 'source') AS source,
   FROM \`${ga4Dataset}.events_*\`
   WHERE
-    _table_suffix between '${GA4_TABLE_THIRTYDAYS_AGO}' and '${GA4_TABLE_TWODAYS_AGO}'
+    _table_suffix between '${longRangeTable}' and '${midRangeTable}'
     AND
     (select value.string_value from unnest(event_params) where key = 'source') = '${utmSource}'
   GROUP BY user_pseudo_id, source
@@ -49,7 +59,7 @@ WITH
     DISTINCT(user_pseudo_id),
     MAX(event_timestamp) last_timestamp,
     (select value.string_value from unnest(event_params) where key = 'source') AS source,
-  FROM ${ref(GA4_TABLE_ONEDAY_AGO)}
+  FROM ${ref(baseTable)}
   WHERE
     (select value.string_value from unnest(event_params) where key = 'source') = '${utmSource}'
   GROUP BY user_pseudo_id, source
@@ -84,7 +94,7 @@ ecommerce_data AS (
     price,
     quantity
 FROM 
-    ${ref(GA4_TABLE_ONEDAY_AGO)}, UNNEST(items)
+    ${ref(baseTable)}, UNNEST(items)
 WHERE
     event_name = 'purchase'
 ORDER BY event_timestamp
