@@ -7,6 +7,11 @@
   "workspaces": [
     "dataform/*"
   ],
+  "scripts": {
+    "lint": "rome check .",
+    "build": "lerna run build --stream",
+    "test": "lerna run test --stream"
+  },
   "devDependencies": {
     "@optimics/repo": "^0.6.0"
   }
