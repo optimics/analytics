@@ -1,7 +1,13 @@
 {
   "name": "@optimics/dataform-utm-source-filter",
   "version": "0.2.0",
-  "files": ["*.js"],
+  "files": [
+    "*.js"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "dependencies": {
     "@dataform/core": "2.4.2"
   }
