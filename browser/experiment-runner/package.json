@@ -1,0 +1,13 @@
+{
+  "name": "@optimics/browser-experiment-runner",
+  "version": "0.1.0",
+  "description": "Register and run experiments on browser",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "license": "MIT",
+  "files": [
+    "dist/*.js"
+  ]
+}

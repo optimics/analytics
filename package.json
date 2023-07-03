@@ -14,6 +14,7 @@
     "test": "lerna run test --stream"
   },
   "devDependencies": {
-    "@optimics/repo": "^0.7.0"
+    "@optimics/repo": "^0.7.0",
+    "@optimics/webpack": "^0.7.0"
   }
 }
