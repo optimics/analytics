@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/optimics/analytics/compare/v0.2.2...v0.2.4) (2023-07-04)
+
+
+### Bug Fixes
+
+* browser experiment runner - isterminated ([5b5e4ce](https://github.com/optimics/analytics/commit/5b5e4ce38cbf46c772f2168b6ce0f72ae2a9f3a0))
+
+
+
+
+
 ## [0.2.3](https://github.com/optimics/analytics/compare/v0.2.2...v0.2.3) (2023-07-04)
 
 
