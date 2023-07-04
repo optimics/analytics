@@ -15,5 +15,10 @@
   "files": [
     "dist/*.js",
     "dist/*.d.ts"
-  ]
+  ],
+  "homepage": "https://github.com/optimics/analytics/browser/experiment-runner",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/optimics/analytics.git"
+  }
 }
