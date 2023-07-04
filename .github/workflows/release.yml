@@ -1,0 +1,61 @@
+---
+name: Release
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Set identity
+        run: |
+          git config --global user.name '${GITHUB_ACTOR}'
+          git config --global user.email '${GITHUB_ACTOR}@users.noreply.github.com'
+      - name: Read Changelog
+        id: changelog
+        run: |
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          lerna changed --json > changed.json
+          changelog=$(npx conventional-changelog-cli -p angular -n changed.json -r1 | tail +4)
+          echo $changelog
+          echo "changelog<<$EOF" >> ${GITHUB_OUTPUT}
+          echo $changelog >> ${GITHUB_OUTPUT}
+          echo "$EOF" >> ${GITHUB_OUTPUT}
+          rm changed.json
+      - name: Tag release
+        run: npx lerna version -y --no-push
+      - name: Read Version
+        id: version
+        run: |
+          version=$(node -p 'require("./lerna.json").version')
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "version=${version}" >> ${GITHUB_OUTPUT}
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "v${{ steps.version.outputs.version }}"
+          committer: GitHub <noreply@github.com>
+          author: "${GITHUB_ACTOR} <${GITHUB_ACTOR}@users.noreply.github.com>"
+          title: "Release ${{ steps.version.outputs.version }}"
+          body: "${{ steps.changelog.outputs.changelog }}"
+          labels: "Type: Release"
+          branch: "release/${{ steps.version.outputs.version }}"
+      - name: Check outputs
+        run: |
+          echo "Pull Request Number - ${{ env.PULL_REQUEST_NUMBER }}"
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pr_number }}"
+
+
+
+
+
