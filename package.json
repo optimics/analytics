@@ -16,5 +16,9 @@
   "devDependencies": {
     "@optimics/repo": "^0.7.0",
     "@optimics/webpack": "^0.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/optimics/analytics.git"
   }
 }
