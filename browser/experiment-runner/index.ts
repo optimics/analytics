@@ -45,11 +45,7 @@ export abstract class Experiment<Props extends ExperimentData> {
   }
 
   shouldBeStarted(): boolean {
-    if(!this.isTerminated()){
-      return true;
-    } else {
-      return false;
-    }
+    return !this.isTerminated()
   }
 
   start(props?: Props): void {
