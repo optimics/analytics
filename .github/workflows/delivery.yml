@@ -1,40 +1,69 @@
+---
 name: Delivery
 on:
-  push:
-    branches-ignore:
-      - '**'
-    tags:
-      - 'v*'
+  pull_request:
+    branches:
+      - master
+    types: [closed]
 
 jobs:
-  publish:
-    name: Publish
+  delivery:
+    name: Deliver packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: master
       - uses: actions/setup-node@v3
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
       - uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      - name: Set Identity
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read Version
+        run: |
+          CURRENT_VERSION=$(node -p 'require("./lerna.json").version')
+          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
+      - name: Tag Check
+        id: tag_check
+        run: |
+          GET_API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/git/ref/tags/v${CURRENT_VERSION}"
+          http_status_code=$(curl -LI $GET_API_URL -o /dev/null -w '%{http_code}\n' -s \
+            -H "Authorization: token ${GITHUB_TOKEN}")
+          if [ "$http_status_code" -ne "404" ] ; then
+            echo "exists_tag=true" >> ${GITHUB_OUTPUT}
+          else
+            echo "exists_tag=false" >> ${GITHUB_OUTPUT}
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Git Tag
+        if: steps.tag_check.outputs.exists_tag == 'false'
+        uses: pkgdeps/git-tag-action@v2
+        with:
+          version: ${{ env.CURRENT_VERSION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_repo: ${{ github.repository }}
+          git_commit_sha: ${{ github.sha }}
+          git_tag_prefix: "v"
       - name: Install
         run: npm ci
-      - name: Lint
-        run: npm run lint
       - name: Build
         run: npm run build
-      - name: Test
-        run: npm test
       - name: Publish packages
         run: |
-          npm whoami
+          git tag v${{ env.CURRENT_VERSION }}
           lerna publish from-git --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
