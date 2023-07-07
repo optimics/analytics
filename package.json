@@ -4,6 +4,7 @@
   "description": "Frequently used analytics tools",
   "author": "Pavel Žák <pavel.zak@optimics.cz>",
   "license": "MIT",
+  "type": "module",
   "workspaces": [
     "browser/*",
     "dataform/*"
@@ -11,9 +12,10 @@
   "scripts": {
     "lint": "rome check .",
     "build": "lerna run build --stream",
-    "test": "lerna run test --stream"
+    "test": "node --experimental-vm-modules ./node_modules/.bin/jest"
   },
   "devDependencies": {
+    "@optimics/jest": "^0.7.0",
     "@optimics/repo": "^0.7.0",
     "@optimics/webpack": "^0.7.0"
   },
