@@ -9,16 +9,21 @@ export interface ExperimentData {
 export abstract class Experiment<Props extends ExperimentData> {
   abstract key: string
   abstract duration: number
+  cachedState?: Props
 
   get name(): string {
     return `experiment:${this.key}`
   }
  
   getState(): Props {
+    if (this.cachedState) {
+      return this.cachedState
+    }
     const record = window.localStorage.getItem(this.name)
     if (record) {
       try {
-        return JSON.parse(record)
+        this.cachedState = JSON.parse(record)
+        return this.cachedState as Props
       } catch (_e) {
         return { name: this.name } as Props
       }
@@ -27,10 +32,11 @@ export abstract class Experiment<Props extends ExperimentData> {
   }
 
   setState(props: Props): void {
-    window.localStorage.setItem(this.name, JSON.stringify({
+    this.cachedState = {
       ...props,
       name: this.name,
-    }))
+    }
+    window.localStorage.setItem(this.name, JSON.stringify(this.cachedState))
   }
 
   isTerminated(): boolean {
