@@ -44,10 +44,6 @@ export abstract class Experiment<Props extends ExperimentData> {
     return Boolean(state.startedAt && !this.isTerminated())
   }
 
-  shouldBeStarted(): boolean {
-    return !this.isTerminated()
-  }
-
   start(props?: Props): void {
     this.setState({
       ...props,
@@ -58,7 +54,7 @@ export abstract class Experiment<Props extends ExperimentData> {
   }
 
   startIfNeeded(props?: Props): void {
-    if (this.shouldBeStarted()) {
+    if (!this.isActive()) {
        this.start(props)
     }
   }
