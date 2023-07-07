@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/optimics/analytics/compare/v0.2.3...v0.2.4) (2023-07-07)
+
+
+### Bug Fixes
+
+* cache experiment state ([f125d45](https://github.com/optimics/analytics/commit/f125d45e5518a851db10f96ac33c24c0e398042c))
+* do not start if active ([0c1cc53](https://github.com/optimics/analytics/commit/0c1cc5332ae1faf2d629885a985eb4fbcc005fbe))
+
+
+
+
+
 ## [0.2.3](https://github.com/optimics/analytics/compare/v0.2.2...v0.2.3) (2023-07-04)
 
 
