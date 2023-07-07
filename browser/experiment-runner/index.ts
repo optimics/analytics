@@ -1,7 +1,7 @@
 export interface ExperimentData {
-  expiresAt?: string 
+  expiresAt?: string
   name?: string
-  startedAt?: string 
+  startedAt?: string
   terminated?: boolean
   variant?: string
 }
@@ -14,7 +14,7 @@ export abstract class Experiment<Props extends ExperimentData> {
   get name(): string {
     return `experiment:${this.key}`
   }
- 
+
   getState(): Props {
     if (this.cachedState) {
       return this.cachedState
@@ -41,7 +41,8 @@ export abstract class Experiment<Props extends ExperimentData> {
 
   isTerminated(): boolean {
     const state = this.getState()
-    const expired = state.expiresAt && state.expiresAt < new Date().toISOString()
+    const expired =
+      state.expiresAt && state.expiresAt < new Date().toISOString()
     return Boolean(state.terminated || expired)
   }
 
@@ -61,7 +62,7 @@ export abstract class Experiment<Props extends ExperimentData> {
 
   startIfNeeded(props?: Props): void {
     if (!this.isActive()) {
-       this.start(props)
+      this.start(props)
     }
   }
 }

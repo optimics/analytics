@@ -10,10 +10,10 @@
     "noImplicitAny": true,
     "inlineSourceMap": true,
     "lib": ["es2022", "dom"],
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "strict": true,
-    "target": "es6",
+    "target": "es2022",
     "types": ["jest", "@types/jest"],
     "useUnknownInCatchVariables": false
   },
@@ -21,6 +21,7 @@
     "**/dist/**",
     "**/node_modules/**",
     "**/__tests__/**",
+    "**/__jest__/**",
     "node_modules",
     "../../node_modules"
   ]
