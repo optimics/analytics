@@ -59,10 +59,13 @@ jobs:
           git_commit_sha: ${{ github.sha }}
           git_tag_prefix: "v"
       - name: Install
+        if: steps.tag_check.outputs.exists_tag == 'false'
         run: npm ci
       - name: Build
+        if: steps.tag_check.outputs.exists_tag == 'false'
         run: npm run build
       - name: Publish packages
+        if: steps.tag_check.outputs.exists_tag == 'false'
         run: |
           git tag v${{ env.CURRENT_VERSION }}
           lerna publish from-git --yes
