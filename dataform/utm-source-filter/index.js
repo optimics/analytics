@@ -1,5 +1,7 @@
 function formatDate(date) {
-  return String(date.getFullYear() * 1e4 + (date.getMonth() + 1) * 100 + date.getDate())
+  return String(
+    date.getFullYear() * 1e4 + (date.getMonth() + 1) * 100 + date.getDate(),
+  )
 }
 
 /** Get date from n-days ago and return it in numeric format without time.
@@ -17,7 +19,7 @@ function getNumericDateFormat(daysAgo) {
  */
 function getHistoricalTableName(daysAgo) {
   const prefix_universal = 'events_'
-  const prefix_intraday = (daysAgo === 1 ? 'intraday_' : '')
+  const prefix_intraday = daysAgo === 1 ? 'intraday_' : ''
   const formattedDate = getNumericDateFormat(daysAgo)
   return `${prefix_universal}${prefix_intraday}${formattedDate}`
 }
@@ -30,11 +32,7 @@ function getHistoricalTableName(daysAgo) {
  * @example 'my-project.my-dataset'
  * @return string
  */
-function createIntradayTable({
-  ga4Dataset,
-  rangeCap = 30,
-  utmSource,
-}) {
+function createIntradayTable({ ga4Dataset, rangeCap = 30, utmSource }) {
   const yesterdayTable = getHistoricalTableName(1)
   const twoDaysAgoTable = getHistoricalTableName(2)
   const rangeCapTable = getHistoricalTableName(rangeCap)
