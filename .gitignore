@@ -37,5 +37,5 @@ terraform.rc
 node_modules
 dist
 rome-logs
-
+/coverage
 *.tgz
