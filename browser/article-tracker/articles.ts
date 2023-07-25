@@ -30,6 +30,10 @@ export interface EventHandlers {
 
 export type EventHandlerName = keyof EventHandlers
 
+function sortByDocumentPosition(a: ArticleElement, b: ArticleElement): number {
+  return a.el.compareDocumentPosition(b.el)
+}
+
 export class ArticleTracker {
   content?: IArticleElement[]
   el: HTMLElement
@@ -112,7 +116,7 @@ export class ArticleTracker {
   parseContent(): IArticleElement[] {
     return this.contentTypes.flatMap((contentType) =>
       contentType.getAll(this.el),
-    )
+    ).sort(sortByDocumentPosition)
   }
 
   getContentByElement(el: HTMLElement): IArticleElement | undefined {

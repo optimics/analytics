@@ -2,7 +2,6 @@ import type { EventHandlerName } from '../articles'
 import type { ArticleMetrics } from '../metrics'
 import type { PageRef } from './puppeteer'
 
-import { timeout } from './puppeteer'
 import { beforeAll } from '@jest/globals'
 
 interface TrackerOptions {
@@ -68,7 +67,7 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
 
   ref.waitUntilSettled = async function (): Promise<void> {
     await ref.waitForAnimationFrame()
-    await timeout(100)
+    await pageRef.timeout(100)
   }
 
   ref.getMetrics = async function (): Promise<ArticleMetrics> {

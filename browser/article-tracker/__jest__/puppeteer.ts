@@ -23,10 +23,6 @@ interface BrowserOptions {
 
 export const timeoutDefault = 60000
 
-export async function timeout(time: number): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, time))
-}
-
 export function configureBrowser(options: BrowserOptions): BrowserRef {
   const browserRef: BrowserRef = {} as BrowserRef
 
@@ -48,6 +44,7 @@ export function configureBrowser(options: BrowserOptions): BrowserRef {
 
 export interface PageRef {
   page: Page
+  timeout: (time: number) => Promise<void>
   window: BrowserContext
 }
 
@@ -87,12 +84,12 @@ export function configureTestPage(options: PageOptions): PageRef {
       }
     }
     await ref.page.waitForNetworkIdle()
-  })
+  }, timeoutDefault)
 
   afterAll(async () => {
     if (ref.page) {
       if (options.keepWindowOpen) {
-        await timeout(3600000)
+        await ref.timeout(3600000)
       }
       if (!ref.page.isClosed()) {
         await ref.page.close()
@@ -102,6 +99,10 @@ export function configureTestPage(options: PageOptions): PageRef {
       await ref.window.close()
     }
   }, timeoutDefault)
+
+  ref.timeout = async function (time: number): Promise<void> {
+    await ref.page.waitForTimeout(time)
+  }
 
   return ref
 }

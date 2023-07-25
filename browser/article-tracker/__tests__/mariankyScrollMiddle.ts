@@ -1,10 +1,6 @@
 import type { ArticleMetrics } from '../metrics'
 
-import {
-  configureTestPage,
-  timeout,
-  timeoutDefault,
-} from '../__jest__/puppeteer'
+import { configureTestPage, timeoutDefault } from '../__jest__/puppeteer'
 import { setupTestServer } from '../__jest__/sampleServer'
 import { configureTracker } from '../__jest__/tracker'
 import { beforeAll, describe, expect, it } from '@jest/globals'
@@ -55,7 +51,7 @@ describe('ArticleTracker with marianky.html sample', () => {
         }
       })
       await tracker.waitForAnimationFrame()
-      await timeout(1000)
+      await pageRef.timeout(1000)
     })
 
     describe('immediately', () => {
@@ -78,7 +74,7 @@ describe('ArticleTracker with marianky.html sample', () => {
       let metrics: ArticleMetrics
 
       beforeAll(async () => {
-        await timeout(10000)
+        await pageRef.timeout(10000)
         metrics = await tracker.getMetrics()
       }, timeoutDefault)
 
