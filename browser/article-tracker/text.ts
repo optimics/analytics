@@ -16,11 +16,11 @@ export class ArticleParagraph extends ArticleElement {
     return Math.ceil(words.length) || 0
   }
 
-  getMinConsumptionTime(): number {
+  estimateFastestTime(): number {
     return this.getBaseConsumptionTime() * 1000 * 0.2
   }
 
-  getMaxConsumptionTime(): number {
+  estimateSlowestTime(): number {
     return this.getBaseConsumptionTime() * 1000 * 0.3
   }
 }

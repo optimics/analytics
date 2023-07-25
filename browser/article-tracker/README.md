@@ -74,6 +74,89 @@ const articleTracker = new ArticleTracker(articleElement, {
 })
 ```
 
+## Metrics object
+
+The `ArticleTracker` metrics are split by the Content Types, but also includes
+aggregated values. When you call `articleTracker.getMetrics`, you might get
+something like this:
+
+```
+{
+  "achieved": 0.05,
+  "consumed": false,
+  "timeExtra": 0,
+  "timeTotal": 25,
+  "content": {
+    "paragraph": {
+      "achived": 0.05,
+      "consumed": false,
+      "consumedElements": 0,
+      "detected": 5,
+      "displayed": 1,
+      "timeExtra": 0,
+      "timeTotal": 25,
+    }
+  }
+}
+```
+
+The values in the root of the metrics object is aggregated from the
+individual elements.
+
+### Metrics definitions
+
+#### `achieved`
+
+Percentage of how much of the context have been consumed. Rounded to two
+decimals.
+
+Available on: `ArticleMetrics`, `ContentTypeMetrics`
+
+#### `consumed`
+
+Each Content Type has specific measurement logic, that determines if it is
+appropriate to mark it consumed. Let's take `ArticleParagraph` for example.
+
+The `ArticleParagraph` estimates the fastest and the slowest consumption time
+based on the amount of words in the paragraph. We measure time the paragraph
+spends on screen and when it reached the fastest consumption time, we mark it
+`consumed`.
+
+The entire Article is `consumed`, when all of its elements have been
+`consumed`.
+
+Available on: `ArticleMetrics`, `ContentTypeMetrics`
+
+#### `consumedElements`
+
+How many elements of this type have been consumed?
+
+Available on: `ContentTypeMetrics`
+
+#### `detected`
+
+How many elements of this type have been detected?
+
+Available on: `ContentTypeMetrics`
+
+#### `timeExtra`
+
+Extra time user spent consuming this content. This is a natural number
+multiplier of the slowest consumer time from TimeEstimates. User, that reached
+twice the time of slowest consumer will have value 1. Three times the slowest
+consumer will be 2, and so on. Useful for filtering out unuseful analytics
+metrics.
+
+Available on: `ArticleMetrics`, `ContentTypeMetrics`
+
+#### `timeTotal`
+
+How much time did user spend on the element or article in seconds.
+
+Available on: `ArticleMetrics`, `ContentTypeMetrics`
+
+
+
 ## Testing
 
 The test suite is a mixture of two environments. JSDOM is used for interface

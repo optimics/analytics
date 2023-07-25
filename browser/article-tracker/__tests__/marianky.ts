@@ -18,6 +18,7 @@ type IntersectionObserverCallback = (
   entries: IntersectionObserverEntry[],
 ) => void
 
+// @ts-ignore
 const baseDir = dirname(fileURLToPath(import.meta.url))
 
 describe('ArticleTracker with marianky.html sample', () => {
@@ -65,12 +66,12 @@ describe('ArticleTracker with marianky.html sample', () => {
       jest.useRealTimers()
     })
 
-    it('getMinConsumptionTime returns 36202', () => {
-      expect(at.getMinConsumptionTime()).toBe(36200)
+    it('estimateFastestTime returns 36202', () => {
+      expect(at.estimateFastestTime()).toBe(36200)
     })
 
-    it('getMaxConsumptionTime returns 54300', () => {
-      expect(at.getMaxConsumptionTime()).toBe(54300)
+    it('estimateSlowestTime returns 54300', () => {
+      expect(at.estimateSlowestTime()).toBe(54300)
     })
 
     it('expect getTimeOnArticle returns 0', () => {
@@ -106,8 +107,8 @@ describe('ArticleTracker with marianky.html sample', () => {
           at.untrack()
         })
 
-        it('returns time.now=30', () => {
-          expect(at.getMetrics()).toHaveProperty('time.now', 30)
+        it('returns timeTotal=30', () => {
+          expect(at.getMetrics()).toHaveProperty('timeTotal', 30)
         })
       })
 
@@ -121,8 +122,8 @@ describe('ArticleTracker with marianky.html sample', () => {
           at.untrack()
         })
 
-        it('returns time.now=90', () => {
-          expect(at.getMetrics()).toHaveProperty('time.now', 90)
+        it('returns timeTotal=90', () => {
+          expect(at.getMetrics()).toHaveProperty('timeTotal', 90)
         })
       })
 
@@ -152,15 +153,15 @@ describe('ArticleTracker with marianky.html sample', () => {
           at.untrack()
         })
 
+        it('returns content.paragraph.detected=6', () => {
+          expect(at.getMetrics()).toHaveProperty('content.paragraph.detected', 6)
+        })
+
         it('returns content.paragraph.displayed=1', () => {
           expect(at.getMetrics()).toHaveProperty(
             'content.paragraph.displayed',
             1,
           )
-        })
-
-        it('returns content.paragraph.total=6', () => {
-          expect(at.getMetrics()).toHaveProperty('content.paragraph.total', 6)
         })
 
         it('triggers elementDisplayedHandler', () => {
@@ -220,15 +221,15 @@ describe('ArticleTracker with marianky.html sample', () => {
           at.untrack()
         })
 
+        it('returns content.paragraph.detected=6', () => {
+          expect(at.getMetrics()).toHaveProperty('content.paragraph.detected', 6)
+        })
+
         it('returns content.paragraph.displayed=3', () => {
           expect(at.getMetrics()).toHaveProperty(
             'content.paragraph.displayed',
             3,
           )
-        })
-
-        it('returns content.paragraph.total=6', () => {
-          expect(at.getMetrics()).toHaveProperty('content.paragraph.total', 6)
         })
 
         it('triggers elementDisplayedHandler with three paragraphs', () => {

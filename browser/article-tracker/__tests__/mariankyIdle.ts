@@ -46,7 +46,7 @@ describe('ArticleTracker with marianky.html sample', () => {
       }, timeoutDefault)
 
       it('detects 6 paragraphs in total', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.total', 6)
+        expect(metrics).toHaveProperty('content.paragraph.detected', 6)
       })
 
       it('marks 1 paragraph displayed', async () => {
@@ -54,7 +54,24 @@ describe('ArticleTracker with marianky.html sample', () => {
       })
 
       it('marks 0 paragraphs consumed', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.consumed', 0)
+        expect(metrics).toHaveProperty('content.paragraph.consumedElements', 0)
+      })
+
+      it('achieved 0 percent consumption', async () => {
+        expect(metrics).toHaveProperty('achieved', 0)
+      })
+
+      it('is not consumed', async () => {
+        expect(metrics).toHaveProperty('consumed', false)
+      })
+
+      it('timeExtra is 0', () => {
+        expect(metrics).toHaveProperty('timeExtra', 0)
+      })
+
+      it('timeTotal is approx 0', () => {
+        // This might fail on some systems because of performance issues
+        expect(metrics.timeTotal).toBeLessThanOrEqual(0.5)
       })
     })
 
@@ -67,14 +84,14 @@ describe('ArticleTracker with marianky.html sample', () => {
       }, timeoutDefault)
 
       it('marks 1 paragraph consumed', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.consumed', 1)
+        expect(metrics).toHaveProperty('content.paragraph.consumedElements', 1)
       })
 
-      it('reports paragraph consumptionTime > 10000', async () => {
+      it('reports paragraph timeTotal > 10000', async () => {
         /* It is impossible to determine exact consumption time due to natural
          * timers used by the automated browser */
         expect(
-          metrics.content.paragraph.consumptionTimeTotal,
+          metrics.content.paragraph.timeTotal,
         ).toBeGreaterThanOrEqual(10000)
       })
 
