@@ -1,30 +1,58 @@
-export interface TimeMetrics {
-  /** Estimated maximum consumption time */
-  max: number
-  /** Estimated minimum consumption time */
-  min: number
-  /** Current consumption time */
-  now: number
+export interface TimeEstimates {
+  /** Estimated fastest time the content could be consumed in */
+  fastest: number
+  /** Estimated slowest time the content could be consumed in */
+  slowest: number
 }
 
-export interface TypeMetrics {
-  /** How many elements of the type were displayed according to intersectionThreshold */
+interface ConsumptionMetrics {
+  /** How much of the content did user consume rounded to 5%
+   * @example 0.05
+   * @example 0.5
+   * @example 1
+   */
+  achieved: number
+  /** True if this content been marked as completely consumed */
+  consumed: boolean
+  /**
+   * Extra time user spent consuming this content. This is a natural number
+   * multiplier of the slowest consumer time from TimeEstimates. User, that
+   * reached twice the time of slowest consumer will have value 1. Three times
+   * the slowest consumer will be 2, and so on. Useful for filtering out
+   * unuseful analytics metrics.
+   *
+   * @example 3
+   */
+  timeExtra: number
+  /**
+   * The total time user spent consuming the content in miliseconds
+   *
+   * @example: 64023
+   */
+  timeTotal: number
+}
+
+export interface ContentTypeMetrics extends ConsumptionMetrics {
+  /** How many elements of the type were consumed during the session. It is at
+   * maximum the number of detected elements.
+   * @example 3
+   */
+  consumedElements: number
+  /** Natural number describing how many elements of the type were detected
+   * @example 3
+   */
+  detected: number
+  /** How many elements of the type were displayed on screen based on the
+   * intersectionThreshold value
+   * @example 5
+   */
   displayed: number
-  /** How many elements of the type were consumed based on their time on page and consumtion time */
-  consumed: number
-  /** Total consumption time of all elements of this type */
-  consumptionTimeTotal: number
-  /** How many elements of the type were detected */
-  total: number
 }
 
-export interface ArticleMetrics {
-  //  advertisementSlots: ArticleTypeMetrics
-  //  images: ArticleTypeMetrics
+export interface ArticleMetrics extends ConsumptionMetrics  {
   //  maximumScroll: number
-  //  paragraphs: ArticleTypeMetrics
-  /** Overall time measures for the article */
-  time: TimeMetrics
-  content: Record<string, TypeMetrics>
-  //  videos: ArticleTypeMetrics
+  /** Overall time estimates for the article */
+  estimates: TimeEstimates
+  /** Content Type specific metrics */
+  content: Record<string, ContentTypeMetrics>
 }

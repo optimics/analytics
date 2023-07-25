@@ -1,11 +1,12 @@
 export interface IArticleElement {
+  achieved: number
   consumable: boolean
   consumed: boolean
   consumptionStartedAt?: number
   consumptionTimeTotal: number
   displayed: boolean
-  getMaxConsumptionTime(): number
-  getMinConsumptionTime(): number
+  estimateFastestTime(): number
+  estimateSlowestTime(): number
   getRootElement(): HTMLElement
   markDisplayed(): void
   markConsumable(onConsumed: ConsumedHandler): void
@@ -38,21 +39,29 @@ export abstract class ArticleElement implements IArticleElement {
 
   /** Get the absolute minimum expected time, the user could take, to consume
    * the entire content of this element in miliseconds */
-  abstract getMinConsumptionTime(): number
+  abstract estimateFastestTime(): number
 
   /** Get the absolute maximum expected time, the user could take, to consume
    * the entire content of this element in miliseconds */
-  abstract getMaxConsumptionTime(): number
+  abstract estimateSlowestTime(): number
 
   get consumptionTimeTotal(): number {
     return this.consumptionTimeTracked + this.getLastConsumptionTime()
   }
 
   get consumed(): boolean {
-    if (this.getMinConsumptionTime() <= 0) {
+    if (this.estimateFastestTime() <= 0) {
       return false
     }
-    return this.consumptionTimeTotal >= this.getMinConsumptionTime()
+    return this.consumptionTimeTotal >= this.estimateFastestTime()
+  }
+
+  get achieved(): number {
+    const fastest = this.estimateFastestTime()
+    if (fastest === 0) {
+      return 0
+    }
+    return Math.min(1, this.consumptionTimeTotal / fastest)
   }
 
   getRootElement(): HTMLElement {
@@ -97,7 +106,7 @@ export abstract class ArticleElement implements IArticleElement {
     if (onConsumed && !this.consumed) {
       this.consumptionTimer = setTimeout(() => {
         onConsumed(this)
-      }, this.getMinConsumptionTime())
+      }, this.estimateFastestTime())
     }
   }
 

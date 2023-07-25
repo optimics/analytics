@@ -66,7 +66,7 @@ describe('ArticleTracker with marianky.html sample', () => {
       })
 
       it('marks 0 paragraphs consumed', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.consumed', 0)
+        expect(metrics).toHaveProperty('content.paragraph.consumedElements', 0)
       })
     })
 
@@ -79,14 +79,14 @@ describe('ArticleTracker with marianky.html sample', () => {
       }, timeoutDefault)
 
       it('marks 3 paragraphs consumed', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.consumed', 3)
+        expect(metrics).toHaveProperty('content.paragraph.consumedElements', 3)
       })
 
-      it('reports paragraph consumptionTime > 10000', async () => {
+      it('reports paragraph timeTotal > 10000', async () => {
         /* It is impossible to determine exact consumption time due to natural
          * timers used by the automated browser */
         expect(
-          metrics.content.paragraph.consumptionTimeTotal,
+          metrics.content.paragraph.timeTotal,
         ).toBeGreaterThanOrEqual(10000)
       })
 

@@ -1,5 +1,5 @@
 import type { ArticleElement, IArticleElement } from './elements.js'
-import type { ArticleMetrics, TypeMetrics } from './metrics.js'
+import type { ArticleMetrics, ContentTypeMetrics } from './metrics.js'
 
 function toSeconds(time: number): number {
   return time / 1000
@@ -83,18 +83,18 @@ export class ArticleTracker {
 
   /** Get minimum expected consumption time for this article based the content
    */
-  getMinConsumptionTime(): number {
+  estimateFastestTime(): number {
     return this.getContent().reduce(
-      (aggr, item) => aggr + item.getMinConsumptionTime(),
+      (aggr, item) => aggr + item.estimateFastestTime(),
       0,
     )
   }
 
   /** Get maximum expected consumption time for this article based the content
    */
-  getMaxConsumptionTime(): number {
+  estimateSlowestTime(): number {
     return this.getContent().reduce(
-      (aggr, item) => aggr + item.getMaxConsumptionTime(),
+      (aggr, item) => aggr + item.estimateSlowestTime(),
       0,
     )
   }
@@ -123,30 +123,47 @@ export class ArticleTracker {
     return this.getContent().find((item) => item.getRootElement() === el)
   }
 
-  getContentMetrics(): Record<string, TypeMetrics> {
-    const metrics: Record<string, TypeMetrics> = {}
+  formatAchievedPercents(val: number): number {
+    return parseFloat(Number(val).toFixed(2))
+  }
+
+  getContentMetrics(): Record<string, ContentTypeMetrics> {
+    const metrics: Record<string, ContentTypeMetrics> = {}
     for (const type of this.contentTypes) {
       const items = this.getContent().filter((i) => i instanceof type)
       metrics[type.typeName] = {
-        consumed: items.filter((i) => i.consumed).length,
-        consumptionTimeTotal: items.reduce(
+        achieved: this.formatAchievedPercents(items.reduce(
+          (aggr, item) => aggr + item.achieved,
+          0
+        ) / items.length),
+        consumed: items.every(item => item.consumed),
+        consumedElements: items.filter((i) => i.consumed).length,
+        detected: items.length,
+        displayed: items.filter((i) => i.displayed).length,
+        timeExtra: 0,
+        timeTotal: items.reduce(
           (aggr, item) => aggr + item.consumptionTimeTotal,
           0,
         ),
-        displayed: items.filter((i) => i.displayed).length,
-        total: items.length,
       }
     }
     return metrics
   }
 
   getMetrics(): ArticleMetrics {
+    const content = this.getContentMetrics()
+    const cv = Object.values(content)
+    const achieved = this.formatAchievedPercents(cv.reduce((aggr, c) => aggr + c.achieved, 0) / cv.length)
+    const consumed = cv.every(c => c.consumed)
     return {
-      content: this.getContentMetrics(),
-      time: {
-        max: toSeconds(this.getMaxConsumptionTime()),
-        min: toSeconds(this.getMinConsumptionTime()),
-        now: toSeconds(this.getTimeOnArticle()),
+      achieved,
+      consumed,
+      content,
+      timeExtra: toSeconds(0),
+      timeTotal: toSeconds(this.getTimeOnArticle()),
+      estimates: {
+        slowest: toSeconds(this.estimateSlowestTime()),
+        fastest: toSeconds(this.estimateFastestTime()),
       },
     }
   }
