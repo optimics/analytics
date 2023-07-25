@@ -68,12 +68,11 @@ export function setupTestServer(config: TestServerOptions): TestServerRef {
       entryPath: config.entryPath,
       env: {},
       manifest: readManifest(config.pkgDir),
-      quiet: true,
-      infrastructureLogging: {
-        level: 'error',
-      },
-      stats: {
-        logging: 'error',
+      compilerConfig: {
+        infrastructureLogging: {
+          level: 'error',
+        },
+        stats: 'errors-only',
       },
     })
     ref.webpack = wds
