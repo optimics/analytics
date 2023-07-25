@@ -2,6 +2,7 @@ import type { EventHandlerName } from '../articles'
 import type { ArticleMetrics } from '../metrics'
 import type { PageRef } from './puppeteer'
 
+import { timeoutDefault } from './puppeteer'
 import { beforeAll } from '@jest/globals'
 
 interface TrackerOptions {
@@ -56,7 +57,7 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
       })
     })
     await ref.waitUntilSettled()
-  })
+  }, timeoutDefault)
 
   ref.waitForAnimationFrame = async function (): Promise<void> {
     await pageRef.page.evaluate(
