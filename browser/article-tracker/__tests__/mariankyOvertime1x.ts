@@ -41,12 +41,24 @@ describe('ArticleTracker with marianky.html sample', () => {
         metrics = await tracker.getMetrics()
       }, timeoutDefault)
 
+      it('consumed is false', async () => {
+        expect(metrics).toHaveProperty('consumed', false)
+      })
+
       it('reports timeTotal approx 120', async () => {
         expect(metrics.timeTotal).toBeGreaterThanOrEqual(120)
       })
 
       it('overtime is 1', async () => {
         expect(metrics).toHaveProperty('overtime', 1)
+      })
+
+      it('achieved 17 percent consumption', async () => {
+        expect(metrics).toHaveProperty('achieved', 0.17)
+      })
+
+      it('marks 1 paragraph consumed', async () => {
+        expect(metrics).toHaveProperty('content.paragraph.consumedElements', 1)
       })
     })
   })
