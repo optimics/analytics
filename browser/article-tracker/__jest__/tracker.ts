@@ -40,6 +40,7 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
       base.eventHandlerCalls = {
         elementsConsumed: [],
         elementsDisplayed: [],
+        overtime: [],
       }
       base.eventHandlerTargets = {
         elementsConsumed: [],
@@ -54,6 +55,9 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
       base.at.on('elementsConsumed', (...args: any[]) => {
         base.eventHandlerCalls.elementsConsumed.push(args)
         base.eventHandlerTargets.elementsConsumed.push(...args[0].targets)
+      })
+      base.at.on('overtime', (...args: any[]) => {
+        base.eventHandlerCalls.overtime.push(args)
       })
     })
     await ref.waitUntilSettled()
