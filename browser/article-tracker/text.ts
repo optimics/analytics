@@ -4,6 +4,9 @@ export class ArticleParagraph extends ArticleElement {
   static selector = 'p'
   static typeName = 'paragraph'
 
+  fastestMultiplier = 0.2
+  slowestMultiplier = 0.3
+
   getBaseConsumptionTime(): number {
     const content = this.el.textContent
     if (!content) {
@@ -17,10 +20,10 @@ export class ArticleParagraph extends ArticleElement {
   }
 
   estimateFastestTime(): number {
-    return this.getBaseConsumptionTime() * 1000 * 0.2
+    return this.getBaseConsumptionTime() * 1000 * this.fastestMultiplier
   }
 
   estimateSlowestTime(): number {
-    return this.getBaseConsumptionTime() * 1000 * 0.3
+    return this.getBaseConsumptionTime() * 1000 * this.slowestMultiplier
   }
 }
