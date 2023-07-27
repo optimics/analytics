@@ -6,6 +6,12 @@ The ArticleTracker connects to the article container DOM element and tracks its
 contents using specific ArticleElement classes and then provides unified
 interface ready for reporting.
 
+* [Installation](#user-content-installation)
+* [Usage](#user-content-usage)
+* [Metrics object](#user-content-metrics-object)
+* [Events](#user-content-events)
+* [Testing](#user-content-testing)
+
 ## Installation
 
 ```
@@ -171,6 +177,48 @@ How much time did user spend on the element or article in seconds.
 
 Available on: `ArticleMetrics`, `ContentTypeMetrics`
 
+## Events
+
+Article Tracker automagically triggers events as result of user interaction.
+The EventHandler is a function, that returns void and always receives props
+objects with at least `articleTracker` instance. All of the events are
+debounced, so they do not trigger too often.
+
+### `elementsDisplayed`
+
+This is triggered whenever an element, that has not been displayed on page yet,
+has been diplayed in the page viewport. The event receives `targets` prop,
+containing reference to all article elements, that have been displayed since
+last call.
+
+```javascript
+articleTracker.on('elementsDisplayed', ({ articleTracker, targets }) => {
+  console.log(articleTracker.getMetrics())
+  console.log(targets)
+})
+```
+
+### `elementsConsumed`
+
+This is triggered whenever an element, that has not been consumed yet, has met
+conditions to be marked as consumed. This event receives `targets` prop,
+containing reference to all article elements, that have been consumed since
+last call.
+
+```javascript
+articleTracker.on('elementsConsumed', ({ articleTracker, targets }) => {
+  console.log(articleTracker.getMetrics())
+  console.log(targets)
+})
+```
+
+### `overtime`
+
+```javascript
+articleTracker.on('overtime', ({ articleTracker }) => {
+  console.log(articleTracker.getMetrics())
+})
+```
 
 
 ## Testing
