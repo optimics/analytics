@@ -139,7 +139,6 @@ export class ArticleTracker {
           fastest: toSeconds(sum(items, item => item.estimateFastestTime())),
           slowest: toSeconds(sum(items, item => item.estimateSlowestTime())),
         },
-        timeExtra: 0,
         timeTotal: sum(items, item => item.consumptionTimeTotal),
       }
     }
@@ -155,7 +154,7 @@ export class ArticleTracker {
       achieved,
       consumed,
       content,
-      timeExtra: toSeconds(0),
+      overtime: toSeconds(0),
       timeTotal: toSeconds(this.getTimeOnArticle()),
       estimates: {
         slowest: toSeconds(this.estimateSlowestTime()),

@@ -65,8 +65,8 @@ describe('ArticleTracker with marianky.html sample', () => {
         expect(metrics).toHaveProperty('consumed', false)
       })
 
-      it('timeExtra is 0', () => {
-        expect(metrics).toHaveProperty('timeExtra', 0)
+      it('overtime is 0', () => {
+        expect(metrics).toHaveProperty('overtime', 0)
       })
 
       it('timeTotal is approx 0', () => {
