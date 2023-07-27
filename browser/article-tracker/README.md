@@ -95,7 +95,15 @@ something like this:
       "displayed": 1,
       "timeExtra": 0,
       "timeTotal": 25,
+      "estimates": {
+        "fastest": 36.4,
+        "slowest": 64.5
+      }
     }
+  },
+  "estimates": {
+    "fastest": 36.4,
+    "slowest": 64.5
   }
 }
 ```
@@ -138,6 +146,14 @@ Available on: `ContentTypeMetrics`
 How many elements of this type have been detected?
 
 Available on: `ContentTypeMetrics`
+
+#### `estimates.fastest`
+
+Calculated estimate of the fastest time required to consume the entire content in seconds.
+
+#### `estimates.slowest`
+
+Calculated estimate of the slowest time required to consume the entire content in seconds.
 
 #### `timeExtra`
 

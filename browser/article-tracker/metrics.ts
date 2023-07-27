@@ -47,6 +47,8 @@ export interface ContentTypeMetrics extends ConsumptionMetrics {
    * @example 5
    */
   displayed: number
+  /** Overall time estimates for the content type */
+  estimates: TimeEstimates
 }
 
 export interface ArticleMetrics extends ConsumptionMetrics  {

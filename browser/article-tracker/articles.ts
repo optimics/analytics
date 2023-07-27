@@ -34,6 +34,10 @@ function sortByDocumentPosition(a: ArticleElement, b: ArticleElement): number {
   return a.el.compareDocumentPosition(b.el)
 }
 
+function sum<T>(items: T[], getter: (item: T) => number): number {
+  return items.reduce((aggr, item) => aggr + getter(item), 0)
+}
+
 export class ArticleTracker {
   content?: IArticleElement[]
   el: HTMLElement
@@ -84,19 +88,13 @@ export class ArticleTracker {
   /** Get minimum expected consumption time for this article based the content
    */
   estimateFastestTime(): number {
-    return this.getContent().reduce(
-      (aggr, item) => aggr + item.estimateFastestTime(),
-      0,
-    )
+    return sum(this.getContent(), item => item.estimateFastestTime())
   }
 
   /** Get maximum expected consumption time for this article based the content
    */
   estimateSlowestTime(): number {
-    return this.getContent().reduce(
-      (aggr, item) => aggr + item.estimateSlowestTime(),
-      0,
-    )
+    return sum(this.getContent(), item => item.estimateSlowestTime())
   }
 
   /** Get time spent since the start of measurement until now
@@ -132,19 +130,17 @@ export class ArticleTracker {
     for (const type of this.contentTypes) {
       const items = this.getContent().filter((i) => i instanceof type)
       metrics[type.typeName] = {
-        achieved: this.formatAchievedPercents(items.reduce(
-          (aggr, item) => aggr + item.achieved,
-          0
-        ) / items.length),
+        achieved: this.formatAchievedPercents(sum(items, item => item.achieved) / items.length),
         consumed: items.every(item => item.consumed),
         consumedElements: items.filter((i) => i.consumed).length,
         detected: items.length,
         displayed: items.filter((i) => i.displayed).length,
+        estimates: {
+          fastest: toSeconds(sum(items, item => item.estimateFastestTime())),
+          slowest: toSeconds(sum(items, item => item.estimateSlowestTime())),
+        },
         timeExtra: 0,
-        timeTotal: items.reduce(
-          (aggr, item) => aggr + item.consumptionTimeTotal,
-          0,
-        ),
+        timeTotal: sum(items, item => item.consumptionTimeTotal),
       }
     }
     return metrics
@@ -153,7 +149,7 @@ export class ArticleTracker {
   getMetrics(): ArticleMetrics {
     const content = this.getContentMetrics()
     const cv = Object.values(content)
-    const achieved = this.formatAchievedPercents(cv.reduce((aggr, c) => aggr + c.achieved, 0) / cv.length)
+    const achieved = this.formatAchievedPercents(sum(cv, c => c.achieved) / cv.length)
     const consumed = cv.every(c => c.consumed)
     return {
       achieved,
