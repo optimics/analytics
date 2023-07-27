@@ -85,7 +85,7 @@ export function setupTestServer(config: TestServerOptions): TestServerRef {
             '.mjs': ['.mjs', '.mts'],
           },
           fallback: {
-            util: requireMock.resolve('util/')
+            util: requireMock.resolve('util/'),
           },
         },
         stats: 'errors-only',

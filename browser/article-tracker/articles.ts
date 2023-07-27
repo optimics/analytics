@@ -88,13 +88,13 @@ export class ArticleTracker {
   /** Get minimum expected consumption time for this article based the content
    */
   estimateFastestTime(): number {
-    return sum(this.getContent(), item => item.estimateFastestTime())
+    return sum(this.getContent(), (item) => item.estimateFastestTime())
   }
 
   /** Get maximum expected consumption time for this article based the content
    */
   estimateSlowestTime(): number {
-    return sum(this.getContent(), item => item.estimateSlowestTime())
+    return sum(this.getContent(), (item) => item.estimateSlowestTime())
   }
 
   /** Get time spent since the start of measurement until now
@@ -112,9 +112,9 @@ export class ArticleTracker {
   }
 
   parseContent(): IArticleElement[] {
-    return this.contentTypes.flatMap((contentType) =>
-      contentType.getAll(this.el),
-    ).sort(sortByDocumentPosition)
+    return this.contentTypes
+      .flatMap((contentType) => contentType.getAll(this.el))
+      .sort(sortByDocumentPosition)
   }
 
   getContentByElement(el: HTMLElement): IArticleElement | undefined {
@@ -130,16 +130,18 @@ export class ArticleTracker {
     for (const type of this.contentTypes) {
       const items = this.getContent().filter((i) => i instanceof type)
       metrics[type.typeName] = {
-        achieved: this.formatAchievedPercents(sum(items, item => item.achieved) / items.length),
-        consumed: items.every(item => item.consumed),
+        achieved: this.formatAchievedPercents(
+          sum(items, (item) => item.achieved) / items.length,
+        ),
+        consumed: items.every((item) => item.consumed),
         consumedElements: items.filter((i) => i.consumed).length,
         detected: items.length,
         displayed: items.filter((i) => i.displayed).length,
         estimates: {
-          fastest: toSeconds(sum(items, item => item.estimateFastestTime())),
-          slowest: toSeconds(sum(items, item => item.estimateSlowestTime())),
+          fastest: toSeconds(sum(items, (item) => item.estimateFastestTime())),
+          slowest: toSeconds(sum(items, (item) => item.estimateSlowestTime())),
         },
-        timeTotal: sum(items, item => item.consumptionTimeTotal),
+        timeTotal: sum(items, (item) => item.consumptionTimeTotal),
       }
     }
     return metrics
@@ -148,15 +150,17 @@ export class ArticleTracker {
   getMetrics(): ArticleMetrics {
     const content = this.getContentMetrics()
     const cv = Object.values(content)
-    const achieved = this.formatAchievedPercents(sum(cv, c => c.achieved) / cv.length)
-    const consumed = cv.every(c => c.consumed)
+    const achieved = this.formatAchievedPercents(
+      sum(cv, (c) => c.achieved) / cv.length,
+    )
+    const consumed = cv.every((c) => c.consumed)
     const timeTotal = this.getTimeOnArticle()
     const slowest = this.estimateSlowestTime()
     return {
       achieved,
       consumed,
       content,
-      overtime: toSeconds(Math.max(0, Math.floor(timeTotal / slowest) - 1)),
+      overtime: Math.max(0, Math.floor(timeTotal / slowest) - 1),
       timeTotal: toSeconds(timeTotal),
       estimates: {
         fastest: toSeconds(this.estimateFastestTime()),

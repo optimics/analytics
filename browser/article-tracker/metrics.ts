@@ -41,7 +41,7 @@ export interface ContentTypeMetrics extends ConsumptionMetrics {
   estimates: TimeEstimates
 }
 
-export interface ArticleMetrics extends ConsumptionMetrics  {
+export interface ArticleMetrics extends ConsumptionMetrics {
   //  maximumScroll: number
   /** Overall time estimates for the article */
   estimates: TimeEstimates

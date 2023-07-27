@@ -21,7 +21,6 @@
     "@optimics/webpack": "^0.7.1",
     "@sinonjs/fake-timers": "^10.3.0",
     "@types/sinonjs__fake-timers": "^8.1.2",
-    "@types/webpack-dev-server": "^4.7.2",
     "babel-plugin-transform-import-meta": "^2.2.0",
     "get-port": "^7.0.0",
     "jest-environment-jsdom": "^29.6.1",

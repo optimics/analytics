@@ -81,10 +81,14 @@ export function configureTestPage(options: PageOptions): PageRef {
       // rome-ignore lint/nursery/noConsoleLog: Intentionally use console.log
       console.log(message)
     })
-    await ref.page.goto(`${options.serverRef.origin}${options.pageUrl}`, { timeout: 5000 })
+    await ref.page.goto(`${options.serverRef.origin}${options.pageUrl}`, {
+      timeout: 30000,
+    })
     if (options.scriptUrls) {
       for (const url of options.scriptUrls) {
-        await ref.page.addScriptTag({ url: `${options.serverRef.origin}${url}` })
+        await ref.page.addScriptTag({
+          url: `${options.serverRef.origin}${url}`,
+        })
       }
     }
     await ref.page.waitForNetworkIdle()
@@ -104,12 +108,12 @@ export function configureTestPage(options: PageOptions): PageRef {
     }
   }, timeoutDefault)
 
-  ref.timeout = async function (time: number, real: boolean = false): Promise<void> {
+  ref.timeout = async function (time: number, real = false): Promise<void> {
     if (real) {
-      await new Promise(resolve => setTimeout(resolve, time))
+      await new Promise((resolve) => setTimeout(resolve, time))
     } else {
       await ref.page.evaluate((time) => {
-        const promise = new Promise(resolve => setTimeout(resolve, time))
+        const promise = new Promise((resolve) => setTimeout(resolve, time))
         window.test.clock.tick(time)
         return promise
       }, time)

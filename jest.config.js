@@ -11,4 +11,7 @@ for (const project of config.projects) {
   }
 }
 
+// Avoid overloading system with Puppeteer contexts
+config.maxWorkers = '50%'
+
 export default config
