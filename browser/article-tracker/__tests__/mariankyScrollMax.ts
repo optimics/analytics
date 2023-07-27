@@ -1,3 +1,5 @@
+import '../__jest__/windowType'
+
 import type { ArticleMetrics } from '../metrics'
 
 import { configureTestPage, timeoutDefault } from '../__jest__/puppeteer'
@@ -6,13 +8,6 @@ import { configureTracker } from '../__jest__/tracker'
 import { beforeAll, describe, expect, it } from '@jest/globals'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
-
-declare global {
-  export interface Window {
-    // rome-ignore lint/suspicious/noExplicitAny: Accept anything into the window test scope
-    test: any
-  }
-}
 
 // @ts-ignore
 const baseDir = dirname(fileURLToPath(import.meta.url))
