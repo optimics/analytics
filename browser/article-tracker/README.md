@@ -9,8 +9,21 @@ interface ready for reporting.
 * [Installation](#user-content-installation)
 * [Usage](#user-content-usage)
 * [Metrics object](#user-content-metrics-object)
+  * [`achieved`](#user-content-achieved)
+  * [`consumed`](#user-content-consumed)
+  * [`consumedElements`](#user-content-consumed-elements)
+  * [`detected`](#user-content-detected)
+  * [`estimates.fastest`](#user-content-estimatesfastest)
+  * [`estimates.slowest`](#user-content-estimatesslowest)
+  * [`overtime`](#user-content-overtime)
+  * [`timeTotal`](#user-content-timeTotal)
 * [Events](#user-content-events)
+  * [`elementsDisplayed`](#user-content-elementsdisplayed)
+  * [`elementsConsumed`](#user-content-elementsconsumed)
+  * [`overtime`](#user-content-overtime)
 * [Testing](#user-content-testing)
+  * [Environment variables](#user-content-environment-variables)
+  * [Known issues](#user-content-known-issues)
 
 ## Installation
 
@@ -90,7 +103,7 @@ something like this:
 {
   "achieved": 0.05,
   "consumed": false,
-  "timeExtra": 0,
+  "overtime": 0,
   "timeTotal": 25,
   "content": {
     "paragraph": {
@@ -99,7 +112,6 @@ something like this:
       "consumedElements": 0,
       "detected": 5,
       "displayed": 1,
-      "timeExtra": 0,
       "timeTotal": 25,
       "estimates": {
         "fastest": 36.4,
@@ -117,16 +129,14 @@ something like this:
 The values in the root of the metrics object is aggregated from the
 individual elements.
 
-### Metrics definitions
-
-#### `achieved`
+### `achieved`
 
 Percentage of how much of the context have been consumed. Rounded to two
 decimals.
 
 Available on: `ArticleMetrics`, `ContentTypeMetrics`
 
-#### `consumed`
+### `consumed`
 
 Each Content Type has specific measurement logic, that determines if it is
 appropriate to mark it consumed. Let's take `ArticleParagraph` for example.
@@ -141,27 +151,27 @@ The entire Article is `consumed`, when all of its elements have been
 
 Available on: `ArticleMetrics`, `ContentTypeMetrics`
 
-#### `consumedElements`
+### `consumedElements`
 
 How many elements of this type have been consumed?
 
 Available on: `ContentTypeMetrics`
 
-#### `detected`
+### `detected`
 
 How many elements of this type have been detected?
 
 Available on: `ContentTypeMetrics`
 
-#### `estimates.fastest`
+### `estimates.fastest`
 
 Calculated estimate of the fastest time required to consume the entire content in seconds.
 
-#### `estimates.slowest`
+### `estimates.slowest`
 
 Calculated estimate of the slowest time required to consume the entire content in seconds.
 
-#### `timeExtra`
+### `overtime`
 
 Extra time user spent consuming this content. This is a natural number
 multiplier of the slowest consumer time from TimeEstimates. User, that reached
@@ -169,9 +179,9 @@ twice the time of slowest consumer will have value 1. Three times the slowest
 consumer will be 2, and so on. Useful for filtering out unuseful analytics
 metrics.
 
-Available on: `ArticleMetrics`, `ContentTypeMetrics`
+Available on: `ArticleMetrics`
 
-#### `timeTotal`
+### `timeTotal`
 
 How much time did user spend on the element or article in seconds.
 
@@ -219,7 +229,6 @@ articleTracker.on('overtime', ({ articleTracker }) => {
   console.log(articleTracker.getMetrics())
 })
 ```
-
 
 ## Testing
 
