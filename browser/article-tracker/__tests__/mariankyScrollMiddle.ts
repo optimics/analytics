@@ -45,13 +45,12 @@ describe('ArticleTracker with marianky.html sample', () => {
         if (element) {
           const target = (element.nextElementSibling || element) as HTMLElement
           target.scrollIntoView({
-            behavior: 'auto',
             block: 'end',
           })
         }
       })
       await tracker.waitForAnimationFrame()
-      await pageRef.timeout(1000)
+      await pageRef.timeout(1000, true)
     })
 
     describe('immediately', () => {

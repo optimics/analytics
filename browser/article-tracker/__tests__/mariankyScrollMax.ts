@@ -51,7 +51,7 @@ describe('ArticleTracker with marianky.html sample', () => {
         }
       })
       await tracker.waitForAnimationFrame()
-      await pageRef.timeout(1000)
+      await pageRef.timeout(1000, true)
     })
 
     describe('immediately', () => {

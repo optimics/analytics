@@ -19,12 +19,15 @@
     "@optimics/jest": "^0.7.0",
     "@optimics/repo": "^0.7.0",
     "@optimics/webpack": "^0.7.1",
+    "@sinonjs/fake-timers": "^10.3.0",
+    "@types/sinonjs__fake-timers": "^8.1.2",
     "@types/webpack-dev-server": "^4.7.2",
     "babel-plugin-transform-import-meta": "^2.2.0",
     "get-port": "^7.0.0",
     "jest-environment-jsdom": "^29.6.1",
     "jsdom": "^22.1.0",
-    "puppeteer": "^20.8.0"
+    "puppeteer": "^20.8.0",
+    "util": "^0.12.5"
   },
   "repository": {
     "type": "git",

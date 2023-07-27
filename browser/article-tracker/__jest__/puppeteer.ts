@@ -8,6 +8,10 @@ import { afterAll, beforeAll } from '@jest/globals'
 
 declare global {
   let browserRef: BrowserRef
+  interface Window {
+    // rome-ignore lint/suspicious/noExplicitAny: Accept anything into the window test scope
+    test: any
+  }
 }
 
 let globalBrowserRef: BrowserRef
@@ -44,7 +48,7 @@ export function configureBrowser(options: BrowserOptions): BrowserRef {
 
 export interface PageRef {
   page: Page
-  timeout: (time: number) => Promise<void>
+  timeout: (time: number, real?: boolean) => Promise<void>
   window: BrowserContext
 }
 
@@ -100,8 +104,16 @@ export function configureTestPage(options: PageOptions): PageRef {
     }
   }, timeoutDefault)
 
-  ref.timeout = async function (time: number): Promise<void> {
-    await ref.page.waitForTimeout(time)
+  ref.timeout = async function (time: number, real: boolean = false): Promise<void> {
+    if (real) {
+      await new Promise(resolve => setTimeout(resolve, time))
+    } else {
+      await ref.page.evaluate((time) => {
+        const promise = new Promise(resolve => setTimeout(resolve, time))
+        window.test.clock.tick(time)
+        return promise
+      }, time)
+    }
   }
 
   return ref
