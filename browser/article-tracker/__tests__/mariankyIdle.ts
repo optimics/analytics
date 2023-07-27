@@ -73,6 +73,22 @@ describe('ArticleTracker with marianky.html sample', () => {
         // This might fail on some systems because of performance issues
         expect(metrics.timeTotal).toBeLessThanOrEqual(0.5)
       })
+
+      it('estimates.fastest is 36.2', () => {
+        expect(metrics).toHaveProperty('estimates.fastest', 36.2)
+      })
+
+      it('estimates.slowest is 54.3', () => {
+        expect(metrics).toHaveProperty('estimates.slowest', 54.3)
+      })
+
+      it('content.paragraph.estimates.fastest is 36.2', () => {
+        expect(metrics).toHaveProperty('content.paragraph.estimates.fastest', 36.2)
+      })
+
+      it('content.paragraph.estimates.slowest is 54.3', () => {
+        expect(metrics).toHaveProperty('content.paragraph.estimates.slowest', 54.3)
+      })
     })
 
     describe('after 10 idle seconds', () => {
