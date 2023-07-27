@@ -150,15 +150,17 @@ export class ArticleTracker {
     const cv = Object.values(content)
     const achieved = this.formatAchievedPercents(sum(cv, c => c.achieved) / cv.length)
     const consumed = cv.every(c => c.consumed)
+    const timeTotal = this.getTimeOnArticle()
+    const slowest = this.estimateSlowestTime()
     return {
       achieved,
       consumed,
       content,
-      overtime: toSeconds(0),
-      timeTotal: toSeconds(this.getTimeOnArticle()),
+      overtime: toSeconds(Math.max(0, Math.floor(timeTotal / slowest) - 1)),
+      timeTotal: toSeconds(timeTotal),
       estimates: {
-        slowest: toSeconds(this.estimateSlowestTime()),
         fastest: toSeconds(this.estimateFastestTime()),
+        slowest: toSeconds(slowest),
       },
     }
   }
