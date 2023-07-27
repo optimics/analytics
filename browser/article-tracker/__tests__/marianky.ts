@@ -154,7 +154,10 @@ describe('ArticleTracker with marianky.html sample', () => {
         })
 
         it('returns content.paragraph.detected=6', () => {
-          expect(at.getMetrics()).toHaveProperty('content.paragraph.detected', 6)
+          expect(at.getMetrics()).toHaveProperty(
+            'content.paragraph.detected',
+            6,
+          )
         })
 
         it('returns content.paragraph.displayed=1', () => {
@@ -222,7 +225,10 @@ describe('ArticleTracker with marianky.html sample', () => {
         })
 
         it('returns content.paragraph.detected=6', () => {
-          expect(at.getMetrics()).toHaveProperty('content.paragraph.detected', 6)
+          expect(at.getMetrics()).toHaveProperty(
+            'content.paragraph.detected',
+            6,
+          )
         })
 
         it('returns content.paragraph.displayed=3', () => {

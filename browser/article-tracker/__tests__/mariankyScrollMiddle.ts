@@ -84,9 +84,9 @@ describe('ArticleTracker with marianky.html sample', () => {
       it('reports paragraph timeTotal > 10000', async () => {
         /* It is impossible to determine exact consumption time due to natural
          * timers used by the automated browser */
-        expect(
-          metrics.content.paragraph.timeTotal,
-        ).toBeGreaterThanOrEqual(10000)
+        expect(metrics.content.paragraph.timeTotal).toBeGreaterThanOrEqual(
+          10000,
+        )
       })
 
       it('reports three elements to be displayed via event handlers', async () => {

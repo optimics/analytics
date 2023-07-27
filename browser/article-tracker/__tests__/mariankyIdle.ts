@@ -83,11 +83,17 @@ describe('ArticleTracker with marianky.html sample', () => {
       })
 
       it('content.paragraph.estimates.fastest is 36.2', () => {
-        expect(metrics).toHaveProperty('content.paragraph.estimates.fastest', 36.2)
+        expect(metrics).toHaveProperty(
+          'content.paragraph.estimates.fastest',
+          36.2,
+        )
       })
 
       it('content.paragraph.estimates.slowest is 54.3', () => {
-        expect(metrics).toHaveProperty('content.paragraph.estimates.slowest', 54.3)
+        expect(metrics).toHaveProperty(
+          'content.paragraph.estimates.slowest',
+          54.3,
+        )
       })
     })
 
@@ -106,9 +112,9 @@ describe('ArticleTracker with marianky.html sample', () => {
       it('reports paragraph timeTotal > 10000', async () => {
         /* It is impossible to determine exact consumption time due to natural
          * timers used by the automated browser */
-        expect(
-          metrics.content.paragraph.timeTotal,
-        ).toBeGreaterThanOrEqual(10000)
+        expect(metrics.content.paragraph.timeTotal).toBeGreaterThanOrEqual(
+          10000,
+        )
       })
 
       it('triggers elementsDisplayed once, for first paragraph', async () => {
