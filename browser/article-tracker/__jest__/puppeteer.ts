@@ -1,3 +1,5 @@
+import './windowType'
+
 // @ts-ignore
 import type { TestServerRef } from '../sampleServer'
 import type { Browser, BrowserContext, Page } from 'puppeteer'
@@ -8,10 +10,6 @@ import { afterAll, beforeAll } from '@jest/globals'
 
 declare global {
   let browserRef: BrowserRef
-  interface Window {
-    // rome-ignore lint/suspicious/noExplicitAny: Accept anything into the window test scope
-    test: any
-  }
 }
 
 let globalBrowserRef: BrowserRef
