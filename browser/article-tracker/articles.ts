@@ -26,6 +26,7 @@ interface EventController {
 export interface EventHandlers {
   elementsDisplayed: EventController
   elementsConsumed: EventController
+  overtime: EventController
 }
 
 export type EventHandlerName = keyof EventHandlers
@@ -39,8 +40,6 @@ function sum<T>(items: T[], getter: (item: T) => number): number {
 }
 
 export class ArticleTracker {
-  content?: IArticleElement[]
-  el: HTMLElement
   handlers: EventHandlers = {
     elementsDisplayed: {
       handlers: [],
@@ -48,12 +47,18 @@ export class ArticleTracker {
     elementsConsumed: {
       handlers: [],
     },
+    overtime: {
+      handlers: [],
+    }
   }
+  content?: IArticleElement[]
+  contentTypes: typeof ArticleElement[]
+  el: HTMLElement
   eventBounceTime = 60
   intersectionThreshold = 0.75
-  startedAt?: Date
   observer?: IntersectionObserver
-  contentTypes: typeof ArticleElement[]
+  overtimeTimer?: ReturnType<typeof setTimeout>
+  startedAt?: Date
 
   constructor(el: HTMLElement, options: ArticleTrackerOptions) {
     this.el = el
@@ -67,6 +72,7 @@ export class ArticleTracker {
   track(): ArticleTracker {
     this.startedAt = new Date()
     this.observeIntersections()
+    this.watchOvertime()
     return this
   }
 
@@ -74,6 +80,7 @@ export class ArticleTracker {
     if (this.observer) {
       this.observer.disconnect()
     }
+    clearTimeout(this.overtimeTimer)
     return this
   }
 
@@ -254,6 +261,17 @@ export class ArticleTracker {
     this.observer = new window.IntersectionObserver(handleIntersections, {
       threshold: this.intersectionThreshold,
     })
+  }
+
+  watchOvertime(): void {
+    clearTimeout(this.overtimeTimer)
+    this.overtimeTimer = setTimeout(() => {
+      const metrics = this.getMetrics()
+      if (metrics.overtime > 0) {
+        this.trigger('overtime', {})
+      }
+      this.watchOvertime()
+    }, this.estimateSlowestTime())
   }
 }
 

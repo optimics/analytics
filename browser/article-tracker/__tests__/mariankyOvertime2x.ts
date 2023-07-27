@@ -60,6 +60,12 @@ describe('ArticleTracker with marianky.html sample', () => {
       it('marks 1 paragraph consumed', async () => {
         expect(metrics).toHaveProperty('content.paragraph.consumedElements', 1)
       })
+
+      it('calls overtime event handler', async () => {
+        expect(
+          await tracker.getEventHandlerCalls('overtime'),
+        ).toHaveLength(2)
+      })
     })
   })
 })
