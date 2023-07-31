@@ -53,11 +53,15 @@ describe('ArticleTracker with marianky.html sample', () => {
         expect(metrics).toHaveProperty('overtime', 2)
       })
 
-      it('achieved 17 percent consumption', async () => {
-        expect(metrics).toHaveProperty('achieved', 0.17)
+      it('achieved 20 percent consumption', async () => {
+        expect(metrics).toHaveProperty('achieved', 0.2)
       })
 
-      it('marks 1 paragraph consumed', async () => {
+      it('content.paragraph.consumableElements is 5', async () => {
+        expect(metrics).toHaveProperty('content.paragraph.consumableElements', 5)
+      })
+
+      it('content.paragraph.consumedElements is 1', async () => {
         expect(metrics).toHaveProperty('content.paragraph.consumedElements', 1)
       })
 

@@ -11,6 +11,7 @@ export interface ArticleTrackerOptions {
 }
 
 interface EventHandlerProps {
+  achieved?: number
   articleTracker: ArticleTracker
   targets?: IArticleElement[]
 }
@@ -24,6 +25,7 @@ interface EventController {
 }
 
 export interface EventHandlers {
+  consumptionAchievement: EventController
   elementsDisplayed: EventController
   elementsConsumed: EventController
   overtime: EventController
@@ -39,8 +41,13 @@ function sum<T>(items: T[], getter: (item: T) => number): number {
   return items.reduce((aggr, item) => aggr + getter(item), 0)
 }
 
+type Timer = ReturnType<typeof setTimeout>
+
 export class ArticleTracker {
   handlers: EventHandlers = {
+    consumptionAchievement: {
+      handlers: [],
+    },
     elementsDisplayed: {
       handlers: [],
     },
@@ -51,13 +58,15 @@ export class ArticleTracker {
       handlers: [],
     }
   }
+  achievedMax = 0
+  achievementTimer?: Timer
   content?: IArticleElement[]
   contentTypes: typeof ArticleElement[]
   el: HTMLElement
   eventBounceTime = 60
   intersectionThreshold = 0.75
   observer?: IntersectionObserver
-  overtimeTimer?: ReturnType<typeof setTimeout>
+  overtimeTimer?: Timer
   startedAt?: Date
 
   constructor(el: HTMLElement, options: ArticleTrackerOptions) {
@@ -136,11 +145,13 @@ export class ArticleTracker {
     const metrics: Record<string, ContentTypeMetrics> = {}
     for (const type of this.contentTypes) {
       const items = this.getContent().filter((i) => i instanceof type)
+      const consumable = items.filter(i => i.consumable)
       metrics[type.typeName] = {
         achieved: this.formatAchievedPercents(
-          sum(items, (item) => item.achieved) / items.length,
+          sum(consumable, (item) => item.achieved) / consumable.length,
         ),
-        consumed: items.every((item) => item.consumed),
+        consumed: consumable.every((item) => item.consumed),
+        consumableElements: consumable.length,
         consumedElements: items.filter((i) => i.consumed).length,
         detected: items.length,
         displayed: items.filter((i) => i.displayed).length,
@@ -154,20 +165,31 @@ export class ArticleTracker {
     return metrics
   }
 
+  getAchivedConsumption(): number {
+    const content = this.getContentMetrics()
+    const cv = Object.values(content)
+    return this.formatAchievedPercents(
+      sum(cv, (c) => c.achieved) / cv.length,
+    )
+  }
+
+  getOvertimeQuotient(): number {
+    const timeTotal = this.getTimeOnArticle()
+    const slowest = this.estimateSlowestTime()
+    return Math.max(0, Math.floor(timeTotal / slowest) - 1)
+  }
+
   getMetrics(): ArticleMetrics {
     const content = this.getContentMetrics()
     const cv = Object.values(content)
-    const achieved = this.formatAchievedPercents(
-      sum(cv, (c) => c.achieved) / cv.length,
-    )
     const consumed = cv.every((c) => c.consumed)
     const timeTotal = this.getTimeOnArticle()
     const slowest = this.estimateSlowestTime()
     return {
-      achieved,
+      achieved: this.getAchivedConsumption(),
       consumed,
       content,
-      overtime: Math.max(0, Math.floor(timeTotal / slowest) - 1),
+      overtime: this.getOvertimeQuotient(),
       timeTotal: toSeconds(timeTotal),
       estimates: {
         fastest: toSeconds(this.estimateFastestTime()),
@@ -231,17 +253,18 @@ export class ArticleTracker {
   }
 
   trackElementConsumption(content: IArticleElement): void {
-    content.markConsumable((item: ArticleElement) => {
+    content.markInViewport((item: ArticleElement) => {
       if (item.consumed) {
         this.trigger('elementsConsumed', {
           targets: [item],
         })
+        this.reportAchievement()
       }
     })
   }
 
   stopElementConsumptionTracking(content: IArticleElement): void {
-    content.markUnconsumable()
+    content.markNotInViewport()
   }
 
   setupObserver(): void {
@@ -263,11 +286,19 @@ export class ArticleTracker {
     })
   }
 
+  reportAchievement(): void {
+    const achieved = this.getAchivedConsumption()
+    // Avoid reporting the same achievement twice
+    if (achieved > this.achievedMax) {
+      this.achievedMax = achieved
+      this.trigger('consumptionAchievement', { achieved })
+    }
+  }
+
   watchOvertime(): void {
     clearTimeout(this.overtimeTimer)
     this.overtimeTimer = setTimeout(() => {
-      const metrics = this.getMetrics()
-      if (metrics.overtime > 0) {
+      if (this.getOvertimeQuotient() > 0) {
         this.trigger('overtime', {})
       }
       this.watchOvertime()
