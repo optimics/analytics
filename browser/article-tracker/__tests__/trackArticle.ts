@@ -52,7 +52,9 @@ describe('trackArticle', () => {
 
   it('returns ArticleTracker', () => {
     const div = document.createElement('div')
-    expect(trackArticle(div, { contentTypes: [] })).toBeInstanceOf(
+    const at = trackArticle(div, { contentTypes: [] })
+    at.untrack()
+    expect(at).toBeInstanceOf(
       ArticleTracker,
     )
   })
