@@ -25,7 +25,7 @@ describe('ArticleTracker with marianky.html sample', () => {
     },
   })
 
-  describe('on article page after scrolling down to the fifth paragraph', () => {
+  describe('on article page after scrolling down to the last paragraph', () => {
     const pageRef = configureTestPage({
       pageUrl: sourceFile,
       scriptUrls: ['/index.js'],
@@ -34,19 +34,7 @@ describe('ArticleTracker with marianky.html sample', () => {
     const tracker = configureTracker({ pageRef })
 
     beforeAll(async () => {
-      await pageRef.page.evaluate(() => {
-        const nth = 5
-        const element = document.querySelectorAll('div.c-rte > p')[nth]
-        if (element) {
-          const target = (element.nextElementSibling || element) as HTMLElement
-          target.scrollIntoView({
-            behavior: 'auto',
-            block: 'end',
-          })
-        }
-      })
-      await tracker.waitForAnimationFrame()
-      await pageRef.timeout(1000, true)
+      await pageRef.scrollToElement('div.c-rte > p', 5)
     })
 
     describe('immediately', () => {
@@ -56,8 +44,8 @@ describe('ArticleTracker with marianky.html sample', () => {
         metrics = await tracker.getMetrics()
       }, timeoutDefault)
 
-      it('marks 5 paragraph displayed', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.displayed', 5)
+      it('marks 6 paragraph displayed', async () => {
+        expect(metrics).toHaveProperty('content.paragraph.displayed', 6)
       })
 
       it('marks 0 paragraphs consumed', async () => {
@@ -73,8 +61,8 @@ describe('ArticleTracker with marianky.html sample', () => {
         metrics = await tracker.getMetrics()
       }, timeoutDefault)
 
-      it('marks 4 paragraphs consumed', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.consumedElements', 4)
+      it('marks 3 paragraphs consumed', async () => {
+        expect(metrics).toHaveProperty('content.paragraph.consumedElements', 3)
       })
 
       it('reports paragraph timeTotal > 10000', async () => {
@@ -85,16 +73,16 @@ describe('ArticleTracker with marianky.html sample', () => {
         )
       })
 
-      it('reports 5 elements to be displayed via event handlers', async () => {
+      it('reports 6 elements to be displayed via event handlers', async () => {
         expect(
           await tracker.getEventHandlerTargets('elementsDisplayed'),
-        ).toHaveLength(5)
+        ).toHaveLength(6)
       })
 
-      it('reports 4 elements to be consumed via event handlers', async () => {
+      it('reports 3 elements to be consumed via event handlers', async () => {
         expect(
           await tracker.getEventHandlerTargets('elementsConsumed'),
-        ).toHaveLength(4)
+        ).toHaveLength(3)
       })
     })
   })

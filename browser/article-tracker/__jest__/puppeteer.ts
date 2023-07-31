@@ -46,6 +46,7 @@ export function configureBrowser(options: BrowserOptions): BrowserRef {
 
 export interface PageRef {
   page: Page
+  scrollToElement: (selector: string, index: number) => Promise<void>
   timeout: (time: number, real?: boolean) => Promise<void>
   window: BrowserContext
 }
@@ -115,6 +116,35 @@ export function configureTestPage(options: PageOptions): PageRef {
       window.test.clock.tick(time)
       return promise
     }, time)
+  }
+
+  ref.scrollToElement = async function (
+    selector: string,
+    nth = 0,
+  ): Promise<void> {
+    await ref.page.evaluate(
+      (selector, nth) => {
+        const element = document.querySelectorAll(selector)[nth]
+        if (element) {
+          const style = window.getComputedStyle(element)
+          const rect = element.getBoundingClientRect()
+          /* Given the element has bottom margin, we need to scroll extra pixels,
+           * to make it fully appear on the viewport */
+          const margin = parseFloat(style.marginBottom)
+          window.scrollTo(
+            0,
+            window.scrollY + rect.bottom + margin - window.innerHeight,
+          )
+        } else {
+          throw new Error(`Paragraph#${nth} not found`)
+        }
+      },
+      selector,
+      nth,
+    )
+    /* Wait for the viewport scroll to propagate, because puppeteer always
+     * uses smooth scroll, that takes around 1 second */
+    await new Promise((resolve) => setTimeout(resolve, 1000))
   }
 
   return ref

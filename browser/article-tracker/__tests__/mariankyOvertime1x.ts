@@ -58,7 +58,10 @@ describe('ArticleTracker with marianky.html sample', () => {
       })
 
       it('content.paragraph.consumableElements is 5', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.consumableElements', 5)
+        expect(metrics).toHaveProperty(
+          'content.paragraph.consumableElements',
+          5,
+        )
       })
 
       it('content.paragraph.consumedElements is 1', async () => {
@@ -66,9 +69,7 @@ describe('ArticleTracker with marianky.html sample', () => {
       })
 
       it('calls overtime event handler', async () => {
-        expect(
-          await tracker.getEventHandlerCalls('overtime'),
-        ).toHaveLength(1)
+        expect(await tracker.getEventHandlerCalls('overtime')).toHaveLength(1)
       })
     })
   })
