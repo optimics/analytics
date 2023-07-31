@@ -160,6 +160,13 @@ describe('ArticleTracker with marianky.html sample', () => {
           )
         })
 
+        it('returns content.paragraph.consumableElements=5', () => {
+          expect(at.getMetrics()).toHaveProperty(
+            'content.paragraph.consumableElements',
+            5,
+          )
+        })
+
         it('returns content.paragraph.displayed=1', () => {
           expect(at.getMetrics()).toHaveProperty(
             'content.paragraph.displayed',

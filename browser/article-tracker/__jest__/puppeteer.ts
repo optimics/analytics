@@ -109,13 +109,12 @@ export function configureTestPage(options: PageOptions): PageRef {
   ref.timeout = async function (time: number, real = false): Promise<void> {
     if (real) {
       await new Promise((resolve) => setTimeout(resolve, time))
-    } else {
-      await ref.page.evaluate((time) => {
-        const promise = new Promise((resolve) => setTimeout(resolve, time))
-        window.test.clock.tick(time)
-        return promise
-      }, time)
     }
+    await ref.page.evaluate((time) => {
+      const promise = new Promise((resolve) => setTimeout(resolve, time))
+      window.test.clock.tick(time)
+      return promise
+    }, time)
   }
 
   return ref

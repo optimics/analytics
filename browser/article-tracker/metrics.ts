@@ -28,6 +28,12 @@ export interface ContentTypeMetrics extends ConsumptionMetrics {
    * @example 3
    */
   consumedElements: number
+
+  /** How many detected elements are actually consumable. This creates base for
+   * the consumption metrics.
+   * @example 2
+   */
+  consumableElements: number
   /** Natural number describing how many elements of the type were detected
    * @example 3
    */

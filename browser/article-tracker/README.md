@@ -13,13 +13,15 @@ interface ready for reporting.
 * [Metrics object](#user-content-metrics-object)
   * [`achieved`](#user-content-achieved)
   * [`consumed`](#user-content-consumed)
-  * [`consumedElements`](#user-content-consumed-elements)
+  * [`consumableElements`](#user-content-consumableelements)
+  * [`consumedElements`](#user-content-consumedelements)
   * [`detected`](#user-content-detected)
   * [`estimates.fastest`](#user-content-estimatesfastest)
   * [`estimates.slowest`](#user-content-estimatesslowest)
   * [`overtime`](#user-content-overtime)
   * [`timeTotal`](#user-content-timeTotal)
 * [Events](#user-content-events)
+  * [`consumptionAchievement`](#user-content-consumptionachievement)
   * [`elementsDisplayed`](#user-content-elementsdisplayed)
   * [`elementsConsumed`](#user-content-elementsconsumed)
   * [`overtime`](#user-content-overtime)
@@ -123,6 +125,7 @@ something like this:
     "paragraph": {
       "achived": 0.05,
       "consumed": false,
+      "consumableElements": 4,
       "consumedElements": 0,
       "detected": 5,
       "displayed": 1,
@@ -164,6 +167,14 @@ The entire Article is `consumed`, when all of its elements have been
 `consumed`.
 
 Available on: `ArticleMetrics`, `ContentTypeMetrics`
+
+### `consumableElements`
+
+How many elements of this type can be consumed? Empty elements of a type are
+not counted into the consumption metrics. For example empty paragraph would be
+ignored.
+
+Available on: `ContentTypeMetrics`
 
 ### `consumedElements`
 
@@ -207,6 +218,18 @@ Article Tracker automagically triggers events as result of user interaction.
 The EventHandler is a function, that returns void and always receives props
 objects with at least `articleTracker` instance. All of the events are
 debounced, so they do not trigger too often.
+
+### `consumptionAchievement`
+
+Reports progress of consumption achievement. Currently triggered together with
+`elementsConsumed` event but the API might change in the future to provide
+details with higher resolution.
+
+```javascript
+articleTracker.on('consumptionAchievement', ({ articleTracker, achieved }) => {
+  console.log(achieved)
+})
+```
 
 ### `elementsDisplayed`
 

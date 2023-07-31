@@ -7,12 +7,17 @@ export class ArticleParagraph extends ArticleElement {
   fastestMultiplier = 0.2
   slowestMultiplier = 0.3
 
+  get consumable(): boolean {
+    // Only articles with text content are consumable
+    return Boolean(this.textContent)
+  }
+
+  get textContent(): string {
+    return this.el.textContent || ''
+  }
+
   getBaseConsumptionTime(): number {
-    const content = this.el.textContent
-    if (!content) {
-      return 0
-    }
-    const words = content.split(/\s/).filter(function (txt) {
+    const words = this.textContent.split(/\s/).filter(function (txt) {
       return /\S/.test(txt)
     })
     // TODO: Count word length instead of word count

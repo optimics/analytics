@@ -9,8 +9,8 @@ export interface IArticleElement {
   estimateSlowestTime(): number
   getRootElement(): HTMLElement
   markDisplayed(): void
-  markConsumable(onConsumed: ConsumedHandler): void
-  markUnconsumable(): void
+  markInViewport(onConsumed: ConsumedHandler): void
+  markNotInViewport(): void
 }
 
 export type ConsumedHandler = (item: ArticleElement) => void
@@ -19,10 +19,10 @@ export abstract class ArticleElement implements IArticleElement {
   static selector: string
   static typeName: string
 
-  consumable = false
   consumptionStartedAt?: number
   consumptionTimeTracked = 0
   consumptionTimer?: ReturnType<typeof setTimeout>
+  inViewport = false
   displayed = false
   el: HTMLElement
 
@@ -47,6 +47,11 @@ export abstract class ArticleElement implements IArticleElement {
 
   get consumptionTimeTotal(): number {
     return this.consumptionTimeTracked + this.getLastConsumptionTime()
+  }
+
+  get consumable(): boolean {
+    // ArticleElement is consumable by default
+    return true
   }
 
   get consumed(): boolean {
@@ -75,13 +80,13 @@ export abstract class ArticleElement implements IArticleElement {
     }
   }
 
-  markConsumable(onConsumed?: ConsumedHandler): void {
-    this.consumable = true
+  markInViewport(onConsumed?: ConsumedHandler): void {
+    this.inViewport = true
     this.recordConsumptionTime(onConsumed)
   }
 
-  markUnconsumable(): void {
-    this.consumable = false
+  markNotInViewport(): void {
+    this.inViewport = false
     this.stopConsumption()
   }
 
