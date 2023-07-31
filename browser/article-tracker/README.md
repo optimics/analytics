@@ -8,6 +8,8 @@ interface ready for reporting.
 
 * [Installation](#user-content-installation)
 * [Usage](#user-content-usage)
+  * [`ArticleParagraph`](#user-content-articleparagraph)
+  * [Custom Element Type](#user-content-custom-element-type)
 * [Metrics object](#user-content-metrics-object)
   * [`achieved`](#user-content-achieved)
   * [`consumed`](#user-content-consumed)
@@ -55,6 +57,18 @@ articleElement.on('elementsConsumed', () => {
   console.log(articleTracker.getMetrics())
 })
 articleElement.track()
+```
+
+### ArticleParagraph
+
+The `ArticleParagraph` is a basic Element Type, that only tracks `<p>` tags
+content. It estimates slowest and fastest reader time based on the text
+content size.
+
+The default selector is just `'p'`.
+
+```javascript
+import { ArticleParagraph } from '@optimics/article-tracker'
 ```
 
 ### Custom Element Type
@@ -181,7 +195,7 @@ metrics.
 
 Available on: `ArticleMetrics`
 
-### `timeTotal`
+#### `timeTotal`
 
 How much time did user spend on the element or article in seconds.
 
