@@ -13,7 +13,7 @@ export class ArticleParagraph extends ArticleElement {
   }
 
   get textContent(): string {
-    return this.el.textContent || ''
+    return this.el.textContent?.trim() || ''
   }
 
   getBaseConsumptionTime(): number {
