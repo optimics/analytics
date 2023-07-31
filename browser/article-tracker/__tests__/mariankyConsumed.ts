@@ -35,28 +35,9 @@ describe('ArticleTracker with marianky.html sample', () => {
 
     describe('after scrolling to the end during 120 seconds', () => {
       let metrics: ArticleMetrics
-      
-      async function scrollToParagraph(nth: number): Promise<void> {
-        await pageRef.page.evaluate((nth) => {
-          const element = document.querySelectorAll('div.c-rte > p')[nth]
-          if (element) {
-            const style = window.getComputedStyle(element)
-            const rect = element.getBoundingClientRect()
-            /* Given the element has bottom margin, we need to scroll extra pixels,
-             * to make it fully appear on the viewport */
-            const margin = parseFloat(style['marginBottom'])
-            window.scrollTo(0, window.scrollY + rect.bottom + margin - window.innerHeight)
-          } else {
-            throw new Error(`Paragraph#${nth} not found`)
-          }
-        }, nth)
-        /* Wait for the viewport scroll to propagate, because puppeteer always
-         * uses smooth scroll, that takes around 1 second */
-        await new Promise(resolve => setTimeout(resolve, 1000))
-      }
 
       async function viewParagraph(index: number, time: number): Promise<void> {
-        await scrollToParagraph(index)
+        await pageRef.scrollToElement('div.c-rte > p', index)
         await pageRef.timeout(time)
       }
 
@@ -94,32 +75,39 @@ describe('ArticleTracker with marianky.html sample', () => {
       })
 
       it('content.paragraph.consumableElements is 5', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.consumableElements', 5)
+        expect(metrics).toHaveProperty(
+          'content.paragraph.consumableElements',
+          5,
+        )
       })
 
       it('content.paragraph.consumedElements is 5', async () => {
         expect(metrics).toHaveProperty('content.paragraph.consumedElements', 5)
       })
-      
+
       it('content.paragraph.achieved 100 percent consumption', async () => {
         expect(metrics).toHaveProperty('content.paragraph.achieved', 1)
       })
-      
+
       it('consumptionAchievement gets called with 60 percent consumption', async () => {
-        const calls = await tracker.getEventHandlerCalls('consumptionAchievement')
+        const calls = await tracker.getEventHandlerCalls(
+          'consumptionAchievement',
+        )
         expect(calls).toContainEqual([
           expect.objectContaining({
-            achieved: 0.6
-          })
+            achieved: 0.6,
+          }),
         ])
       })
 
       it('consumptionAchievement gets called with 100 percent consumption', async () => {
-        const calls = await tracker.getEventHandlerCalls('consumptionAchievement')
+        const calls = await tracker.getEventHandlerCalls(
+          'consumptionAchievement',
+        )
         expect(calls).toContainEqual([
           expect.objectContaining({
-            achieved: 1
-          })
+            achieved: 1,
+          }),
         ])
       })
     })

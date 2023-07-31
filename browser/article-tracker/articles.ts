@@ -56,7 +56,7 @@ export class ArticleTracker {
     },
     overtime: {
       handlers: [],
-    }
+    },
   }
   achievedMax = 0
   achievementTimer?: Timer
@@ -145,7 +145,7 @@ export class ArticleTracker {
     const metrics: Record<string, ContentTypeMetrics> = {}
     for (const type of this.contentTypes) {
       const items = this.getContent().filter((i) => i instanceof type)
-      const consumable = items.filter(i => i.consumable)
+      const consumable = items.filter((i) => i.consumable)
       metrics[type.typeName] = {
         achieved: this.formatAchievedPercents(
           sum(consumable, (item) => item.achieved) / consumable.length,
@@ -168,9 +168,7 @@ export class ArticleTracker {
   getAchivedConsumption(): number {
     const content = this.getContentMetrics()
     const cv = Object.values(content)
-    return this.formatAchievedPercents(
-      sum(cv, (c) => c.achieved) / cv.length,
-    )
+    return this.formatAchievedPercents(sum(cv, (c) => c.achieved) / cv.length)
   }
 
   getOvertimeQuotient(): number {

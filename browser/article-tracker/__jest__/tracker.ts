@@ -57,9 +57,11 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
         base.eventHandlerCalls.elementsConsumed.push(args)
         base.eventHandlerTargets.elementsConsumed.push(...args[0].targets)
       })
+      // rome-ignore lint/suspicious/noExplicitAny: Track all arguments
       base.at.on('consumptionAchievement', (...args: any[]) => {
         base.eventHandlerCalls.consumptionAchievement.push(args)
       })
+      // rome-ignore lint/suspicious/noExplicitAny: Track all arguments
       base.at.on('overtime', (...args: any[]) => {
         base.eventHandlerCalls.overtime.push(args)
       })

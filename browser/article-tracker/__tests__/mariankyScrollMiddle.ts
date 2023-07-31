@@ -34,18 +34,7 @@ describe('ArticleTracker with marianky.html sample', () => {
     const tracker = configureTracker({ pageRef })
 
     beforeAll(async () => {
-      await pageRef.page.evaluate(() => {
-        const nth = 2
-        const element = document.querySelectorAll('div.c-rte > p')[nth]
-        if (element) {
-          const target = (element.nextElementSibling || element) as HTMLElement
-          target.scrollIntoView({
-            block: 'end',
-          })
-        }
-      })
-      await tracker.waitForAnimationFrame()
-      await pageRef.timeout(1000, true)
+      await pageRef.scrollToElement('div.c-rte > p', 2)
     })
 
     describe('immediately', () => {
