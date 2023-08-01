@@ -13,7 +13,11 @@
   "homepage": "https://github.com/optimics/analytics#readme",
   "license": "MIT",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
   "files": [
     "dist/*.js",
     "dist/*.d.ts"
@@ -21,6 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "homepage": "https://github.com/optimics/analytics/browser/article-tracker",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/optimics/analytics.git"
