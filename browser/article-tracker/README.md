@@ -89,13 +89,13 @@ class ArticleVideo extends ArticleElement {
     return this.el.dataset.player
   }
 
-  getMinConsumptionTime() {
+  estimateFastestTime() {
     /* In this example, we assume, that the element can be considered consumed
      * after 75 % of the video length has been played */
     return this.getMetadata().length * 0.75
   }
 
-  getMaxConsumptionTime() {
+  estimateSlowestTime() {
     return this.getMetadata().length
   }
 }
