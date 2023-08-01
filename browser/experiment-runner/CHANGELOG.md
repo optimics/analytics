@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/optimics/analytics/compare/v0.2.4...v0.3.0) (2023-08-01)
+
+
+### Features
+
+* create article tracker ([bcff7ff](https://github.com/optimics/analytics/commit/bcff7ffb0e9cf335cb9a20224ac972b9958b2f87))
+
+
+
+
+
 ## [0.2.4](https://github.com/optimics/analytics/compare/v0.2.3...v0.2.4) (2023-07-07)
 
 
