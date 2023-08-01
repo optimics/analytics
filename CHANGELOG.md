@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/optimics/analytics/compare/v0.3.0...v0.3.1) (2023-08-01)
+
+
+### Bug Fixes
+
+* publish package contents ([235884d](https://github.com/optimics/analytics/commit/235884d156d189de39b14eabade3cebb45e19eff))
+
+
+
+
+
 # [0.3.0](https://github.com/optimics/analytics/compare/v0.2.4...v0.3.0) (2023-08-01)
 
 
