@@ -1,4 +1,5 @@
-import type { EventHandler } from '../articles'
+import type { TargetEventProps } from '../articles'
+import type { EventHandler } from '../events'
 
 import { ArticleParagraph, ArticleTracker, IArticleElement } from '..'
 import {
@@ -128,11 +129,11 @@ describe('ArticleTracker with marianky.html sample', () => {
       })
 
       describe('after scrolling to the first paragraph of the article in 90 seconds', () => {
-        let elementDisplayedHandler: EventHandler
+        let elementDisplayedHandler: EventHandler<TargetEventProps>
 
         beforeEach(() => {
           elementDisplayedHandler = jest.fn()
-          at.on('elementsDisplayed', elementDisplayedHandler)
+          at.events.elementsDisplayed.subscribe(elementDisplayedHandler)
           at.track()
           jest.advanceTimersByTime(90000)
           const target = at.el.querySelector('p') as HTMLElement
@@ -176,18 +177,17 @@ describe('ArticleTracker with marianky.html sample', () => {
 
         it('triggers elementDisplayedHandler', () => {
           expect(elementDisplayedHandler).toHaveBeenCalledWith({
-            articleTracker: at,
             targets: [expect.any(ArticleParagraph)],
           })
         })
       })
 
       describe('after scrolling to the third paragraph of the article in 90 seconds', () => {
-        let elementDisplayedHandler: EventHandler
+        let elementDisplayedHandler: EventHandler<TargetEventProps>
 
         beforeEach(() => {
           elementDisplayedHandler = jest.fn()
-          at.on('elementsDisplayed', elementDisplayedHandler)
+          at.events.elementsDisplayed.subscribe(elementDisplayedHandler)
           at.track()
           jest.advanceTimersByTime(90000)
           const targets = at.el.querySelectorAll('p')
@@ -247,7 +247,6 @@ describe('ArticleTracker with marianky.html sample', () => {
 
         it('triggers elementDisplayedHandler with three paragraphs', () => {
           expect(elementDisplayedHandler).toHaveBeenCalledWith({
-            articleTracker: at,
             targets: [
               expect.any(ArticleParagraph),
               expect.any(ArticleParagraph),
