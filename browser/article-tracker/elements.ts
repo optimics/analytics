@@ -30,11 +30,10 @@ export abstract class ArticleElement implements IArticleElement {
     this.el = el
   }
 
-  static getAll(articleEl: HTMLElement): ArticleElement[] {
-    return Array.from(articleEl.querySelectorAll(this.selector)).map((el) => {
-      // @ts-ignore
-      return new this(el as HTMLElement)
-    })
+  static getAll(articleEl: HTMLElement): HTMLElement[] {
+    return Array.from(
+      articleEl.querySelectorAll(this.selector),
+    ) as HTMLElement[]
   }
 
   /** Get the absolute minimum expected time, the user could take, to consume
@@ -106,16 +105,20 @@ export abstract class ArticleElement implements IArticleElement {
   }
 
   recordConsumptionTime(onConsumed?: ConsumedHandler): void {
-    this.updateConsumptionMetrics()
-    this.consumptionStartedAt = Date.now()
-    if (onConsumed && !this.consumed) {
-      this.consumptionTimer = setTimeout(() => {
-        onConsumed(this)
-      }, this.estimateFastestTime())
+    if (this.consumable) {
+      this.updateConsumptionMetrics()
+      this.consumptionStartedAt = Date.now()
+      if (onConsumed && !this.consumed) {
+        this.consumptionTimer = setTimeout(() => {
+          onConsumed(this)
+        }, this.estimateFastestTime())
+      }
     }
   }
 
   stopConsumption(): void {
-    this.updateConsumptionMetrics()
+    if (this.consumable) {
+      this.updateConsumptionMetrics()
+    }
   }
 }

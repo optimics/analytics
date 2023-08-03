@@ -1,40 +1,45 @@
 import type { ArticleElement, IArticleElement } from './elements.js'
 import type { ArticleMetrics, ContentTypeMetrics } from './metrics.js'
 
+import { EventController } from './events.js'
+
 function toSeconds(time: number): number {
   return time / 1000
 }
 
 export interface ArticleTrackerOptions {
   contentTypes: typeof ArticleElement[]
+  eventBounceTime?: number
   intersectionThreshold?: number
 }
 
-interface EventHandlerProps {
-  achieved?: number
-  articleTracker: ArticleTracker
-  targets?: IArticleElement[]
+export interface ConsumptionAchievementProps {
+  achieved: number
 }
 
-export type EventHandler = (props: EventHandlerProps) => void
+export interface TargetEventProps {
+  targets: IArticleElement[]
+}
 
-interface EventController {
-  bouncer?: ReturnType<typeof setTimeout>
-  targets?: IArticleElement[]
-  handlers: EventHandler[]
+export interface OvertimeEventProps {
+  overtime: number
 }
 
 export interface EventHandlers {
-  consumptionAchievement: EventController
-  elementsDisplayed: EventController
-  elementsConsumed: EventController
-  overtime: EventController
+  consumptionAchievement: EventController<ConsumptionAchievementProps>
+  elementsAdded: EventController<TargetEventProps>
+  elementsConsumed: EventController<TargetEventProps>
+  elementsDisplayed: EventController<TargetEventProps>
+  overtime: EventController<OvertimeEventProps>
 }
 
 export type EventHandlerName = keyof EventHandlers
 
-function sortByDocumentPosition(a: ArticleElement, b: ArticleElement): number {
-  return a.el.compareDocumentPosition(b.el)
+function sortByDocumentPosition(
+  a: IArticleElement,
+  b: IArticleElement,
+): number {
+  return a.getRootElement().compareDocumentPosition(b.getRootElement())
 }
 
 function sum<T>(items: T[], getter: (item: T) => number): number {
@@ -44,51 +49,38 @@ function sum<T>(items: T[], getter: (item: T) => number): number {
 type Timer = ReturnType<typeof setTimeout>
 
 export class ArticleTracker {
-  handlers: EventHandlers = {
-    consumptionAchievement: {
-      handlers: [],
-    },
-    elementsDisplayed: {
-      handlers: [],
-    },
-    elementsConsumed: {
-      handlers: [],
-    },
-    overtime: {
-      handlers: [],
-    },
-  }
   achievedMax = 0
   achievementTimer?: Timer
   content?: IArticleElement[]
   contentTypes: typeof ArticleElement[]
   el: HTMLElement
-  eventBounceTime = 60
-  intersectionThreshold = 0.75
-  observer?: IntersectionObserver
+  events: EventHandlers
+  intersectionThreshold?: number
+  intersectionObserver: IntersectionObserver
+  mutationObserver: MutationObserver
   overtimeTimer?: Timer
   startedAt?: Date
 
   constructor(el: HTMLElement, options: ArticleTrackerOptions) {
     this.el = el
     this.contentTypes = options.contentTypes
-    if (options.intersectionThreshold) {
-      this.intersectionThreshold = options.intersectionThreshold
-    }
-    this.setupObserver()
+    this.intersectionThreshold = options.intersectionThreshold || 0.75
+    this.events = this.createEventControllers(options)
+    this.mutationObserver = this.createMutationObserver()
+    this.intersectionObserver = this.createIntersectionObserver()
   }
 
   track(): ArticleTracker {
     this.startedAt = new Date()
     this.observeIntersections()
+    this.observeMutations()
     this.watchOvertime()
     return this
   }
 
   untrack(): ArticleTracker {
-    if (this.observer) {
-      this.observer.disconnect()
-    }
+    this.intersectionObserver.disconnect()
+    this.mutationObserver.disconnect()
     clearTimeout(this.overtimeTimer)
     return this
   }
@@ -127,10 +119,21 @@ export class ArticleTracker {
     return 0
   }
 
-  parseContent(): IArticleElement[] {
-    return this.contentTypes
-      .flatMap((contentType) => contentType.getAll(this.el))
-      .sort(sortByDocumentPosition)
+  parseContent(onlyAdditions = false): IArticleElement[] {
+    const src = this.contentTypes.flatMap((contentType) => {
+      let els = contentType.getAll(this.el)
+      if (onlyAdditions) {
+        els = els.filter((el) => {
+          if (this.content) {
+            return this.content.every((item) => item.getRootElement() !== el)
+          }
+          return true
+        })
+      }
+      // @ts-ignore
+      return els.map((el) => new contentType(el))
+    })
+    return src.sort(sortByDocumentPosition)
   }
 
   getContentByElement(el: HTMLElement): IArticleElement | undefined {
@@ -148,9 +151,14 @@ export class ArticleTracker {
       const consumable = items.filter((i) => i.consumable)
       metrics[type.typeName] = {
         achieved: this.formatAchievedPercents(
-          sum(consumable, (item) => item.achieved) / consumable.length,
+          consumable.length > 0
+            ? sum(consumable, (item) => item.achieved) / consumable.length
+            : 0,
         ),
-        consumed: consumable.every((item) => item.consumed),
+        consumed:
+          consumable.length > 0
+            ? consumable.every((item) => item.consumed)
+            : false,
         consumableElements: consumable.length,
         consumedElements: items.filter((i) => i.consumed).length,
         detected: items.length,
@@ -172,8 +180,11 @@ export class ArticleTracker {
   }
 
   getOvertimeQuotient(): number {
-    const timeTotal = this.getTimeOnArticle()
     const slowest = this.estimateSlowestTime()
+    if (slowest === 0) {
+      return 0
+    }
+    const timeTotal = this.getTimeOnArticle()
     return Math.max(0, Math.floor(timeTotal / slowest) - 1)
   }
 
@@ -199,61 +210,28 @@ export class ArticleTracker {
   markDisplayed(content: IArticleElement): void {
     content.markDisplayed()
     if (content.displayed) {
-      this.trigger('elementsDisplayed', { targets: [content] })
-    }
-  }
-
-  on(eventName: EventHandlerName, handler: EventHandler): ArticleTracker {
-    this.handlers[eventName].handlers.push(handler)
-    return this
-  }
-
-  trigger(
-    eventName: EventHandlerName,
-    props: Partial<EventHandlerProps>,
-  ): void {
-    const targets = [
-      ...(this.handlers[eventName]?.targets || []),
-      ...(props.targets || []),
-    ]
-    clearTimeout(this.handlers[eventName].bouncer)
-    this.handlers[eventName].targets = targets
-    this.handlers[eventName].bouncer = setTimeout(() => {
-      this.triggerDebounced(eventName, {
-        ...props,
-        targets: this.handlers[eventName].targets,
+      this.events.elementsDisplayed.debounce({
+        targets: [content],
       })
-      this.handlers[eventName].targets = []
-    }, this.eventBounceTime)
-  }
-
-  triggerDebounced(
-    eventName: keyof EventHandlers,
-    props: Partial<EventHandlerProps>,
-  ): void {
-    const handlers = this.handlers[eventName].handlers
-    if (handlers) {
-      for (const handler of handlers) {
-        handler({
-          ...props,
-          articleTracker: this,
-        })
-      }
     }
   }
 
   observeIntersections(): void {
-    if (this.observer) {
-      for (const item of this.getContent()) {
-        this.observer.observe(item.getRootElement())
-      }
+    for (const item of this.getContent()) {
+      this.intersectionObserver.observe(item.getRootElement())
     }
+  }
+
+  observeMutations(): void {
+    this.mutationObserver.observe(this.el, {
+      childList: true,
+    })
   }
 
   trackElementConsumption(content: IArticleElement): void {
     content.markInViewport((item: ArticleElement) => {
       if (item.consumed) {
-        this.trigger('elementsConsumed', {
+        this.events.elementsConsumed.debounce({
           targets: [item],
         })
         this.reportAchievement()
@@ -261,11 +239,52 @@ export class ArticleTracker {
     })
   }
 
+  integrateNewContent(targets: IArticleElement[]): void {
+    if (this.content && targets.length !== 0) {
+      this.content = [...this.content, ...targets].sort(sortByDocumentPosition)
+      for (const item of targets) {
+        this.intersectionObserver.observe(item.getRootElement())
+      }
+      this.events.elementsAdded.debounce({ targets })
+    }
+  }
+
   stopElementConsumptionTracking(content: IArticleElement): void {
     content.markNotInViewport()
   }
 
-  setupObserver(): void {
+  createEventControllers(options: ArticleTrackerOptions): EventHandlers {
+    const handlerOptions = {
+      bounceTime: options.eventBounceTime || 60,
+    }
+    const targetHandlerOptions = {
+      ...handlerOptions,
+      mergeProps: ['targets'] as (keyof TargetEventProps)[],
+    }
+    return {
+      consumptionAchievement: new EventController<ConsumptionAchievementProps>(
+        handlerOptions,
+      ),
+      elementsAdded: new EventController<TargetEventProps>(
+        targetHandlerOptions,
+      ),
+      elementsDisplayed: new EventController<TargetEventProps>(
+        targetHandlerOptions,
+      ),
+      elementsConsumed: new EventController<TargetEventProps>(
+        targetHandlerOptions,
+      ),
+      overtime: new EventController<OvertimeEventProps>(handlerOptions),
+    }
+  }
+
+  createMutationObserver(): MutationObserver {
+    return new window.MutationObserver(() => {
+      this.integrateNewContent(this.parseContent(true))
+    })
+  }
+
+  createIntersectionObserver(): IntersectionObserver {
     const handleIntersections = (entries: IntersectionObserverEntry[]) => {
       for (const entry of entries) {
         const content = this.getContentByElement(entry.target as HTMLElement)
@@ -279,7 +298,7 @@ export class ArticleTracker {
         }
       }
     }
-    this.observer = new window.IntersectionObserver(handleIntersections, {
+    return new window.IntersectionObserver(handleIntersections, {
       threshold: this.intersectionThreshold,
     })
   }
@@ -289,15 +308,18 @@ export class ArticleTracker {
     // Avoid reporting the same achievement twice
     if (achieved > this.achievedMax) {
       this.achievedMax = achieved
-      this.trigger('consumptionAchievement', { achieved })
+      this.events.consumptionAchievement.debounce({
+        achieved,
+      })
     }
   }
 
   watchOvertime(): void {
     clearTimeout(this.overtimeTimer)
     this.overtimeTimer = setTimeout(() => {
-      if (this.getOvertimeQuotient() > 0) {
-        this.trigger('overtime', {})
+      const overtime = this.getOvertimeQuotient()
+      if (overtime > 0) {
+        this.events.overtime.now({ overtime })
       }
       this.watchOvertime()
     }, this.estimateSlowestTime())
