@@ -1,5 +1,5 @@
 import type { ArticleElement, IArticleElement } from './elements.js'
-import type { ArticleMetrics, ContentTypeMetrics } from './metrics.js'
+import type { ArticleMetrics, ContentTypeMetrics, TimeEstimates } from './metrics.js'
 
 import { EventController } from './events.js'
 
@@ -144,6 +144,13 @@ export class ArticleTracker {
     return parseFloat(Number(val).toFixed(2))
   }
 
+  getTimeEstimates(items: IArticleElement[]): TimeEstimates {
+    return {
+      fastest: toSeconds(sum(items, (item) => item.estimateFastestTime())),
+      slowest: toSeconds(sum(items, (item) => item.estimateSlowestTime())),
+    }
+  }
+
   getContentMetrics(): Record<string, ContentTypeMetrics> {
     const metrics: Record<string, ContentTypeMetrics> = {}
     for (const type of this.contentTypes) {
@@ -163,10 +170,7 @@ export class ArticleTracker {
         consumedElements: items.filter((i) => i.consumed).length,
         detected: items.length,
         displayed: items.filter((i) => i.displayed).length,
-        estimates: {
-          fastest: toSeconds(sum(items, (item) => item.estimateFastestTime())),
-          slowest: toSeconds(sum(items, (item) => item.estimateSlowestTime())),
-        },
+        estimates: this.getTimeEstimates(items),
         timeTotal: sum(items, (item) => item.consumptionTimeTotal),
       }
     }
