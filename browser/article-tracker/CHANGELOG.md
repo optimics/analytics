@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/optimics/analytics/compare/v0.3.1...v0.4.0) (2023-08-09)
+
+
+### Features
+
+* track article content mutations ([8055147](https://github.com/optimics/analytics/commit/8055147c08e8e9f1fb293c06ca818dc4f600f116))
+
+
+
+
+
 ## [0.3.1](https://github.com/optimics/analytics/compare/v0.3.0...v0.3.1) (2023-08-01)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@optimics/browser-experiment-runner",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Register and run experiments on browser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
