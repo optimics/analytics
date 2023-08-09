@@ -1,5 +1,5 @@
 ---
-name: Release tag
+name: Publish
 on:
   pull_request_target:
     branches:
