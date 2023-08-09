@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "required": ["docId"],
+  "properties": {
+    "docId": {
+      "type": "string",
+      "title": "docId",
+      "description": "The ID of the Google document, which can be copy pasted from the document URL",
+      "examples": ["1pbcP6OHyBGOrXGjNkV9tUe4LrqXJM6mr-BLVrAWVV5Y"]
+    }
+  }
+}

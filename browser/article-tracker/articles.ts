@@ -1,5 +1,9 @@
 import type { ArticleElement, IArticleElement } from './elements.js'
-import type { ArticleMetrics, ContentTypeMetrics, TimeEstimates } from './metrics.js'
+import type {
+  ArticleMetrics,
+  ContentTypeMetrics,
+  TimeEstimates,
+} from './metrics.js'
 
 import { EventController } from './events.js'
 

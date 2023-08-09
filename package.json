@@ -7,7 +7,8 @@
   "type": "module",
   "workspaces": [
     "browser/*",
-    "dataform/*"
+    "dataform/*",
+    "google/**"
   ],
   "scripts": {
     "lint": "rome check .",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.22.9",
+    "@google-cloud/functions-framework": "^3.3.0",
     "@optimics/jest": "^0.7.0",
     "@optimics/repo": "^0.7.0",
     "@optimics/webpack": "^0.7.1",
