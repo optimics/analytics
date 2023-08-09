@@ -8,6 +8,8 @@
   on your audience
 * [@optimics/dataform-utm-source-filter](./dataform/utm-source-filter) -
   evaluate `utm_source` contribution in conversions
+* [@optimics/ga4-manager](./google/sheets/ga4-manager) - configure your GA4
+  custom properties and dimensions from Sheets
 
 ## Testing
 
