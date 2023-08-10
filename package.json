@@ -12,13 +12,14 @@
   ],
   "scripts": {
     "lint": "rome check .",
-    "build": "lerna run build --stream",
+    "build": "npm-isolate bundle",
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.22.9",
     "@google-cloud/functions-framework": "^3.3.0",
     "@optimics/jest": "^0.7.0",
+    "@optimics/npm-isolate": "^0.8.3",
     "@optimics/repo": "^0.7.0",
     "@optimics/webpack": "^0.7.1",
     "@sinonjs/fake-timers": "^10.3.0",

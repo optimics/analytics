@@ -40,7 +40,7 @@ locals {
   continent  = var.GCP_CONTINENT
   production = local.root_env_stage == "le"
   region     = var.GCP_REGION
-  root_dir   = abspath("${dirname(abspath(path.module))}/..")
+  root_dir   = abspath("${dirname(abspath(path.module))}/../../..")
   root_env   = "${local.root_env_prefix}-${local.root_env_stage}"
 }
 
