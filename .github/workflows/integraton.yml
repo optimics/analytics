@@ -37,6 +37,7 @@ jobs:
   deploy-ga4-manager:
     name: Deploy GA4 Manager
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
     environment: gcp:google-sheets:ga4-manager:sg
     concurrency: gcp:google-sheets:ga4-manager:sg
     needs:
