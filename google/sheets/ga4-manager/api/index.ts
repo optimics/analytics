@@ -4,7 +4,9 @@ import type { Request, Response } from 'express'
 import { AnalyticsAdmin } from './analytics.js'
 import { cors, validatedBody } from './http.js'
 import { createPlan, printPlan } from './plan.js'
-import { NoSheetError, SheetReporter, SpreadsheetSource } from './sheets.js'
+import { SheetReporter } from './sheets/SheetReporter.js'
+import { SheetSource } from './sheets/SheetSource.js'
+import { NoSheetError } from './sheets/Worksheet.js'
 import { Credentials } from './types.js'
 import { readFile } from 'fs/promises'
 import { dirname, resolve } from 'path'
@@ -57,15 +59,14 @@ function authorized(
   descriptor: PropertyDescriptor,
 ) {
   const fn = descriptor.value
-  descriptor.value =
-    async (req: Request, res: Response) => {
-      try {
-        req.body.credentials = await getCredentials()
-      } catch (_e) {
-        req.body.credentials = undefined
-      }
-      return fn(req, res)
+  descriptor.value = async (req: Request, res: Response) => {
+    try {
+      req.body.credentials = await getCredentials()
+    } catch (_e) {
+      req.body.credentials = undefined
     }
+    return fn(req, res)
+  }
 }
 
 function withSheet(
@@ -74,23 +75,22 @@ function withSheet(
   descriptor: PropertyDescriptor,
 ) {
   const fn = descriptor.value
-  descriptor.value =
-    async (req: Request, res: Response) => {
-      try {
-        req.body.sheet = new SpreadsheetSource({
-          docId: req.body.docId,
-          credentials: req.body.credentials,
-        })
-        await req.body.sheet.connect()
-        return fn(req, res)
-      } catch (e) {
-        console.error(e)
-        res.status(422).json({
-          message: `Cannot access the Google Spreadsheet document. The API responded with "${e.message}"`,
-          docId: req.body.docId,
-        })
-      }
+  descriptor.value = async (req: Request, res: Response) => {
+    try {
+      req.body.sheet = new SheetSource({
+        docId: req.body.docId,
+        credentials: req.body.credentials,
+      })
+      await req.body.sheet.connect()
+      return fn(req, res)
+    } catch (e) {
+      console.error(e)
+      res.status(422).json({
+        message: `Cannot access the Google Spreadsheet document. The API responded with "${e.message}"`,
+        docId: req.body.docId,
+      })
     }
+  }
   return descriptor
 }
 
@@ -101,20 +101,20 @@ function withSheetState(
 ) {
   const fn = descriptor.value
   descriptor.value = async (req: Request, res: Response) => {
-      try {
-        req.body.sheetState = await req.body.sheet.parseState()
-        req.body.scopes = req.body.sheet.getMutationScopes()
-        if (req.body.scopes.length === 0) {
-          return res.status(200).json({ message: 'No work scopes detected' })
-        }
-        return fn(req, res)
-      } catch (e) {
-        if (e instanceof NoSheetError) {
-          return res.status(200).json({ message: 'Nothing to do' })
-        }
-        throw e
+    try {
+      req.body.sheetState = await req.body.sheet.parseState()
+      req.body.scopes = req.body.sheet.getMutationScopes()
+      if (req.body.scopes.length === 0) {
+        return res.status(200).json({ message: 'No work scopes detected' })
       }
+      return fn(req, res)
+    } catch (e) {
+      if (e instanceof NoSheetError) {
+        return res.status(200).json({ message: 'Nothing to do' })
+      }
+      throw e
     }
+  }
   return descriptor
 }
 

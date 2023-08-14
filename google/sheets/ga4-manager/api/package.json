@@ -12,7 +12,7 @@
   "scripts": {
     "compile": "tsc",
     "dev": "functions-framework --target=request",
-    "predev": "npm run build",
+    "predev": "npm run compile",
     "manage": "node ./dist/index.js"
   },
   "dependencies": {

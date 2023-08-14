@@ -3,8 +3,12 @@ import Ajv, { JSONSchemaType } from 'ajv'
 import type { Request, Response } from 'express'
 
 export function cors(...allowedMethods: string[]) {
-  // rome-ignore lint/suspicious/noExplicitAny: Baldy typed, but blocker
-  return (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) => {
+  return (
+    // rome-ignore lint/suspicious/noExplicitAny: Baldy typed, but blocker
+    _target: any,
+    _propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) => {
     const fn = descriptor.value
     descriptor.value = (req: Request, res: Response) => {
       res.set('Access-Control-Allow-Origin', req.get('Origin') || '*')
@@ -30,8 +34,12 @@ export function cors(...allowedMethods: string[]) {
 export function validatedBody(schema: JSONSchemaType<any>) {
   const ajv = new Ajv.default()
   const validate = ajv.compile(schema)
-  // rome-ignore lint/suspicious/noExplicitAny: Baldy typed, but blocker
-  return (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) => {
+  return (
+    // rome-ignore lint/suspicious/noExplicitAny: Baldy typed, but blocker
+    _target: any,
+    _propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) => {
     const fn = descriptor.value
     descriptor.value = (req: Request, res: Response) => {
       const valid = validate(req.body)
