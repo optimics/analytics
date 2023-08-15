@@ -28,14 +28,6 @@ export class SpreadsheetError extends Error {}
 export class WorksheetError extends Error {}
 export class NoSheetError extends SpreadsheetError {}
 
-export const propertyKeyMap: PropertyKeyMap = {
-  displayName: ['propertyName', 'property'],
-  propertyId: ['propertyId'],
-  conversionEvents: ['conversionEvents'],
-  customDimensions: ['customDimensions'],
-  customMetrics: ['customMetrics'],
-}
-
 function parsePropertyName(id: string | number): string {
   if (typeof id === 'string' && id.startsWith('properties/')) {
     return id
@@ -53,6 +45,13 @@ export class Worksheet {
   doc: SheetSource
   headerMap: SheetHeaderMap = {}
   sheet: GoogleSpreadsheetWorksheet
+  propertyKeyMap: PropertyKeyMap = {
+    displayName: ['propertyName', 'property'],
+    propertyId: ['propertyId'],
+    conversionEvents: ['conversionEvents'],
+    customDimensions: ['customDimensions'],
+    customMetrics: ['customMetrics'],
+  }
 
   constructor({ sheet, doc }: WorksheetOptions) {
     this.doc = doc
@@ -67,7 +66,7 @@ export class Worksheet {
 
   parseHeaders(): SheetHeaderMap {
     return Object.fromEntries(
-      Object.entries(propertyKeyMap).map(([entry, matchKeys]) => [
+      Object.entries(this.propertyKeyMap).map(([entry, matchKeys]) => [
         entry,
         this.findHeaderIndex(matchKeys),
       ]),
