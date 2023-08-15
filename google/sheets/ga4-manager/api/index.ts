@@ -21,9 +21,13 @@ const requestSchema = await import('./requestSchema.json', {
 })
 
 async function readFirstFile(...files: string[]) {
-  return Promise.any(
-    files.map(async (file) => JSON.parse(await readFile(file, 'utf-8'))),
-  )
+  for (const file of files) {
+    try {
+      return JSON.parse(await readFile(file, 'utf-8'))
+    } catch (_e) {
+      // Reading failed. Intentionally skip the file
+    }
+  }
 }
 
 async function getCredentials(): Promise<Credentials> {

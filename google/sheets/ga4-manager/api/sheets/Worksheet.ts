@@ -1,4 +1,8 @@
-import type { AnalyticsPropertyState, CellAddress } from '../types.d.ts'
+import type {
+  AnalyticsPropertyState,
+  CellAddress,
+  EntityConfig,
+} from '../types.d.ts'
 import type { SheetSource } from './SheetSource.js'
 import type {
   GoogleSpreadsheetCell,
@@ -144,6 +148,10 @@ export class Worksheet {
     this.parseSheetTypeSpecificValues(property, rowIndex)
     this.injectOptionalProp(property, 'displayName', rowIndex)
     return property
+  }
+
+  async parseConfig(): Promise<EntityConfig | null> {
+    return null
   }
 
   async parseProperties(): Promise<AnalyticsPropertyState[]> {

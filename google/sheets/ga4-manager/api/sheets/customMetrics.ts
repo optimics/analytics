@@ -10,15 +10,17 @@ export class CustomMetricsSheet extends Worksheet {
     property: AnalyticsPropertyState,
     cell: GoogleSpreadsheetCell,
   ): CustomMetricState {
+    const parameterName = String(cell.value)
+    const defaultProps = this.doc.entityConfig.customMetric[parameterName] || {}
     return {
+      displayName: defaultProps.displayName || parameterName,
+      measurementUnit: defaultProps.measurementUnit || 'STANDARD',
+      scope: defaultProps.scope || 'EVENT',
+      description: defaultProps.description || '',
       id: `${property.id}/customMetrics/${cell.value}`,
-      // @TODO: Read sheet params instead of interpolation
-      displayName: String(cell.value),
-      parameterName: String(cell.value),
+      parameterName,
       parent: String(property.name),
       uiRef: this.getUiRef(cell),
-      measurementUnit: 'STANDARD',
-      scope: 'EVENT',
     }
   }
 

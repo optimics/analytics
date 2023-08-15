@@ -2,6 +2,7 @@ import type {
   AnalyticsPropertyState,
   AnalyticsState,
   Credentials,
+  EntityConfig,
   ObjectMutationScope,
 } from '../types.d.ts'
 import type { Worksheet } from './Worksheet.d.ts'
@@ -22,6 +23,10 @@ interface SheetSourceOptions {
 export class SheetSource {
   credentials: Credentials
   doc: GoogleSpreadsheet
+  entityConfig: EntityConfig = {
+    customDimension: {},
+    customMetric: {},
+  }
   mutationScopes: ObjectMutationScope[] = []
 
   constructor({ docId, credentials }: SheetSourceOptions) {
@@ -75,8 +80,21 @@ export class SheetSource {
     }, new Map<string, AnalyticsPropertyState>())
   }
 
+  mergeConfigs(configs: EntityConfig[]): EntityConfig {
+    return configs.reduce(
+      (aggr, cfg) => Object.assign(aggr, cfg),
+      {} as EntityConfig,
+    )
+  }
+
   async parseState(): Promise<AnalyticsState> {
     const sheets = await this.extractSheets()
+    const configs = await Promise.all(
+      sheets.map((sheet) => sheet.parseConfig()),
+    )
+    this.entityConfig = this.mergeConfigs(
+      configs.filter(Boolean) as EntityConfig[],
+    )
     const properties = await Promise.all(
       sheets.map((sheet) => sheet.parseProperties()),
     )

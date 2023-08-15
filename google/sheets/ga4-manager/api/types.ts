@@ -1,4 +1,5 @@
 import type { google } from '@google-analytics/admin/build/protos/protos.d.ts'
+import type { Operation } from 'just-diff'
 
 export interface Credentials {
   client_email: string
@@ -26,6 +27,32 @@ export type CustomMetricState = google.analytics.admin.v1beta.ICustomMetric &
 export type ConversionEventState =
   google.analytics.admin.v1beta.IConversionEvent & Ga4Ref
 
+export type CustomDimensionConfig =
+  google.analytics.admin.v1beta.ICustomDimension
+export type CustomMetricConfig = google.analytics.admin.v1beta.ICustomMetric
+
+type CustomDimensionConfigRow = CustomDimensionConfig & {
+  type: EntityType.customDimension
+  name: string
+}
+
+type CustomMetricConfigRow = CustomMetricConfig & {
+  type: EntityType.customMetric
+  name: string
+}
+
+export enum EntityType {
+  customDimension = 'customDimension',
+  customMetric = 'customMetric',
+}
+
+export type ConfigRow = CustomDimensionConfigRow | CustomMetricConfigRow
+
+export interface EntityConfig {
+  customDimension: Record<string, CustomDimensionConfig>
+  customMetric: Record<string, CustomMetricConfig>
+}
+
 export interface AnalyticsPropertyState
   extends google.analytics.admin.v1beta.IProperty {
   id: string
@@ -34,12 +61,14 @@ export interface AnalyticsPropertyState
   customDimensions?: Map<string, CustomDimensionState>
   customMetrics?: Map<string, CustomMetricState>
   conversionEvents?: Map<string, ConversionEventState>
+  entityConfig?: EntityConfig
   uiRef?: VisualRef
 }
 
 export interface AnalyticsState {
   customDimensions?: Map<string, CustomDimensionState>
   customMetrics?: Map<string, CustomMetricState>
+  entityConfig?: EntityConfig
   properties: Map<string, AnalyticsPropertyState>
 }
 
@@ -64,6 +93,13 @@ export enum OperationProgress {
   NoOp = 'noop',
 }
 
+interface DiffOperation {
+  op: Operation
+  path: Array<string | number>
+  // rome-ignore lint/suspicious/noExplicitAny: Result of diff can be anything
+  value: any
+}
+
 export interface AnalyticsOperation {
   ident: string
   mode: AnalyticsOperationMode
@@ -72,6 +108,7 @@ export interface AnalyticsOperation {
   state: AnalyticsObject | null
   targetState?: AnalyticsObject
   uiRef?: VisualRef
+  diff?: DiffOperation[]
 }
 
 export type AnalyticsOperationPlan = Map<string, AnalyticsOperation>

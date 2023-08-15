@@ -53,8 +53,8 @@ function getStateFieldDiff(
 
 function isMeaningful(op: AnalyticsOperation): boolean {
   if (op.mode === AnalyticsOperationMode.Modify) {
-    const diff = getStateFieldDiff(op.state, op.targetState)
-    return diff.length > 0
+    op.diff = getStateFieldDiff(op.state, op.targetState)
+    return op.diff.length > 0
   }
   return true
 }
@@ -175,6 +175,15 @@ export function printPlan(plan: AnalyticsOperationPlan): void {
     for (const [key, op] of plan.entries()) {
       writeLn('')
       writeLn(`* ${op.mode} ${key}`)
+      if (op.state && op.diff) {
+        for (const d of op.diff) {
+          /* Assuming, the path is always one level deep. This will break for
+           * more complex paths */
+          const p = d.path.join('.')
+          const prev = String(op?.state?.[p as keyof typeof op.state])
+          writeLn(`  [${p}] "${prev}" -> "${d.value}"`)
+        }
+      }
     }
   } else {
     writeLn(' Nothing to do')

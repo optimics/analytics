@@ -1,4 +1,7 @@
 function camelize(str) {
+  if (!str) {
+    return ''
+  }
   return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
     return index === 0 ? word.toLowerCase() : word.toUpperCase();
   }).replace(/\s+/g, '');
@@ -25,6 +28,7 @@ const interestingSheetTitles = [
   'GA4: Custom Dimensions',
   'GA4: Custom Metrics',
   'GA4: Conversion Events',
+  'GA4: Config',
 ].map(camelize)
 
 function getNormalizedSheetTitles () {

@@ -17,12 +17,15 @@ export class CustomDimensionsSheet extends Worksheet {
     property: AnalyticsPropertyState,
     cell: GoogleSpreadsheetCell,
   ): CustomDimensionState {
+    const parameterName = String(cell.value)
+    const defaultProps =
+      this.doc.entityConfig.customDimension[parameterName] || {}
     return {
+      displayName: defaultProps.displayName || parameterName,
+      scope: defaultProps.scope || 'EVENT',
+      description: defaultProps.description || '',
       id: `${property.id}/customDimensions/${cell.value}`,
-      // @TODO: Read sheet params instead of interpolation
-      displayName: String(cell.value),
-      parameterName: String(cell.value),
-      scope: 'EVENT',
+      parameterName,
       parent: String(property.name),
       uiRef: this.getUiRef(cell),
     }
