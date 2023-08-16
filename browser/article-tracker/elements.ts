@@ -54,7 +54,7 @@ export abstract class ArticleElement implements IArticleElement {
   abstract estimateSlowestTime(): number
 
   abstract get consumptionTimeTotal(): number
-  
+
   get consumable(): boolean {
     // ArticleElement is consumable by default
     return true

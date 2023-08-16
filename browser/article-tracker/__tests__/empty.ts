@@ -241,10 +241,10 @@ describe('ArticleTracker with empty.html sample', () => {
       })
 
       it('triggers consumptionStateChanged', async () => {
-        const calls = await tracker.getEventHandlerCalls('consumptionStateChanged')
-        expect(calls).toContainEqual([
-          { consuming: true }
-        ])
+        const calls = await tracker.getEventHandlerCalls(
+          'consumptionStateChanged',
+        )
+        expect(calls).toContainEqual([{ consuming: true }])
         expect(calls).toHaveLength(1)
       })
 
