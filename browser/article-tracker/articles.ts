@@ -235,11 +235,7 @@ export class ArticleTracker {
 
   observeIntersections(): void {
     for (const item of this.getContent()) {
-      item.events.consumed.subscribe(({ element }) => {
-        this.events.elementsConsumed.debounce({
-          targets: [element],
-        })
-      })
+      this.bindContentListeners(item)
       this.intersectionObserver.observe(item.getRootElement())
     }
   }
@@ -250,15 +246,29 @@ export class ArticleTracker {
     })
   }
 
+  isConsuming(): boolean {
+    return this.getContent().some(i => i.consuming)
+  }
+
+  bindContentListeners(target: IArticleElement) {
+    target.events.consumed.subscribe(() => {
+      this.events.elementsConsumed.debounce({
+        targets: [target],
+      })
+      this.reportAchievement()
+    })
+    target.events.consumptionStateChanged.subscribe(() => {
+      this.events.consumptionStateChanged.debounce({
+        consuming: this.isConsuming()
+      })
+    })
+  }
+
   integrateNewContent(targets: IArticleElement[]): void {
     if (this.content && targets.length !== 0) {
       this.content = [...this.content, ...targets].sort(sortByDocumentPosition)
       for (const item of targets) {
-        item.events.consumed.subscribe(({ element }) => {
-          this.events.elementsConsumed.debounce({
-            targets: [element],
-          })
-        })
+        this.bindContentListeners(item)
         this.intersectionObserver.observe(item.getRootElement())
       }
       this.events.elementsAdded.debounce({ targets })

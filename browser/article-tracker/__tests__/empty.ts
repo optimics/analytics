@@ -190,13 +190,6 @@ describe('ArticleTracker with empty.html sample', () => {
       it('content.paragraph.timeTotal is 0', async () => {
         expect(metrics.content.paragraph.timeTotal).toBe(0)
       })
-
-      it('triggers consumptionStateChanged with consuming=tru', async () => {
-        const calls = await tracker.getEventHandlerCalls('consumptionStateChanged')
-        expect(calls).toContainEqual([
-          { consuming: true }
-        ])
-      })
     })
 
     describe('after injecting a contentful paragraph into the page', () => {
@@ -227,8 +220,11 @@ describe('ArticleTracker with empty.html sample', () => {
         expect(metrics).toHaveProperty('content.paragraph.displayed', 2)
       })
 
-      it('does trigger consumptionStateChanged again', async () => {
+      it('triggers consumptionStateChanged', async () => {
         const calls = await tracker.getEventHandlerCalls('consumptionStateChanged')
+        expect(calls).toContainEqual([
+          { consuming: true }
+        ])
         expect(calls).toHaveLength(1)
       })
 

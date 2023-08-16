@@ -6,12 +6,14 @@ interface ElementEventProps {
 
 interface ElementEventControllers {
   consumed: EventController<ElementEventProps>
+  consumptionStateChanged: EventController<ElementEventProps>
 }
 
 export interface IArticleElement {
   achieved: number
   consumable: boolean
   consumed: boolean
+  consuming: boolean
   consumptionStartedAt?: number
   consumptionTimeTotal: number
   displayed: boolean
@@ -28,6 +30,7 @@ export abstract class ArticleElement implements IArticleElement {
   static selector: string
   static typeName: string
 
+  consuming = false
   consumptionStartedAt?: number
   consumptionTimeTracked = 0
   inViewport = false
@@ -77,8 +80,10 @@ export abstract class ArticleElement implements IArticleElement {
   }
 
   createEventControllers(): ElementEventControllers {
+    const props = {}
     return {
-      consumed: new EventController<ElementEventProps>({})
+      consumed: new EventController<ElementEventProps>(props),
+      consumptionStateChanged: new EventController<ElementEventProps>(props),
     }
   }
 
@@ -119,12 +124,24 @@ export abstract class ArticleElement implements IArticleElement {
     if (this.consumable) {
       this.updateConsumptionMetrics()
       this.consumptionStartedAt = Date.now()
+      if (!this.consuming) {
+        this.consuming = true
+        this.events.consumptionStateChanged.debounce({
+          element: this,
+        })
+      }
     }
   }
 
   stopConsumption(): void {
     if (this.consumable) {
       this.updateConsumptionMetrics()
+      if (this.consuming) {
+        this.consuming = false
+        this.events.consumptionStateChanged.debounce({
+          element: this
+        })
+      }
     }
   }
 }
@@ -144,6 +161,7 @@ export abstract class VisualArticleElement extends ArticleElement {
   updateConsumptionMetrics(): void {
     if (this.consumptionTimer) {
       clearTimeout(this.consumptionTimer)
+      this.consumptionTimer = undefined
     }
     super.updateConsumptionMetrics()
   }
