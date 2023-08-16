@@ -178,6 +178,7 @@ export class ArticleTracker {
           consumable.length > 0
             ? consumable.every((item) => item.consumed)
             : false,
+        consuming: consumable.some(i => i.consuming),
         consumableElements: consumable.length,
         consumedElements: items.filter((i) => i.consumed).length,
         detected: items.length,
@@ -213,6 +214,7 @@ export class ArticleTracker {
     return {
       achieved: this.getAchivedConsumption(),
       consumed,
+      consuming: this.isConsuming(),
       content,
       overtime: this.getOvertimeQuotient(),
       timeTotal: toSeconds(timeTotal),
@@ -300,6 +302,8 @@ export class ArticleTracker {
       ),
       consumptionStateChanged: new EventController<ConsumptionStateProps>({
         bounceTime: options.uiBounceTime || 200,
+        cacheOriginalProps: true,
+        filter: (props, original) => props.consuming === original?.consuming,
       }),
       consumptionStarted: new EventController<void>(handlerOptions),
       elementsAdded: new EventController<TargetEventProps>(
