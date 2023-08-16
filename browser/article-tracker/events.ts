@@ -1,8 +1,11 @@
+export type EventFilter<T> = (props: T, originalProps?: T) => boolean
 export type EventHandler<T> = (props: T) => void
 
 export interface EventControllerOptions<T> {
   bounceTime?: number
+  cacheOriginalProps?: boolean
   defaultProps?: Partial<T>
+  filter?: EventFilter<T>
   mergeProps?: (keyof T)[]
 }
 
@@ -24,13 +27,18 @@ export class EventController<T> {
   bouncer?: ReturnType<typeof setTimeout>
   bounceTime: number
   cachedProps?: Partial<T>
+  cacheOriginalProps: boolean
+  cachedOriginalProps?: T
   defaultProps: Partial<T>
+  filter?: EventFilter<T>
   handlers: EventHandler<T>[] = []
   mergeProps?: (keyof T)[]
 
   constructor(options: EventControllerOptions<T>) {
     this.bounceTime = options.bounceTime || 60
+    this.cacheOriginalProps = options.cacheOriginalProps || false
     this.defaultProps = options.defaultProps || {}
+    this.filter = options.filter
     this.mergeProps = options.mergeProps
   }
 
@@ -83,6 +91,9 @@ export class EventController<T> {
    * merged deeply */
   debounce(props: T): void {
     clearTimeout(this.bouncer)
+    if (this.cacheOriginalProps && !this.cachedOriginalProps) {
+      this.cachedOriginalProps = props
+    }
     const passProps = this.mergeDebounceProps(props)
     this.cachedProps = passProps
     this.bouncer = setTimeout(() => {
@@ -93,12 +104,23 @@ export class EventController<T> {
 
   /** Immediately trigger the event and pass it the props */
   now(props: T): void {
-    for (const handler of this.handlers) {
-      handler({
-        ...this.defaultProps,
-        ...props,
-      })
+    if (this.shouldPass(props)) {
+      this.cachedOriginalProps = undefined
+      for (const handler of this.handlers) {
+        handler({
+          ...this.defaultProps,
+          ...props,
+        })
+      }
     }
+  }
+
+  /** Run filter first, to see if an event should be fired */
+  shouldPass(props: T): boolean {
+    if (this.filter) {
+      return this.filter(props, this.cachedOriginalProps)
+    }
+    return true
   }
 
   /** Subscribe to this event */

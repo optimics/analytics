@@ -48,6 +48,10 @@ describe('ArticleTracker with empty.html sample', () => {
         expect(metrics).toHaveProperty('consumed', false)
       })
 
+      it('consuming is false', async () => {
+        expect(metrics).toHaveProperty('consuming', false)
+      })
+
       it('overtime is 0', () => {
         expect(metrics).toHaveProperty('overtime', 0)
       })
@@ -104,6 +108,14 @@ describe('ArticleTracker with empty.html sample', () => {
         metrics = await tracker.getMetrics()
       }, timeoutDefault)
 
+      it('consumed is false', async () => {
+        expect(metrics).toHaveProperty('consumed', false)
+      })
+
+      it('consuming is false', async () => {
+        expect(metrics).toHaveProperty('consuming', false)
+      })
+
       it('content.paragraph.consumedElements is 0', async () => {
         expect(metrics).toHaveProperty('content.paragraph.consumedElements', 0)
       })
@@ -159,6 +171,14 @@ describe('ArticleTracker with empty.html sample', () => {
         await pageRef.timeout(10000)
         metrics = await tracker.getMetrics()
       }, timeoutDefault)
+
+      it('consumed is false', async () => {
+        expect(metrics).toHaveProperty('consumed', false)
+      })
+
+      it('consuming is false', async () => {
+        expect(metrics).toHaveProperty('consuming', false)
+      })
 
       it('content.paragraph.detected is 1', async () => {
         expect(metrics).toHaveProperty('content.paragraph.detected', 1)

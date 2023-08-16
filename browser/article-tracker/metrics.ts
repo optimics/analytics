@@ -14,6 +14,8 @@ interface ConsumptionMetrics {
   achieved: number
   /** True if this content been marked as completely consumed */
   consumed: boolean
+  /** True if this content is currently being consumed */
+  consuming: boolean
   /**
    * The total time user spent consuming the content in miliseconds
    *
