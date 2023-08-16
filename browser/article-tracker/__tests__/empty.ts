@@ -228,6 +228,11 @@ describe('ArticleTracker with empty.html sample', () => {
         expect(calls).toHaveLength(1)
       })
 
+      it('triggers consumptionStarted', async () => {
+        const calls = await tracker.getEventHandlerCalls('consumptionStarted')
+        expect(calls).toHaveLength(1)
+      })
+
       it('content.paragraph.consumableElements is 1', async () => {
         expect(metrics).toHaveProperty(
           'content.paragraph.consumableElements',

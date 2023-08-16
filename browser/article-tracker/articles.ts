@@ -14,6 +14,7 @@ function toSeconds(time: number): number {
 export interface ArticleTrackerOptions {
   contentTypes: typeof ArticleElement[]
   eventBounceTime?: number
+  uiBounceTime?: number
   intersectionThreshold?: number
 }
 
@@ -36,6 +37,7 @@ export interface OvertimeEventProps {
 export interface EventHandlers {
   consumptionAchievement: EventController<ConsumptionAchievementProps>
   consumptionStateChanged: EventController<ConsumptionStateProps>
+  consumptionStarted: EventController<void>
   elementsAdded: EventController<TargetEventProps>
   elementsConsumed: EventController<TargetEventProps>
   elementsDisplayed: EventController<TargetEventProps>
@@ -83,6 +85,7 @@ export class ArticleTracker {
     this.startedAt = new Date()
     this.observeIntersections()
     this.observeMutations()
+    this.observeInternalEvents()
     this.watchOvertime()
     return this
   }
@@ -246,6 +249,14 @@ export class ArticleTracker {
     })
   }
 
+  observeInternalEvents(): void {
+    this.events.consumptionStateChanged.subscribe(({ consuming }) => {
+      if (consuming) {
+        this.events.consumptionStarted.now()
+      }
+    })
+  }
+
   isConsuming(): boolean {
     return this.getContent().some(i => i.consuming)
   }
@@ -275,10 +286,6 @@ export class ArticleTracker {
     }
   }
 
-  stopElementConsumptionTracking(content: IArticleElement): void {
-    content.markNotInViewport()
-  }
-
   createEventControllers(options: ArticleTrackerOptions): EventHandlers {
     const handlerOptions = {
       bounceTime: options.eventBounceTime || 60,
@@ -292,9 +299,9 @@ export class ArticleTracker {
         handlerOptions,
       ),
       consumptionStateChanged: new EventController<ConsumptionStateProps>({
-        ...handlerOptions,
-        mergeProps: ['consuming']
+        bounceTime: options.uiBounceTime || 200,
       }),
+      consumptionStarted: new EventController<void>(handlerOptions),
       elementsAdded: new EventController<TargetEventProps>(
         targetHandlerOptions,
       ),
