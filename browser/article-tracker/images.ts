@@ -1,6 +1,6 @@
-import { ArticleElement } from './elements.js'
+import { VisualArticleElement } from './elements.js'
 
-export class ArticleImage extends ArticleElement {
+export class ArticleImage extends VisualArticleElement {
   static selector = 'img, picture'
 
   estimateFastestTime(): number {

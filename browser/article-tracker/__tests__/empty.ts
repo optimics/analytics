@@ -88,6 +88,12 @@ describe('ArticleTracker with empty.html sample', () => {
       it('content.paragraph.estimates.slowest is 0', () => {
         expect(metrics).toHaveProperty('content.paragraph.estimates.slowest', 0)
       })
+
+      it('does not trigger consumptionStateChanged', async () => {
+        expect(
+          await tracker.getEventHandlerCalls('consumptionStateChanged'),
+        ).toHaveLength(0)
+      })
     })
 
     describe('after 10 idle seconds', () => {
@@ -104,6 +110,12 @@ describe('ArticleTracker with empty.html sample', () => {
 
       it('content.paragraph.timeTotal is 0', async () => {
         expect(metrics.content.paragraph.timeTotal).toBe(0)
+      })
+
+      it('does not trigger consumptionStateChanged', async () => {
+        expect(
+          await tracker.getEventHandlerCalls('consumptionStateChanged'),
+        ).toHaveLength(0)
       })
 
       it('does not trigger elementsDisplayed, for the empty paragraph', async () => {
@@ -178,6 +190,13 @@ describe('ArticleTracker with empty.html sample', () => {
       it('content.paragraph.timeTotal is 0', async () => {
         expect(metrics.content.paragraph.timeTotal).toBe(0)
       })
+
+      it('triggers consumptionStateChanged with consuming=tru', async () => {
+        const calls = await tracker.getEventHandlerCalls('consumptionStateChanged')
+        expect(calls).toContainEqual([
+          { consuming: true }
+        ])
+      })
     })
 
     describe('after injecting a contentful paragraph into the page', () => {
@@ -206,6 +225,11 @@ describe('ArticleTracker with empty.html sample', () => {
 
       it('content.paragraph.displayed is 2', async () => {
         expect(metrics).toHaveProperty('content.paragraph.displayed', 2)
+      })
+
+      it('does trigger consumptionStateChanged again', async () => {
+        const calls = await tracker.getEventHandlerCalls('consumptionStateChanged')
+        expect(calls).toHaveLength(1)
       })
 
       it('content.paragraph.consumableElements is 1', async () => {

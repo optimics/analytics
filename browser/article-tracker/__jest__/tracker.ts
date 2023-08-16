@@ -45,6 +45,7 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
       base.at.track()
       base.eventHandlerCalls = {
         consumptionAchievement: [],
+        consumptionStateChanged: [],
         elementsConsumed: [],
         elementsDisplayed: [],
         overtime: [],
@@ -63,6 +64,9 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
       })
       base.at.events.consumptionAchievement.subscribe((...args: Call) => {
         base.eventHandlerCalls.consumptionAchievement.push(args)
+      })
+      base.at.events.consumptionStateChanged.subscribe((...args: Call) => {
+        base.eventHandlerCalls.consumptionStateChanged.push(args)
       })
       base.at.events.overtime.subscribe((...args: Call) => {
         base.eventHandlerCalls.overtime.push(args)
