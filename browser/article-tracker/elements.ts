@@ -1,12 +1,8 @@
 import { EventController } from './events.js'
 
-interface ElementEventProps {
-  element: ArticleElement
-}
-
 interface ElementEventControllers {
-  consumed: EventController<ElementEventProps>
-  consumptionStateChanged: EventController<ElementEventProps>
+  consumed: EventController<void>
+  consumptionStateChanged: EventController<void>
 }
 
 export interface IArticleElement {
@@ -82,8 +78,8 @@ export abstract class ArticleElement implements IArticleElement {
   createEventControllers(): ElementEventControllers {
     const props = {}
     return {
-      consumed: new EventController<ElementEventProps>(props),
-      consumptionStateChanged: new EventController<ElementEventProps>(props),
+      consumed: new EventController<void>(props),
+      consumptionStateChanged: new EventController<void>(props),
     }
   }
 
@@ -101,7 +97,6 @@ export abstract class ArticleElement implements IArticleElement {
   markInViewport(): void {
     this.markDisplayed()
     this.inViewport = true
-    this.recordConsumptionTime()
   }
 
   markNotInViewport(): void {
@@ -126,9 +121,7 @@ export abstract class ArticleElement implements IArticleElement {
       this.consumptionStartedAt = Date.now()
       if (!this.consuming) {
         this.consuming = true
-        this.events.consumptionStateChanged.debounce({
-          element: this,
-        })
+        this.events.consumptionStateChanged.debounce()
       }
     }
   }
@@ -138,9 +131,7 @@ export abstract class ArticleElement implements IArticleElement {
       this.updateConsumptionMetrics()
       if (this.consuming) {
         this.consuming = false
-        this.events.consumptionStateChanged.debounce({
-          element: this
-        })
+        this.events.consumptionStateChanged.debounce()
       }
     }
   }
@@ -151,6 +142,11 @@ export abstract class VisualArticleElement extends ArticleElement {
 
   get consumptionTimeTotal(): number {
     return this.consumptionTimeTracked + this.getLastConsumptionTime()
+  }
+
+  markInViewport(): void {
+    super.markInViewport()
+    this.recordConsumptionTime()
   }
 
   markNotInViewport(): void {
@@ -170,7 +166,7 @@ export abstract class VisualArticleElement extends ArticleElement {
     super.recordConsumptionTime()
     if (this.consumable && !this.consumed) {
       this.consumptionTimer = setTimeout(() => {
-        this.events.consumed.now({ element: this })
+        this.events.consumed.now()
       }, this.estimateFastestTime())
     }
   }
