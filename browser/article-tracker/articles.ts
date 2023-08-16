@@ -38,6 +38,7 @@ export interface EventHandlers {
   consumptionAchievement: EventController<ConsumptionAchievementProps>
   consumptionStateChanged: EventController<ConsumptionStateProps>
   consumptionStarted: EventController<void>
+  consumptionStopped: EventController<void>
   elementsAdded: EventController<TargetEventProps>
   elementsConsumed: EventController<TargetEventProps>
   elementsDisplayed: EventController<TargetEventProps>
@@ -178,7 +179,7 @@ export class ArticleTracker {
           consumable.length > 0
             ? consumable.every((item) => item.consumed)
             : false,
-        consuming: consumable.some(i => i.consuming),
+        consuming: consumable.some((i) => i.consuming),
         consumableElements: consumable.length,
         consumedElements: items.filter((i) => i.consumed).length,
         detected: items.length,
@@ -255,12 +256,14 @@ export class ArticleTracker {
     this.events.consumptionStateChanged.subscribe(({ consuming }) => {
       if (consuming) {
         this.events.consumptionStarted.now()
+      } else {
+        this.events.consumptionStopped.now()
       }
     })
   }
 
   isConsuming(): boolean {
-    return this.getContent().some(i => i.consuming)
+    return this.getContent().some((i) => i.consuming)
   }
 
   bindContentListeners(target: IArticleElement) {
@@ -272,7 +275,7 @@ export class ArticleTracker {
     })
     target.events.consumptionStateChanged.subscribe(() => {
       this.events.consumptionStateChanged.debounce({
-        consuming: this.isConsuming()
+        consuming: this.isConsuming(),
       })
     })
   }
@@ -306,6 +309,7 @@ export class ArticleTracker {
         filter: (props, original) => props.consuming === original?.consuming,
       }),
       consumptionStarted: new EventController<void>(handlerOptions),
+      consumptionStopped: new EventController<void>(handlerOptions),
       elementsAdded: new EventController<TargetEventProps>(
         targetHandlerOptions,
       ),

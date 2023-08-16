@@ -24,15 +24,14 @@ describe('ArticleTracker with marianky.html sample', () => {
       index: resolve(jestDir, 'globals.ts'),
     },
   })
+  const pageRef = configureTestPage({
+    pageUrl: sourceFile,
+    scriptUrls: ['/index.js'],
+    serverRef,
+  })
+  const tracker = configureTracker({ pageRef })
 
   describe('after scrolling down to the third paragraph and then away from the article', () => {
-    const pageRef = configureTestPage({
-      pageUrl: sourceFile,
-      scriptUrls: ['/index.js'],
-      serverRef,
-    })
-    const tracker = configureTracker({ pageRef })
-
     beforeAll(async () => {
       await pageRef.scrollToElement('div.c-rte > p', 2)
       // jumping to footer will remove the article from viewport
@@ -49,7 +48,9 @@ describe('ArticleTracker with marianky.html sample', () => {
       }, timeoutDefault)
 
       it('does not trigger consumptionStateChanged', async () => {
-        const calls = await tracker.getEventHandlerCalls('consumptionStateChanged')
+        const calls = await tracker.getEventHandlerCalls(
+          'consumptionStateChanged',
+        )
         expect(calls).toHaveLength(0)
       })
 
@@ -57,6 +58,51 @@ describe('ArticleTracker with marianky.html sample', () => {
         const calls = await tracker.getEventHandlerCalls('consumptionStarted')
         expect(calls).toHaveLength(0)
       })
+
+      it('does not trigger consumptionStopped', async () => {
+        const calls = await tracker.getEventHandlerCalls('consumptionStopped')
+        expect(calls).toHaveLength(0)
+      })
+    })
+  })
+
+  describe('after scrolling back to the third paragraph and reading for 5 seconds', () => {
+    beforeAll(async () => {
+      await pageRef.scrollToElement('div.c-rte > p', 2)
+      await pageRef.timeout(5000)
+    })
+
+    it('triggers consumptionStateChanged with consuming=true', async () => {
+      const calls = await tracker.getEventHandlerCalls(
+        'consumptionStateChanged',
+      )
+      expect(calls).toContainEqual([{ consuming: true }])
+      expect(calls).toHaveLength(1)
+    })
+
+    it('does not trigger consumptionStarted', async () => {
+      const calls = await tracker.getEventHandlerCalls('consumptionStarted')
+      expect(calls).toHaveLength(1)
+    })
+  })
+
+  describe('after down to the footer and iddling for 5 seconds', () => {
+    beforeAll(async () => {
+      await pageRef.scrollToElement('footer', 0)
+      await pageRef.timeout(5000)
+    })
+
+    it('triggers consumptionStateChanged with consuming=false', async () => {
+      const calls = await tracker.getEventHandlerCalls(
+        'consumptionStateChanged',
+      )
+      expect(calls).toContainEqual([{ consuming: false }])
+      expect(calls).toHaveLength(2)
+    })
+
+    it('does not trigger consumptionStopped', async () => {
+      const calls = await tracker.getEventHandlerCalls('consumptionStopped')
+      expect(calls).toHaveLength(1)
     })
   })
 })
