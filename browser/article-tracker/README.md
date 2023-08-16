@@ -22,6 +22,10 @@ interface ready for reporting.
   * [`timeTotal`](#user-content-timeTotal)
 * [Events](#user-content-events)
   * [`consumptionAchievement`](#user-content-consumptionachievement)
+  * [`consumptionStateChanged`](#user-content-consumptionstatechanged)
+  * [`consumptionStarted`](#user-content-consumptionstarted)
+  * [`consumptionStartedFirst`](#user-content-consumptionstartedfirst)
+  * [`consumptionStopped`](#user-content-consumptionstopped)
   * [`elementsDisplayed`](#user-content-elementsdisplayed)
   * [`elementsConsumed`](#user-content-elementsconsumed)
   * [`overtime`](#user-content-overtime)
@@ -231,6 +235,64 @@ articleTracker.on('consumptionAchievement', ({ articleTracker, achieved }) => {
 })
 ```
 
+### `consumptionStateChanged`
+
+Fired when the Article Tracker changes state between "no elements being
+consumed" and "some elements being consumed". The callback gets passed boolean
+property `consuming`. When `consuming` is `true`, it means, that some elements
+in the article are being consumed by the user.
+
+* [Debounced event](#user-content-debouncedevent)
+* [Squashed event](#user-content-debouncedevent) on `consuming`
+
+```javascript
+articleTracker.on('consumptionStarted', ({ consuming }) => {
+  console.log(consuming)
+})
+```
+
+### `consumptionStarted`
+
+Fired when the article tracker changes state from "no elements being consumed" to "some
+elements being consumed".
+
+* [Debounced event](#user-content-debouncedevent) by
+  [consumptionStateChanged](#user-content-consumptionstatechanged)
+
+```javascript
+articleTracker.on('consumptionStarted', ({ articleTracker }) => {
+  console.log(articleTracker.getMetrics())
+})
+```
+
+### `consumptionStartedFirst`
+
+Fired when the Article Tracker changes state from "no elements being consumed"
+to "some elements being consumed" for the first time only.
+
+* [Debounced event](#user-content-debouncedevent) by
+  [consumptionStateChanged](#user-content-consumptionstatechanged)
+
+```javascript
+articleTracker.on('consumptionStartedFirst', ({ articleTracker }) => {
+  console.log(articleTracker.getMetrics())
+})
+```
+
+### `consumptionStopped`
+
+Fired when the article tracker changes state from "some elements being
+consumed" to "no elements being consumed".
+
+* [Debounced event](#user-content-debouncedevent) by
+  [consumptionStateChanged](#user-content-consumptionstatechanged)
+
+```javascript
+articleTracker.on('consumptionStopped', ({ articleTracker }) => {
+  console.log(articleTracker.getMetrics())
+})
+```
+
 ### `elementsDisplayed`
 
 This is triggered whenever an element, that has not been displayed on page yet,
@@ -245,6 +307,9 @@ articleTracker.on('elementsDisplayed', ({ articleTracker, targets }) => {
 })
 ```
 
+* [Debounced event](#user-content-debouncedevent)
+* [Squashed event](#user-content-squashedevent)
+
 ### `elementsConsumed`
 
 This is triggered whenever an element, that has not been consumed yet, has met
@@ -258,6 +323,9 @@ articleTracker.on('elementsConsumed', ({ articleTracker, targets }) => {
   console.log(targets)
 })
 ```
+
+* [Debounced event](#user-content-debouncedevent)
+* [Squashed event](#user-content-squashedevent)
 
 ### `overtime`
 
