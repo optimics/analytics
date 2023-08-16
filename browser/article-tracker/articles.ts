@@ -38,6 +38,7 @@ export interface EventHandlers {
   consumptionAchievement: EventController<ConsumptionAchievementProps>
   consumptionStateChanged: EventController<ConsumptionStateProps>
   consumptionStarted: EventController<void>
+  consumptionStartedFirst: EventController<void>
   consumptionStopped: EventController<void>
   elementsAdded: EventController<TargetEventProps>
   elementsConsumed: EventController<TargetEventProps>
@@ -63,6 +64,7 @@ type Timer = ReturnType<typeof setTimeout>
 export class ArticleTracker {
   achievedMax = 0
   achievementTimer?: Timer
+  consumptionStartFired = false
   content?: IArticleElement[]
   contentTypes: typeof ArticleElement[]
   el: HTMLElement
@@ -256,6 +258,10 @@ export class ArticleTracker {
     this.events.consumptionStateChanged.subscribe(({ consuming }) => {
       if (consuming) {
         this.events.consumptionStarted.now()
+        if (!this.consumptionStartFired) {
+          this.consumptionStartFired = true
+          this.events.consumptionStartedFirst.now()
+        }
       } else {
         this.events.consumptionStopped.now()
       }
@@ -309,6 +315,7 @@ export class ArticleTracker {
         filter: (props, original) => props.consuming === original?.consuming,
       }),
       consumptionStarted: new EventController<void>(handlerOptions),
+      consumptionStartedFirst: new EventController<void>(handlerOptions),
       consumptionStopped: new EventController<void>(handlerOptions),
       elementsAdded: new EventController<TargetEventProps>(
         targetHandlerOptions,

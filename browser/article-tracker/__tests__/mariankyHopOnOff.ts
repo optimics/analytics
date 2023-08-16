@@ -59,6 +59,11 @@ describe('ArticleTracker with marianky.html sample', () => {
         expect(calls).toHaveLength(0)
       })
 
+      it('does not trigger consumptionStartedFirst', async () => {
+        const calls = await tracker.getEventHandlerCalls('consumptionStartedFirst')
+        expect(calls).toHaveLength(0)
+      })
+
       it('does not trigger consumptionStopped', async () => {
         const calls = await tracker.getEventHandlerCalls('consumptionStopped')
         expect(calls).toHaveLength(0)
@@ -80,8 +85,13 @@ describe('ArticleTracker with marianky.html sample', () => {
       expect(calls).toHaveLength(1)
     })
 
-    it('does not trigger consumptionStarted', async () => {
+    it('triggers consumptionStarted', async () => {
       const calls = await tracker.getEventHandlerCalls('consumptionStarted')
+      expect(calls).toHaveLength(1)
+    })
+
+    it('trigger consumptionStartedFirst', async () => {
+      const calls = await tracker.getEventHandlerCalls('consumptionStartedFirst')
       expect(calls).toHaveLength(1)
     })
   })
