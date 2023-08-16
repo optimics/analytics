@@ -21,6 +21,10 @@ export interface ConsumptionAchievementProps {
   achieved: number
 }
 
+export interface ConsumptionStateProps {
+  consuming: boolean
+}
+
 export interface TargetEventProps {
   targets: IArticleElement[]
 }
@@ -31,6 +35,7 @@ export interface OvertimeEventProps {
 
 export interface EventHandlers {
   consumptionAchievement: EventController<ConsumptionAchievementProps>
+  consumptionStateChanged: EventController<ConsumptionStateProps>
   elementsAdded: EventController<TargetEventProps>
   elementsConsumed: EventController<TargetEventProps>
   elementsDisplayed: EventController<TargetEventProps>
@@ -215,8 +220,8 @@ export class ArticleTracker {
     }
   }
 
-  markDisplayed(content: IArticleElement): void {
-    content.markDisplayed()
+  markInViewport(content: IArticleElement): void {
+    content.markInViewport()
     if (content.displayed) {
       this.events.elementsDisplayed.debounce({
         targets: [content],
@@ -224,8 +229,17 @@ export class ArticleTracker {
     }
   }
 
+  markNotInViewport(content: IArticleElement): void {
+    content.markNotInViewport()
+  }
+
   observeIntersections(): void {
     for (const item of this.getContent()) {
+      item.events.consumed.subscribe(({ element }) => {
+        this.events.elementsConsumed.debounce({
+          targets: [element],
+        })
+      })
       this.intersectionObserver.observe(item.getRootElement())
     }
   }
@@ -236,21 +250,15 @@ export class ArticleTracker {
     })
   }
 
-  trackElementConsumption(content: IArticleElement): void {
-    content.markInViewport((item: ArticleElement) => {
-      if (item.consumed) {
-        this.events.elementsConsumed.debounce({
-          targets: [item],
-        })
-        this.reportAchievement()
-      }
-    })
-  }
-
   integrateNewContent(targets: IArticleElement[]): void {
     if (this.content && targets.length !== 0) {
       this.content = [...this.content, ...targets].sort(sortByDocumentPosition)
       for (const item of targets) {
+        item.events.consumed.subscribe(({ element }) => {
+          this.events.elementsConsumed.debounce({
+            targets: [element],
+          })
+        })
         this.intersectionObserver.observe(item.getRootElement())
       }
       this.events.elementsAdded.debounce({ targets })
@@ -273,6 +281,10 @@ export class ArticleTracker {
       consumptionAchievement: new EventController<ConsumptionAchievementProps>(
         handlerOptions,
       ),
+      consumptionStateChanged: new EventController<ConsumptionStateProps>({
+        ...handlerOptions,
+        mergeProps: ['consuming']
+      }),
       elementsAdded: new EventController<TargetEventProps>(
         targetHandlerOptions,
       ),
@@ -298,10 +310,9 @@ export class ArticleTracker {
         const content = this.getContentByElement(entry.target as HTMLElement)
         if (content) {
           if (entry.isIntersecting) {
-            this.markDisplayed(content)
-            this.trackElementConsumption(content)
+            this.markInViewport(content)
           } else {
-            this.stopElementConsumptionTracking(content)
+            this.markNotInViewport(content)
           }
         }
       }

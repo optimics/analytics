@@ -1,6 +1,6 @@
-import { ArticleElement } from './elements.js'
+import { VisualArticleElement } from './elements.js'
 
-export class ArticleParagraph extends ArticleElement {
+export class ArticleParagraph extends VisualArticleElement {
   static selector = 'p'
   static typeName = 'paragraph'
 

@@ -1,3 +1,13 @@
+import { EventController } from './events.js'
+
+interface ElementEventProps {
+  element: ArticleElement
+}
+
+interface ElementEventControllers {
+  consumed: EventController<ElementEventProps>
+}
+
 export interface IArticleElement {
   achieved: number
   consumable: boolean
@@ -7,13 +17,12 @@ export interface IArticleElement {
   displayed: boolean
   estimateFastestTime(): number
   estimateSlowestTime(): number
+  events: ElementEventControllers
   getRootElement(): HTMLElement
   markDisplayed(): void
-  markInViewport(onConsumed: ConsumedHandler): void
+  markInViewport(): void
   markNotInViewport(): void
 }
-
-export type ConsumedHandler = (item: ArticleElement) => void
 
 export abstract class ArticleElement implements IArticleElement {
   static selector: string
@@ -21,13 +30,14 @@ export abstract class ArticleElement implements IArticleElement {
 
   consumptionStartedAt?: number
   consumptionTimeTracked = 0
-  consumptionTimer?: ReturnType<typeof setTimeout>
   inViewport = false
   displayed = false
   el: HTMLElement
+  events: ElementEventControllers
 
   constructor(el: HTMLElement) {
     this.el = el
+    this.events = this.createEventControllers()
   }
 
   static getAll(articleEl: HTMLElement): HTMLElement[] {
@@ -44,10 +54,8 @@ export abstract class ArticleElement implements IArticleElement {
    * the entire content of this element in miliseconds */
   abstract estimateSlowestTime(): number
 
-  get consumptionTimeTotal(): number {
-    return this.consumptionTimeTracked + this.getLastConsumptionTime()
-  }
-
+  abstract get consumptionTimeTotal(): number
+  
   get consumable(): boolean {
     // ArticleElement is consumable by default
     return true
@@ -68,6 +76,12 @@ export abstract class ArticleElement implements IArticleElement {
     return Math.min(1, this.consumptionTimeTotal / fastest)
   }
 
+  createEventControllers(): ElementEventControllers {
+    return {
+      consumed: new EventController<ElementEventProps>({})
+    }
+  }
+
   getRootElement(): HTMLElement {
     return this.el
   }
@@ -79,14 +93,14 @@ export abstract class ArticleElement implements IArticleElement {
     }
   }
 
-  markInViewport(onConsumed?: ConsumedHandler): void {
+  markInViewport(): void {
+    this.markDisplayed()
     this.inViewport = true
-    this.recordConsumptionTime(onConsumed)
+    this.recordConsumptionTime()
   }
 
   markNotInViewport(): void {
     this.inViewport = false
-    this.stopConsumption()
   }
 
   getLastConsumptionTime(): number {
@@ -97,28 +111,49 @@ export abstract class ArticleElement implements IArticleElement {
   }
 
   updateConsumptionMetrics(): void {
-    if (this.consumptionTimer) {
-      clearTimeout(this.consumptionTimer)
-    }
     this.consumptionTimeTracked += this.getLastConsumptionTime()
     this.consumptionStartedAt = undefined
   }
 
-  recordConsumptionTime(onConsumed?: ConsumedHandler): void {
+  recordConsumptionTime(): void {
     if (this.consumable) {
       this.updateConsumptionMetrics()
       this.consumptionStartedAt = Date.now()
-      if (onConsumed && !this.consumed) {
-        this.consumptionTimer = setTimeout(() => {
-          onConsumed(this)
-        }, this.estimateFastestTime())
-      }
     }
   }
 
   stopConsumption(): void {
     if (this.consumable) {
       this.updateConsumptionMetrics()
+    }
+  }
+}
+
+export abstract class VisualArticleElement extends ArticleElement {
+  consumptionTimer?: ReturnType<typeof setTimeout>
+
+  get consumptionTimeTotal(): number {
+    return this.consumptionTimeTracked + this.getLastConsumptionTime()
+  }
+
+  markNotInViewport(): void {
+    super.markNotInViewport()
+    this.stopConsumption()
+  }
+
+  updateConsumptionMetrics(): void {
+    if (this.consumptionTimer) {
+      clearTimeout(this.consumptionTimer)
+    }
+    super.updateConsumptionMetrics()
+  }
+
+  recordConsumptionTime(): void {
+    super.recordConsumptionTime()
+    if (this.consumable && !this.consumed) {
+      this.consumptionTimer = setTimeout(() => {
+        this.events.consumed.now({ element: this })
+      }, this.estimateFastestTime())
     }
   }
 }
