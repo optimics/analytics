@@ -11,6 +11,8 @@ jobs:
   release-tag:
     name: Tag Release
     runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.tag_check.outputs.exists_tag }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -71,3 +73,26 @@ jobs:
           lerna publish from-git --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
+
+  deploy-ga4-manager:
+    name: Deploy GA4 Manager
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && needs.release-tag.outputs.skip != 'true'
+    environment: gcp:google-sheets:ga4-manager:le
+    concurrency: gcp:google-sheets:ga4-manager:le
+    needs:
+      - release-tag
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+      - uses: google-github-actions/setup-gcloud@v1
+      - uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist/
+      - name: Deploy to GCP
+        env:
+          TF_VAR_BUCKET_TERRAFORM: ${{ vars.TF_VAR_BUCKET_TERRAFORM }}
+          TF_VAR_GCP_PROJECT: ${{ vars.TF_VAR_GCP_PROJECT }}
+          TF_VAR_GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        run: ./tf/run-terraform.sh "google/sheets/ga4-manager/terraform"

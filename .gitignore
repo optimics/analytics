@@ -33,6 +33,7 @@ lerna-debug.log
 
 # Ignore CLI configuration files
 .terraformrc
+.credentials
 terraform.rc
 node_modules
 dist
