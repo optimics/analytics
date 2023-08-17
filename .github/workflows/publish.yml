@@ -19,14 +19,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
         with:
+          cache: npm
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
-      - uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - name: Set Identity
         run: |
           git config --global user.name 'github-actions[bot]'
