@@ -236,9 +236,9 @@ describe('ArticleTracker with empty.html sample', () => {
       })
 
       it(
-        'content.paragraph.timeTotal is 10000',
+        'content.paragraph.timeTotal is 10',
         async () => {
-          expect(metrics.content.paragraph.timeTotal).toBe(10000)
+          expect(metrics.content.paragraph.timeTotal).toBe(10)
         },
         timeoutDefault,
       )

@@ -65,11 +65,11 @@ describe('ArticleTracker with marianky.html sample', () => {
         expect(metrics).toHaveProperty('content.paragraph.consumedElements', 3)
       })
 
-      it('reports paragraph timeTotal > 10000', async () => {
+      it('reports paragraph timeTotal > 10', async () => {
         /* It is impossible to determine exact consumption time due to natural
          * timers used by the automated browser */
         expect(metrics.content.paragraph.timeTotal).toBeGreaterThanOrEqual(
-          10000,
+          10,
         )
       })
 
