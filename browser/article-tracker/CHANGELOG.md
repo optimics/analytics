@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/optimics/analytics/compare/v0.4.1...v0.5.0) (2023-08-17)
+
+
+### Features
+
+* avoid firing meaningless event updates ([1f5ac49](https://github.com/optimics/analytics/commit/1f5ac4945deae491758790761bd8a4f5fb23a413))
+* trigger consumptionStarted ([ea5d745](https://github.com/optimics/analytics/commit/ea5d74592970fbebf6a05d68ecf72058baa2efc5))
+* trigger consumptionStartedFirst ([ed92cfb](https://github.com/optimics/analytics/commit/ed92cfb21c4234309fa1466cd4b1c88efb657c87))
+* trigger consumptionStateChanged ([dc4c2cd](https://github.com/optimics/analytics/commit/dc4c2cd69f2fe90e6acabf152f58dbe153171cd1))
+* trigger consumptionStopped ([6fffc69](https://github.com/optimics/analytics/commit/6fffc69166b94c446cb3d18295af512d31a10431))
+
+
+
+
+
 ## [0.4.1](https://github.com/optimics/analytics/compare/v0.4.0...v0.4.1) (2023-08-17)
 
 
