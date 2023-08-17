@@ -187,7 +187,7 @@ export class ArticleTracker {
         detected: items.length,
         displayed: items.filter((i) => i.displayed).length,
         estimates: this.getTimeEstimates(items),
-        timeTotal: sum(items, (item) => item.consumptionTimeTotal),
+        timeTotal: toSeconds(sum(items, (item) => item.consumptionTimeTotal)),
         wordCount: sum(items, item => item.wordCount || 0),
       }
     }
