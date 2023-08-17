@@ -11,6 +11,7 @@ export interface IArticleElement {
   markDisplayed(): void
   markInViewport(onConsumed: ConsumedHandler): void
   markNotInViewport(): void
+  wordCount?: number
 }
 
 export type ConsumedHandler = (item: ArticleElement) => void

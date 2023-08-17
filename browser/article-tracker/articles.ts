@@ -176,6 +176,7 @@ export class ArticleTracker {
         displayed: items.filter((i) => i.displayed).length,
         estimates: this.getTimeEstimates(items),
         timeTotal: sum(items, (item) => item.consumptionTimeTotal),
+        wordCount: sum(items, item => item.wordCount || 0),
       }
     }
     return metrics
@@ -202,12 +203,14 @@ export class ArticleTracker {
     const consumed = cv.every((c) => c.consumed)
     const timeTotal = this.getTimeOnArticle()
     const slowest = this.estimateSlowestTime()
+    const wordCount = sum(cv, item => item.wordCount || 0)
     return {
       achieved: this.getAchivedConsumption(),
       consumed,
       content,
       overtime: this.getOvertimeQuotient(),
       timeTotal: toSeconds(timeTotal),
+      wordCount,
       estimates: {
         fastest: toSeconds(this.estimateFastestTime()),
         slowest: toSeconds(slowest),

@@ -57,6 +57,10 @@ describe('ArticleTracker with empty.html sample', () => {
         expect(metrics.timeTotal).toBeLessThanOrEqual(0.5)
       })
 
+      it('wordCount is 0', async () => {
+        expect(metrics).toHaveProperty('wordCount', 0)
+      })
+
       it('estimates.fastest is 0', () => {
         expect(metrics).toHaveProperty('estimates.fastest', 0)
       })
@@ -199,6 +203,10 @@ describe('ArticleTracker with empty.html sample', () => {
         await pageRef.timeout(10000)
         metrics = await tracker.getMetrics()
       }, timeoutDefault)
+
+      it('wordCount is 0', async () => {
+        expect(metrics).toHaveProperty('wordCount', 30)
+      })
 
       it('content.paragraph.detected is 2', async () => {
         expect(metrics).toHaveProperty('content.paragraph.detected', 2)
