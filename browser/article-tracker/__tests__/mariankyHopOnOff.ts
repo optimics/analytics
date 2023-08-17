@@ -60,7 +60,9 @@ describe('ArticleTracker with marianky.html sample', () => {
       })
 
       it('does not trigger consumptionStartedFirst', async () => {
-        const calls = await tracker.getEventHandlerCalls('consumptionStartedFirst')
+        const calls = await tracker.getEventHandlerCalls(
+          'consumptionStartedFirst',
+        )
         expect(calls).toHaveLength(0)
       })
 
@@ -91,7 +93,9 @@ describe('ArticleTracker with marianky.html sample', () => {
     })
 
     it('trigger consumptionStartedFirst', async () => {
-      const calls = await tracker.getEventHandlerCalls('consumptionStartedFirst')
+      const calls = await tracker.getEventHandlerCalls(
+        'consumptionStartedFirst',
+      )
       expect(calls).toHaveLength(1)
     })
   })
