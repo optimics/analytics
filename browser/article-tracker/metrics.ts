@@ -47,6 +47,7 @@ export interface ContentTypeMetrics extends ConsumptionMetrics {
   displayed: number
   /** Overall time estimates for the content type */
   estimates: TimeEstimates
+  wordCount?: number
 }
 
 export interface ArticleMetrics extends ConsumptionMetrics {
@@ -65,4 +66,5 @@ export interface ArticleMetrics extends ConsumptionMetrics {
    * @example 3
    */
   overtime: number
+  wordCount: number
 }

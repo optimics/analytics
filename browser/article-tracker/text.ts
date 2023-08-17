@@ -16,12 +16,16 @@ export class ArticleParagraph extends VisualArticleElement {
     return this.el.textContent?.trim() || ''
   }
 
-  getBaseConsumptionTime(): number {
+  get wordCount(): number {
     const words = this.textContent.split(/\s/).filter(function (txt) {
       return /\S/.test(txt)
     })
-    // TODO: Count word length instead of word count
     return Math.ceil(words.length) || 0
+  }
+
+  getBaseConsumptionTime(): number {
+    // TODO: Count word length instead of word count
+    return this.wordCount
   }
 
   estimateFastestTime(): number {

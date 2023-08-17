@@ -20,6 +20,7 @@ export interface IArticleElement {
   markDisplayed(): void
   markInViewport(): void
   markNotInViewport(): void
+  wordCount?: number
 }
 
 export abstract class ArticleElement implements IArticleElement {

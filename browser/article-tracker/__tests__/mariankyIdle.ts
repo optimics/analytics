@@ -69,6 +69,14 @@ describe('ArticleTracker with marianky.html sample', () => {
         expect(metrics.timeTotal).toBeLessThanOrEqual(0.5)
       })
 
+      it('wordCount is 181', async () => {
+        expect(metrics).toHaveProperty('wordCount', 181)
+      })
+
+      it('content.paragraph.wordCount is 181', async () => {
+        expect(metrics).toHaveProperty('content.paragraph.wordCount', 181)
+      })
+
       it('estimates.fastest is 36.2', () => {
         expect(metrics).toHaveProperty('estimates.fastest', 36.2)
       })
