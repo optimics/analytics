@@ -61,6 +61,11 @@ jobs:
       - name: Build
         if: steps.tag_check.outputs.exists_tag == 'false'
         run: npm run build
+      - uses: actions/upload-artifact@v3
+        if: steps.tag_check.outputs.exists_tag == 'false'
+        with:
+          name: dist
+          path: dist/
       - name: Publish packages
         if: steps.tag_check.outputs.exists_tag == 'false'
         run: |
