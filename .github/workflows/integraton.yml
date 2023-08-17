@@ -7,6 +7,48 @@ on:
       - 'v*'
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -25,14 +67,6 @@ jobs:
         run: npm ci
       - name: Test
         run: npm test
-      - name: Lint
-        run: npm run lint
-      - name: Build
-        run: npm run build
-      - uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: dist/
 
   deploy-ga4-manager:
     name: Deploy GA4 Manager
@@ -41,7 +75,8 @@ jobs:
     environment: gcp:google-sheets:ga4-manager:sg
     concurrency: gcp:google-sheets:ga4-manager:sg
     needs:
-      - test
+      - build
+      - lint
     steps:
       - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v2
