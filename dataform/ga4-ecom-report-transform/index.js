@@ -12,7 +12,7 @@ const {
  * @example 'my-project.my-dataset'
  * @return string
  */
-function createIntradayTable({ ga4Dataset, rangeCap }) {
+function getEcomQuery({ ga4Dataset, rangeCap }) {
   const yesterday = getNumericDateFormat(-1)
   const yesterdayTable = getHistoricalTableName(1)
   const rangeCapDate = rangeCap ? getNumericDateFormat(rangeCap) : undefined
@@ -97,5 +97,5 @@ WHERE
 }
 
 module.exports = {
-  createIntradayTable,
+  getEcomQuery,
 }
