@@ -171,7 +171,7 @@ export function configureTestPage(options: PageOptions): PageRef {
     )
     /* Wait for the viewport scroll to propagate */
     await new Promise((resolve) =>
-      setTimeout(resolve, behavior === 'smooth' ? 1000 : 100),
+      setTimeout(resolve, behavior === 'smooth' ? 1000 : 200),
     )
   }
 

@@ -36,7 +36,7 @@ export class EventController<T> {
 
   constructor(options: EventControllerOptions<T>) {
     this.bounceTime = options.bounceTime || 60
-    this.cacheOriginalProps = options.cacheOriginalProps || false
+    this.cacheOriginalProps = Boolean(options.cacheOriginalProps)
     this.defaultProps = options.defaultProps || {}
     this.filter = options.filter
     this.mergeProps = options.mergeProps

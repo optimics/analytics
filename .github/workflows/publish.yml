@@ -60,7 +60,12 @@ jobs:
         run: npm ci
       - name: Build
         if: steps.tag_check.outputs.exists_tag == 'false'
-        run: npm run build
+        run: |
+          echo "${{ secrets.ARTICLE_TRACKER_GITHUB_DEPLOY_KEY }}" > /tmp/article_tracker_id_ed25519
+          chmod 400 /tmp/article_tracker_id_ed25519
+          eval $(ssh-agent -s)
+          ssh-add /tmp/article_tracker_id_ed25519
+          npm run build
       - uses: actions/upload-artifact@v3
         if: steps.tag_check.outputs.exists_tag == 'false'
         with:
@@ -96,3 +101,38 @@ jobs:
           TF_VAR_GCP_PROJECT: ${{ vars.TF_VAR_GCP_PROJECT }}
           TF_VAR_GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         run: ./tf/run-terraform.sh "google/sheets/ga4-manager/terraform"
+
+  deliver-gtm-article-tracker:
+    name: Deliver GTM ArticleTracker
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && needs.release-tag.outputs.skip != 'true'
+    environment: gcp:gtm:article-tracker:le
+    concurrency: gcp:gtm:article-tracker:le
+    needs:
+      - release-tag
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+      - uses: google-github-actions/setup-gcloud@v1
+      - uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist/
+      - name: Deploy scripts
+        env:
+          TF_VAR_BUCKET_TERRAFORM: ${{ vars.TF_VAR_BUCKET_TERRAFORM }}
+          TF_VAR_GCP_PROJECT: ${{ vars.TF_VAR_GCP_PROJECT }}
+          TF_VAR_GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        run: ./tf/run-terraform.sh "google/tag-manager/article-tracker-gtm/terraform"
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          node-version: '20'
+      - run: |
+          echo "${{ secrets.ARTICLE_TRACKER_GITHUB_DEPLOY_KEY }}" > /tmp/article_tracker_id_ed25519
+          chmod 400 /tmp/article_tracker_id_ed25519
+          eval $(ssh-agent -s)
+          ssh-add /tmp/article_tracker_id_ed25519
+          npm ci
+          node ./google/tag-manager/article-tracker-gtm/scripts/build.js
+          node ./google/tag-manager/article-tracker-gtm/scripts/release.js

@@ -1,0 +1,117 @@
+[
+  {
+    "type": "TEXT",
+    "name": "selector",
+    "displayName": "Selector",
+    "simpleValueType": true,
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      }
+    ],
+    "help": "The article is expected in a container located by this CSS selector."
+  },
+  {
+    "type": "PARAM_TABLE",
+    "name": "contentTypes",
+    "displayName": "Content Types",
+    "paramTableColumns": [
+      {
+        "param": {
+          "type": "TEXT",
+          "name": "path",
+          "displayName": "Content Type Path",
+          "simpleValueType": true,
+          "valueHint": "myScope.customContentTypeProvider",
+          "defaultValue": "",
+          "help": "Dot (\".\") separated path from the global scope (window), to the function, that creates the custom Content Type provider. See -\u003e https://github.com/optimics/analytics/tree/master/browser/article-tracker"
+        },
+        "isUnique": true
+      }
+    ]
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "trackDefaultContentTypes",
+    "checkboxText": "Track all Default Content Types",
+    "simpleValueType": true,
+    "defaultValue": true,
+    "alwaysInSummary": true,
+    "help": "By default, we track all paragraphs and headings -\u003e https://github.com/optimics/analytics/tree/master/browser/article-tracker"
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "staging",
+    "checkboxText": "Use staging version",
+    "simpleValueType": true,
+    "alwaysInSummary": true,
+    "help": "If ticked, the template will use unstable version of the Article Tracker."
+  },
+  {
+    "type": "PARAM_TABLE",
+    "name": "connectedEvents",
+    "displayName": "Event Bindings",
+    "paramTableColumns": [
+      {
+        "param": {
+          "type": "TEXT",
+          "name": "event",
+          "displayName": "Article Tracker Event",
+          "simpleValueType": true,
+          "help": "The event name from Article Tracker to subscribe to\n\nhttps://github.com/optimics/analytics/tree/master/browser/article-tracker#user-content-events",
+          "valueHint": "consumptionAchievement",
+          "valueValidators": [
+            {
+              "type": "NON_EMPTY"
+            }
+          ]
+        },
+        "isUnique": true
+      },
+      {
+        "param": {
+          "type": "TEXT",
+          "name": "gtmEvent",
+          "displayName": "GTM Event",
+          "simpleValueType": true,
+          "defaultValue": "",
+          "help": "The \"event\", that will be pushed to the Data Layer",
+          "valueValidators": [
+            {
+              "type": "NON_EMPTY"
+            }
+          ]
+        },
+        "isUnique": false
+      },
+      {
+        "param": {
+          "type": "TEXT",
+          "name": "props",
+          "displayName": "Extra properties",
+          "simpleValueType": true,
+          "help": "JSON Encoded extra properties, that will be passed to the Data Layer push",
+          "valueHint": "{\"matrixID\":91}"
+        },
+        "isUnique": false
+      }
+    ],
+    "valueValidators": [
+      {
+        "type": "TABLE_ROW_COUNT",
+        "args": [
+          1
+        ]
+      }
+    ],
+    "alwaysInSummary": true
+  },
+  {
+    "type": "TEXT",
+    "name": "extraProps",
+    "displayName": "Extra Properties",
+    "simpleValueType": true,
+    "help": "Extra properties, that should be added to all of the Article Tracker events. Encoded in JSON.",
+    "valueHint": "{\"content_title\": \"{{Content Title}}\"}"
+  }
+]

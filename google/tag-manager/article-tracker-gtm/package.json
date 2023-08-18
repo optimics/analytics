@@ -1,0 +1,35 @@
+{
+  "name": "@optimics/article-tracker-gtm",
+  "version": "0.5.0",
+  "description": "Report article content consumption data into Data Layer",
+  "private": true,
+  "keywords": [
+    "article",
+    "tracking",
+    "DOM",
+    "datalayer",
+    "gtm"
+  ],
+  "author": "Pavel Žák <pavel@zak.global>",
+  "homepage": "https://github.com/optimics/analytics/tree/master/google/tag-manager/article-tracker-gtm",
+  "documentation": "https://github.com/optimics/analytics/tree/master/google/tag-manager/article-tracker-gtm",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "node scripts/devServer.js"
+  },
+  "files": [
+    "dist/*.js",
+    "dist/*.d.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/optimics/analytics.git"
+  },
+  "bugs": {
+    "url": "https://github.com/optimics/analytics/issues"
+  }
+}
