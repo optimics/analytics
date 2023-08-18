@@ -36,3 +36,8 @@ export class ArticleParagraph extends VisualArticleElement {
     return this.getBaseConsumptionTime() * 1000 * this.slowestMultiplier
   }
 }
+
+export class ArticleHeading extends ArticleParagraph {
+  static selector = 'h1,h2,h3,h4,h5,h6'
+  static typeName = 'heading'
+}
