@@ -1,9 +1,8 @@
+const { getEventParam } = require('./eventParams.js')
 const {
   getNumericDateFormat,
   getHistoricalTableName,
 } = require('@optimics/dataform-tables')
-
-const helper = require('./eventParams.js')
 
 /** Return intraday table specific for utm source customers as a string
  * @param config.ga4Dataset The Fully Qualified dataset name prefixed with GCP project name
@@ -65,16 +64,16 @@ SELECT
   promotion_name,
   creative_name,
   creative_slot,
-  ${helper.getEventParam('page_location')},
-  ${helper.getEventParam('entrances')},
-  ${helper.getEventParam('source')},
-  ${helper.getEventParam('medium')},
-  ${helper.getEventParam('ga_session_number')},
-  ${helper.getEventParam('session_engaged')},
-  ${helper.getEventParam('ignore_referrer')},
-  ${helper.getEventParam('gclid')},
-  ${helper.getEventParam('page_referrer')},
-  ${helper.getEventParam('ga_session_id', 'int')},
+  ${getEventParam('page_location')},
+  ${getEventParam('entrances')},
+  ${getEventParam('source')},
+  ${getEventParam('medium')},
+  ${getEventParam('ga_session_number')},
+  ${getEventParam('session_engaged')},
+  ${getEventParam('ignore_referrer')},
+  ${getEventParam('gclid')},
+  ${getEventParam('page_referrer')},
+  ${getEventParam('ga_session_id', 'int')},
 FROM 
   ${ref(yesterdayTable)}, UNNEST(items)
 WHERE
