@@ -14,7 +14,9 @@
     "moduleResolution": "NodeNext",
     "strict": true,
     "target": "es2022",
-    "types": ["jest", "@types/jest"],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
     "useUnknownInCatchVariables": false
   },
   "exclude": [
