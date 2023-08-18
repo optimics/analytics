@@ -78,8 +78,22 @@ FROM
   ${ref(yesterdayTable)}, UNNEST(items)
 WHERE
   ${rangeCapFilter}
-  event_name IN ('add_payment_info', 'add_shipping_info', 'add_to_cart', 'add_to_wishlist', 'begin_checkout', 'refund', 'remove_from_cart', 'select_item', 'select_promotion', 'view_cart', 'view_item', 'view_item_list', 'view_promotion', 'purchase')
-    `
+  event_name IN (
+    'add_payment_info',
+    'add_shipping_info',
+    'add_to_cart',
+    'add_to_wishlist',
+    'begin_checkout',
+    'refund',
+    'remove_from_cart',
+    'select_item',
+    'select_promotion',
+    'view_cart',
+    'view_item',
+    'view_item_list',
+    'view_promotion',
+    'purchase'
+  )`
 }
 
 module.exports = {
