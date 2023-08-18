@@ -1,5 +1,6 @@
 {
-  "name": "@optimics/dataform-utm-source-filter",
+  "name": "@optimics/dataform-tables",
+  "description": "Dataform table naming utility",
   "version": "0.5.0",
   "files": [
     "*.js"
@@ -8,11 +9,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "dependencies": {
-    "@dataform/core": "2.4.2",
-    "@optimics/dataform-tables": "file:../dataform-tables"
-  },
-  "homepage": "https://github.com/optimics/analytics/dataform/utm-source-filter",
+  "homepage": "https://github.com/optimics/analytics/dataform/tables",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/optimics/analytics.git"

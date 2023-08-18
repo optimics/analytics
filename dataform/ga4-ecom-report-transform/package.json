@@ -10,7 +10,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@dataform/core": "2.4.2"
+    "@dataform/core": "2.4.2",
+    "@optimics/dataform-tables": "file:../dataform-tables"
   },
   "homepage": "https://github.com/optimics/analytics/dataform/ga4-ecom-report-transform",
   "repository": {
