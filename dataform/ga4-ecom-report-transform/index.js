@@ -1,4 +1,4 @@
-const helper = require('./helper.js')
+const helper = require('./eventParams.js')
 
 function formatDate(date) {
   return String(
