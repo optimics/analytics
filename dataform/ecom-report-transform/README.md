@@ -69,7 +69,7 @@ ${ecom.query}
 ```javascript
 const { getEcomQuery } = require('@optimics/dataform-ecom-report-transform')
 const query = getEcomQuery({
-    ga4Dataset: 'optimics.analytics_12345678_events_20230101', 
+    ga4Dataset: 'optimics.analytics_12345678', 
     rangeCap: 30
 })
 
