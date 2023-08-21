@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/optimics/analytics/compare/v0.5.0...v0.6.0) (2023-08-21)
+
+
+### Bug Fixes
+
+* create ecommerce reporting package ([80c6a7e](https://github.com/optimics/analytics/commit/80c6a7e708e9da943e13743da953da0dd2abc1b7))
+* pass totalTime as seconds ([c7a8f67](https://github.com/optimics/analytics/commit/c7a8f67c11ac51ca4c74b72988e6e5cba722d9db))
+* rename helper to eventParams ([62120cd](https://github.com/optimics/analytics/commit/62120cdacd9226a20112fb19833725bb9fc0627d))
+* track word count ([517c781](https://github.com/optimics/analytics/commit/517c781a69b6ac045a0b9a7916f81a6ff3dce473))
+* use destructuring ([8961a8e](https://github.com/optimics/analytics/commit/8961a8ea45a175407505399f452a52f5042002d2))
+
+
+### Features
+
+* configure entity properties ([9390a5c](https://github.com/optimics/analytics/commit/9390a5c0e945d34f5833463eb2e631e6fd666d46))
+
+
+
+
+
 # [0.5.0](https://github.com/optimics/analytics/compare/v0.4.1...v0.5.0) (2023-08-17)
 
 

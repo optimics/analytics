@@ -1,6 +1,6 @@
 {
   "name": "@optimics/article-tracker",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Report article content consumption data into Data Layer",
   "keywords": [
     "article",
