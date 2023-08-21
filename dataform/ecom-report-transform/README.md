@@ -59,22 +59,24 @@ config {
     schema: "ga4_datamart",
 }
 
-${getEcomQuery}
+${ecom.query}
+
 ```
 
-3. In the `includes` directory, create a `.js` file.
+3. In the `includes` directory, create a `ecom.js` file.
 4. Insert the following code into the `.js` file:
 
 ```javascript
-const { createTable } = require('@optimics/dataform-ecom-report-transform')
-const query = createTable({
-    ga4Dataset: '{YOUR GOOGLE CLOUD PROJECT ID}.{YOUR DATASET ID}',
-    rangeCap: '0'  
+const { getEcomQuery } = require('@optimics/dataform-ecom-report-transform')
+const query = getEcomQuery({
+    ga4Dataset: 'optimics.analytics_12345678_events_20230101', 
+    rangeCap: 30
 })
+
 module.exports = { query }
 ```
 
 ## Committing and Pushing Changes
 
 Once you have made the necessary changes to the repository, commit the changes
-and push them to the branch.
+and push them to the main branch.
