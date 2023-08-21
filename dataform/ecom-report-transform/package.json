@@ -1,5 +1,5 @@
 {
-  "name": "@optimics/dataform-ga4-ecom-report-transform",
+  "name": "@optimics/dataform-ecom-report-transform",
   "version": "0.5.0",
   "type": "commonjs",
   "files": [
@@ -13,7 +13,7 @@
     "@dataform/core": "2.4.2",
     "@optimics/dataform-tables": "file:../dataform-tables"
   },
-  "homepage": "https://github.com/optimics/analytics/dataform/ga4-ecom-report-transform",
+  "homepage": "https://github.com/optimics/analytics/dataform/ecom-report-transform",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/optimics/analytics.git"
