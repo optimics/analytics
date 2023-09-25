@@ -16,6 +16,7 @@ type VisualRef = CellAddress
 export interface Ga4Ref {
   id: string
   parent: string
+  replacementProps?: string[]
   name?: string
   uiRef?: VisualRef
 }
@@ -62,6 +63,7 @@ export interface AnalyticsPropertyState
   customMetrics?: Map<string, CustomMetricState>
   conversionEvents?: Map<string, ConversionEventState>
   entityConfig?: EntityConfig
+  replacementProps?: string[]
   uiRef?: VisualRef
 }
 
@@ -76,6 +78,7 @@ export enum AnalyticsOperationMode {
   Create = 'create',
   Dispose = 'dispose',
   Modify = 'modify',
+  Replace = 'replace',
 }
 
 // @TODO: Type all object options

@@ -86,12 +86,20 @@ export class Worksheet {
     )
   }
 
-  parsePropertyCell(rowIndex: number, cellIndex: number): string | null {
-    const cell = this.sheet.getCell(rowIndex, cellIndex)
+  parseCellValue(cell: GoogleSpreadsheetCell): string | null {
     if (!cell.value || typeof cell.value === 'boolean') {
       return null
     }
     return String(cell.value)
+  }
+
+  getCell(rowIndex: number, cellIndex: number): GoogleSpreadsheetCell {
+    return this.sheet.getCell(rowIndex, cellIndex)
+  }
+
+  parsePropertyCell(rowIndex: number, cellIndex: number): string | null {
+    const cell = this.getCell(rowIndex, cellIndex)
+    return this.parseCellValue(cell)
   }
 
   injectOptionalProp(

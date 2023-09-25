@@ -96,6 +96,14 @@ function isDeletable(item: ConversionEventState | AnalyticsObject): boolean {
   return true
 }
 
+function needsReplacing(op: AnalyticsOperation): boolean {
+  if (op.mode === AnalyticsOperationMode.Modify && op?.state?.replacementProps && op.diff) {
+    const replacementProps = op.state.replacementProps
+    return op.diff.some(diffOp => replacementProps.includes(diffOp.path.join('.')))
+  }
+  return false
+}
+
 export async function createPlan(
   state: AnalyticsState,
   target: AnalyticsState,
@@ -154,6 +162,9 @@ export async function createPlan(
         uiRef: ref?.uiRef || entry?.uiRef,
       }
       if (isMeaningful(op)) {
+        if (needsReplacing(op)) {
+          op.mode = AnalyticsOperationMode.Replace
+        }
         operations.set(key, op)
       } else {
         reporter.progress(op, OperationProgress.NoOp)
@@ -181,7 +192,8 @@ export function printPlan(plan: AnalyticsOperationPlan): void {
            * more complex paths */
           const p = d.path.join('.')
           const prev = String(op?.state?.[p as keyof typeof op.state])
-          writeLn(`  [${p}] "${prev}" -> "${d.value}"`)
+          const warn = op?.state.replacementProps?.includes(p) ? ' **forces replacement**' : ''
+          writeLn(`  [${p}] "${prev}" -> "${d.value}"${warn}`)
         }
       }
     }

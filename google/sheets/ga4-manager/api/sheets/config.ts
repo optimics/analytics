@@ -5,7 +5,7 @@ import type {
   EntityConfig,
 } from '../types.d.ts'
 import type { PropertyKeyMap } from './Worksheet.d.ts'
-import type { GoogleSpreadsheetRow } from 'google-spreadsheet'
+import type { GoogleSpreadsheetCell, GoogleSpreadsheetRow } from 'google-spreadsheet'
 
 import camelCase from 'camelcase'
 
@@ -13,6 +13,12 @@ import { EntityType } from '../types.js'
 import { SpreadsheetError, Worksheet } from './Worksheet.js'
 
 export class ValidationError extends SpreadsheetError {}
+
+enum DimensionScope {
+  user = 'user',
+  event = 'event',
+  item = 'item',
+}
 
 export class ConfigSheet extends Worksheet {
   static titles = [
@@ -51,12 +57,23 @@ export class ConfigSheet extends Worksheet {
   parseCustomDimensionPropertyValue(
     _type: EntityType,
     property: keyof CustomDimensionConfig,
-    value: string,
+    cell: GoogleSpreadsheetCell
   ) {
-    if (property === 'scope') {
-      return value.toUpperCase()
+    let value = this.parseCellValue(cell)
+    if (value) {
+      if (property === 'scope') {
+        value = value.toUpperCase()
+        if (!(value in DimensionScope)) {
+          const allowed = Object.values(DimensionScope).map(v => `"${v}"`).join(', ')
+          this.reportInvalidConfig(cell, `Value "${value}" is not a valid Custom Dimension Scope. Try one of: (${allowed})`)
+        }
+      }
     }
     return value
+  }
+
+  reportInvalidConfig(_cell: GoogleSpreadsheetCell, _message: string) {
+    // @TODO: Bind to the sheet reporter 
   }
 
   parseCustomMetricProperty(
@@ -96,7 +113,7 @@ export class ConfigSheet extends Worksheet {
       const propertyValue = this.parseCustomDimensionPropertyValue(
         type,
         propertyName,
-        value,
+        this.getCell(rowIndex, this.headerMap.value),
       )
       return {
         type,
