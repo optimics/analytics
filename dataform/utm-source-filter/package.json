@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@dataform/core": "2.4.2",
-    "@optimics/dataform-tables": "file:../dataform-tables"
+    "@optimics/dataform-tables": "file:../tables"
   },
   "homepage": "https://github.com/optimics/analytics/dataform/utm-source-filter",
   "repository": {
