@@ -38,9 +38,13 @@ export class ConfigError extends SpreadsheetError {
 }
 
 enum DimensionScope {
-  user = 'user',
-  event = 'event',
-  item = 'item',
+  USER = 'USER',
+  EVENT = 'EVENT',
+  ITEM = 'ITEM',
+}
+
+enum MetricScope {
+  EVENT = 'EVENT'
 }
 
 export class ConfigSheet extends Worksheet {
@@ -87,7 +91,7 @@ export class ConfigSheet extends Worksheet {
     if (value) {
       if (property === 'scope') {
         value = value.toUpperCase()
-        if (value.toLowerCase() in DimensionScope) {
+        if (value in DimensionScope) {
           this.reportValid(cell)
         } else {
           const allowed = Object.values(DimensionScope).map(v => `"${v}"`).join(', ')
@@ -125,10 +129,22 @@ export class ConfigSheet extends Worksheet {
   parseCustomMetricPropertyValue(
     _type: EntityType,
     property: keyof CustomMetricConfig,
-    value: string,
+    cell: GoogleSpreadsheetCell
   ) {
-    if (property === 'scope' || property === 'measurementUnit') {
-      return value.toUpperCase()
+    let value = this.parseCellValue(cell)
+    if  (value) {
+      if (property === 'scope') {
+        value = value.toUpperCase()
+        if (value in MetricScope) {
+          this.reportValid(cell)
+        } else {
+          const allowed = Object.values(DimensionScope).map(v => `"${v}"`).join(', ')
+          this.reportInvalid(new ValidationError(this.sheet, cell, `Value "${value}" is not a valid Custom Metric Scope. Try one of: (${allowed})`))
+        }
+      }
+      if (property === 'measurementUnit') {
+        return value.toUpperCase()
+      }
     }
     return value
   }
@@ -167,7 +183,7 @@ export class ConfigSheet extends Worksheet {
         const propertyValue = this.parseCustomMetricPropertyValue(
           type,
           propertyName,
-          value,
+          this.getCell(rowIndex, this.headerMap.value),
         )
         return {
           type,
