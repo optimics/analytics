@@ -1,5 +1,6 @@
 import type { AnalyticsOperation } from '../types.d.ts'
 import type { SheetSource } from './SheetSource.d.ts'
+import type { ValidationError, ValidationResult } from './config.d.ts'
 import type {
   GoogleSpreadsheetCell,
   GoogleSpreadsheetWorksheet,
@@ -87,11 +88,13 @@ const StyleMap: CellStyleMap = {
 const SAVE_TIMEOUT_DEBOUNCE = 200
 const SAVE_TIMEOUT_REGENERATE = 60000
 
+type Timeout = ReturnType<typeof setTimeout>
+
 export class SheetReporter extends StatusReporter {
+  handleFlushed?: () => void
   lastSave?: number
   sheet: SheetSource
-  saveTimeout: Map<GoogleSpreadsheetWorksheet, ReturnType<typeof setTimeout>> =
-    new Map()
+  saveTimeout: Map<GoogleSpreadsheetWorksheet, Timeout | null> = new Map()
 
   constructor({ sheet }: SheetReporterOptions) {
     super()
@@ -131,9 +134,29 @@ export class SheetReporter extends StatusReporter {
     )
   }
 
-  saveSheet(sheet: GoogleSpreadsheetWorksheet): void {
+  isLoaded(): boolean {
+    return Array.from(this.saveTimeout.values()).filter(Boolean).length > 0
+  }
+
+  waitUntilFlushed(callback: () => void): void {
+    if (this.isLoaded()) {
+      this.handleFlushed = callback
+    } else {
+      callback()
+    }
+  }
+
+  checkLoad(): void {
+    if (this.handleFlushed && !this.isLoaded()) {
+      this.handleFlushed()
+    }
+  }
+
+  async saveSheet(sheet: GoogleSpreadsheetWorksheet): Promise<void> {
     this.lastSave = Date.now()
-    sheet.saveUpdatedCells()
+    this.resetSaveTimeout(sheet)
+    await sheet.saveUpdatedCells()
+    this.checkLoad()
   }
 
   resetSaveTimeout(sheet: GoogleSpreadsheetWorksheet): void {
@@ -141,6 +164,7 @@ export class SheetReporter extends StatusReporter {
     if (timeout) {
       clearTimeout(timeout)
     }
+    this.saveTimeout.set(sheet, null)
   }
 
   progress(op: AnalyticsOperation, status: OperationProgress, msg?: string) {
@@ -189,5 +213,17 @@ export class SheetReporter extends StatusReporter {
   applyStyle(cell: GoogleSpreadsheetCell, style: CellStyle): void {
     cell.backgroundColor = style.backgroundColor
     cell.textFormat = style.textFormat
+  }
+
+  reportError(err: ValidationError): void {
+    this.applyStyle(err.cell, StyleMap.danger)
+    err.cell.note = err.message
+    this.scheduleSave(err.sheet)
+  }
+
+  reportValid(result: ValidationResult): void {
+    this.applyStyle(result.cell, StyleMap.valid)
+    result.cell.note = ''
+    this.scheduleSave(result.sheet)
   }
 }

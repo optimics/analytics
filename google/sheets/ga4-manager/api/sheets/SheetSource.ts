@@ -1,3 +1,4 @@
+import type { StatusReporter } from '../status.d.ts'
 import type {
   AnalyticsPropertyState,
   AnalyticsState,
@@ -18,6 +19,7 @@ import { GoogleSpreadsheet } from 'google-spreadsheet'
 interface SheetSourceOptions {
   credentials: Credentials
   docId: string
+  reporter?: StatusReporter
 }
 
 export class SheetSource {
@@ -28,8 +30,9 @@ export class SheetSource {
     customMetric: {},
   }
   mutationScopes: ObjectMutationScope[] = []
+  reporter?: StatusReporter
 
-  constructor({ docId, credentials }: SheetSourceOptions) {
+  constructor({ docId, credentials, reporter }: SheetSourceOptions) {
     const auth = new JWT({
       email: credentials.client_email,
       key: credentials.private_key,
@@ -37,6 +40,7 @@ export class SheetSource {
     })
     this.doc = new GoogleSpreadsheet(docId, auth)
     this.credentials = credentials
+    this.reporter = reporter
   }
 
   getSheetType(sheetTitle: string): typeof Worksheet | null {

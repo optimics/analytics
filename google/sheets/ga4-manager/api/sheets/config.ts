@@ -5,14 +5,37 @@ import type {
   EntityConfig,
 } from '../types.d.ts'
 import type { PropertyKeyMap } from './Worksheet.d.ts'
-import type { GoogleSpreadsheetCell, GoogleSpreadsheetRow } from 'google-spreadsheet'
+import type { GoogleSpreadsheetCell, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from 'google-spreadsheet'
 
 import camelCase from 'camelcase'
 
 import { EntityType } from '../types.js'
 import { SpreadsheetError, Worksheet } from './Worksheet.js'
 
-export class ValidationError extends SpreadsheetError {}
+export interface ValidationResult {
+  cell: GoogleSpreadsheetCell
+  sheet: GoogleSpreadsheetWorksheet
+}
+
+export class ValidationError extends SpreadsheetError {
+  cell: GoogleSpreadsheetCell
+  sheet: GoogleSpreadsheetWorksheet
+
+  constructor(sheet: GoogleSpreadsheetWorksheet, cell: GoogleSpreadsheetCell, message: string) {
+    super(message)
+    this.cell = cell
+    this.sheet = sheet
+  }
+}
+
+export class ConfigError extends SpreadsheetError {
+  errors: ValidationError[]
+
+  constructor(errors: ValidationError[]) {
+    super('Configuration failed')
+    this.errors = errors
+  }
+}
 
 enum DimensionScope {
   user = 'user',
@@ -29,6 +52,8 @@ export class ConfigSheet extends Worksheet {
     'ga4:Configuration',
   ]
 
+  errors: ValidationError[] = []
+
   propertyKeyMap: PropertyKeyMap = {
     type: ['type'],
     name: ['name'],
@@ -36,14 +61,13 @@ export class ConfigSheet extends Worksheet {
     value: ['value'],
   }
 
-  parseEntityType(type: string): EntityType {
+  parseEntityType(type: string): EntityType | null {
     const normalized = camelCase(type) as EntityType
     const types = Object.values(EntityType)
     if (types.includes(normalized)) {
       return normalized
     }
-    throw new ValidationError(`Value "${type}" is not a recognized Entity Type.
-                              Try one of "${types.join(', ')}"`)
+    return null
   }
 
   parseCustomDimensionProperty(
@@ -63,17 +87,31 @@ export class ConfigSheet extends Worksheet {
     if (value) {
       if (property === 'scope') {
         value = value.toUpperCase()
-        if (!(value in DimensionScope)) {
+        if (value.toLowerCase() in DimensionScope) {
+          this.reportValid(cell)
+        } else {
           const allowed = Object.values(DimensionScope).map(v => `"${v}"`).join(', ')
-          this.reportInvalidConfig(cell, `Value "${value}" is not a valid Custom Dimension Scope. Try one of: (${allowed})`)
+          this.reportInvalid(new ValidationError(this.sheet, cell, `Value "${value}" is not a valid Custom Dimension Scope. Try one of: (${allowed})`))
         }
       }
     }
     return value
   }
 
-  reportInvalidConfig(_cell: GoogleSpreadsheetCell, _message: string) {
-    // @TODO: Bind to the sheet reporter 
+  reportInvalid(err: ValidationError) {
+    this.errors.push(err)
+    if (this.doc.reporter) {
+      this.doc.reporter.reportError(err)
+    }
+  }
+
+  reportValid(cell: GoogleSpreadsheetCell): void {
+    if (this.doc.reporter) {
+      this.doc.reporter.reportValid({
+        sheet: this.sheet,
+        cell
+      })
+    }
   }
 
   parseCustomMetricProperty(
@@ -102,37 +140,48 @@ export class ConfigSheet extends Worksheet {
       return null
     }
     const type = this.parseEntityType(entityType)
-    const name = this.parsePropertyCell(rowIndex, this.headerMap.name)
-    const property = this.parsePropertyCell(rowIndex, this.headerMap.property)
-    const value = this.parsePropertyCell(rowIndex, this.headerMap.value)
-    if (!(property && value && name)) {
-      return null
-    }
-    if (type === EntityType.customDimension) {
-      const propertyName = this.parseCustomDimensionProperty(type, property)
-      const propertyValue = this.parseCustomDimensionPropertyValue(
-        type,
-        propertyName,
-        this.getCell(rowIndex, this.headerMap.value),
-      )
-      return {
-        type,
-        name,
-        [propertyName]: propertyValue,
+    const entityCell = this.getCell(rowIndex, this.headerMap.type)
+    if (type) {
+      this.reportValid(entityCell)
+      const name = this.parsePropertyCell(rowIndex, this.headerMap.name)
+      const property = this.parsePropertyCell(rowIndex, this.headerMap.property)
+      const value = this.parsePropertyCell(rowIndex, this.headerMap.value)
+      if (!(property && value && name)) {
+        return null
       }
-    }
-    if (type === EntityType.customMetric) {
-      const propertyName = this.parseCustomMetricProperty(type, property)
-      const propertyValue = this.parseCustomMetricPropertyValue(
-        type,
-        propertyName,
-        value,
-      )
-      return {
-        type,
-        name,
-        [propertyName]: propertyValue,
+      if (type === EntityType.customDimension) {
+        const propertyName = this.parseCustomDimensionProperty(type, property)
+        const propertyValue = this.parseCustomDimensionPropertyValue(
+          type,
+          propertyName,
+          this.getCell(rowIndex, this.headerMap.value),
+        )
+        return {
+          type,
+          name,
+          [propertyName]: propertyValue,
+        }
       }
+      if (type === EntityType.customMetric) {
+        const propertyName = this.parseCustomMetricProperty(type, property)
+        const propertyValue = this.parseCustomMetricPropertyValue(
+          type,
+          propertyName,
+          value,
+        )
+        return {
+          type,
+          name,
+          [propertyName]: propertyValue,
+        }
+      }
+    } else {
+      const types = Object.values(EntityType)
+      this.reportInvalid(new ValidationError(
+        this.sheet,
+        entityCell,
+        `Value "${type}" is not a recognized Entity Type. Try one of "${types.join(', ')}"`
+      ))
     }
     return null
   }
@@ -159,6 +208,9 @@ export class ConfigSheet extends Worksheet {
         customMetric: {},
       } as EntityConfig,
     )
+    if (this.errors.length !== 0) {
+      throw new ConfigError(this.errors)
+    }
     return data
   }
 

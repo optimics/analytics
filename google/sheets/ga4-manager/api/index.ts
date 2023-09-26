@@ -98,6 +98,43 @@ function withSheet(
   return descriptor
 }
 
+function withResponse(
+  _target: RequestDispatcher,
+  _propertyKey: string,
+  descriptor: PropertyDescriptor,
+) {
+  const fn = descriptor.value
+  descriptor.value = async (req: Request, res: Response) => {
+    try {
+      const body = await fn(req, res)
+      res.send(body)
+    } catch(err) {
+      console.error(err)
+      res.status(500).send({
+        message: err.message
+      })
+    }
+  }
+  return descriptor
+}
+
+function withReporter(
+  _target: RequestDispatcher,
+  _propertyKey: string,
+  descriptor: PropertyDescriptor,
+) {
+  const fn = descriptor.value
+  descriptor.value = async (req: Request, res: Response) => {
+    req.body.reporter = new SheetReporter({ sheet: req.body.sheet })
+    req.body.sheet.reporter = req.body.reporter
+    try {
+      return fn(req, res)
+    } finally {
+      await new Promise<void>(resolve => req.body.reporter.waitUntilFlushed(resolve))
+    }
+  }
+}
+
 function withSheetState(
   _target: RequestDispatcher,
   _propertyKey: string,
@@ -126,10 +163,12 @@ class RequestDispatcher {
   @cors('POST')
   @validatedBody(requestSchema.default as JSONSchemaType<RequestBody>)
   @authorized
+  @withResponse
   @withSheet
+  @withReporter
   @withSheetState
-  async request(req: Request, res: Response): Promise<void> {
-    const reporter = new SheetReporter({ sheet: req.body.sheet })
+  async request(req: Request, _res: Response): Promise<{ message: string, totalOperations?: number }> {
+    const reporter = req.body.reporter
     const ga = new AnalyticsAdmin({
       credentials: req.body.credentials,
       reporter,
@@ -145,10 +184,10 @@ class RequestDispatcher {
     )
     printPlan(plan)
     await ga.executePlan(plan)
-    res.status(200).send({
+    return {
       message: 'Ok',
       totalOperations: plan.size,
-    })
+    }
   }
 }
 

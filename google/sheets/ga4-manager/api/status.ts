@@ -1,3 +1,5 @@
+import type { ValidationError, ValidationResult } from './sheets/config.d.ts'
+
 import { AnalyticsOperation, OperationProgress } from './types.js'
 
 interface JobCounter {
@@ -49,4 +51,7 @@ export class StatusReporter {
     this.log(`* Failure: ${this.counter.failure}`)
     this.log(`* Success: ${this.counter.success}`)
   }
+
+  reportError(_error: ValidationError): void {}
+  reportValid(_result: ValidationResult): void {}
 }
