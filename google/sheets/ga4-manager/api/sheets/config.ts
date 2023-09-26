@@ -5,7 +5,11 @@ import type {
   EntityConfig,
 } from '../types.d.ts'
 import type { PropertyKeyMap } from './Worksheet.d.ts'
-import type { GoogleSpreadsheetCell, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from 'google-spreadsheet'
+import type {
+  GoogleSpreadsheetCell,
+  GoogleSpreadsheetRow,
+  GoogleSpreadsheetWorksheet,
+} from 'google-spreadsheet'
 
 import camelCase from 'camelcase'
 
@@ -21,7 +25,11 @@ export class ValidationError extends SpreadsheetError {
   cell: GoogleSpreadsheetCell
   sheet: GoogleSpreadsheetWorksheet
 
-  constructor(sheet: GoogleSpreadsheetWorksheet, cell: GoogleSpreadsheetCell, message: string) {
+  constructor(
+    sheet: GoogleSpreadsheetWorksheet,
+    cell: GoogleSpreadsheetCell,
+    message: string,
+  ) {
     super(message)
     this.cell = cell
     this.sheet = sheet
@@ -44,7 +52,25 @@ enum DimensionScope {
 }
 
 enum MetricScope {
-  EVENT = 'EVENT'
+  EVENT = 'EVENT',
+}
+
+enum MeasurementUnit {
+  STANDARD = 1,
+  CURRENCY = 2,
+  FEET = 3,
+  METERS = 4,
+  KILOMETERS = 5,
+  MILES = 6,
+  MILLISECONDS = 7,
+  SECONDS = 8,
+  MINUTES = 9,
+  HOURS = 10,
+}
+
+enum RestrictedMetricType {
+  COST_DATA = 1,
+  REVENUE_DATA = 2,
 }
 
 export class ConfigSheet extends Worksheet {
@@ -85,7 +111,7 @@ export class ConfigSheet extends Worksheet {
   parseCustomDimensionPropertyValue(
     _type: EntityType,
     property: keyof CustomDimensionConfig,
-    cell: GoogleSpreadsheetCell
+    cell: GoogleSpreadsheetCell,
   ) {
     let value = this.parseCellValue(cell)
     if (value) {
@@ -94,8 +120,16 @@ export class ConfigSheet extends Worksheet {
         if (value in DimensionScope) {
           this.reportValid(cell)
         } else {
-          const allowed = Object.values(DimensionScope).map(v => `"${v}"`).join(', ')
-          this.reportInvalid(new ValidationError(this.sheet, cell, `Value "${value}" is not a valid Custom Dimension Scope. Try one of: (${allowed})`))
+          const allowed = Object.values(DimensionScope)
+            .map((v) => `"${v}"`)
+            .join(', ')
+          this.reportInvalid(
+            new ValidationError(
+              this.sheet,
+              cell,
+              `Value "${value}" is not a valid Custom Dimension Scope. Try one of: (${allowed})`,
+            ),
+          )
         }
       }
     }
@@ -113,7 +147,7 @@ export class ConfigSheet extends Worksheet {
     if (this.doc.reporter) {
       this.doc.reporter.reportValid({
         sheet: this.sheet,
-        cell
+        cell,
       })
     }
   }
@@ -129,21 +163,62 @@ export class ConfigSheet extends Worksheet {
   parseCustomMetricPropertyValue(
     _type: EntityType,
     property: keyof CustomMetricConfig,
-    cell: GoogleSpreadsheetCell
+    cell: GoogleSpreadsheetCell,
   ) {
     let value = this.parseCellValue(cell)
-    if  (value) {
+    if (value) {
       if (property === 'scope') {
         value = value.toUpperCase()
         if (value in MetricScope) {
           this.reportValid(cell)
         } else {
-          const allowed = Object.values(DimensionScope).map(v => `"${v}"`).join(', ')
-          this.reportInvalid(new ValidationError(this.sheet, cell, `Value "${value}" is not a valid Custom Metric Scope. Try one of: (${allowed})`))
+          const allowed = Object.values(DimensionScope)
+            .map((v) => `"${v}"`)
+            .join(', ')
+          this.reportInvalid(
+            new ValidationError(
+              this.sheet,
+              cell,
+              `Value "${value}" is not a valid Custom Metric Scope. Try one of: (${allowed})`,
+            ),
+          )
         }
       }
       if (property === 'measurementUnit') {
-        return value.toUpperCase()
+        value = value.toUpperCase()
+        if (value in MeasurementUnit) {
+          this.reportValid(cell)
+        } else {
+          const allowed = Object.values(DimensionScope)
+            .map((v) => `"${v}"`)
+            .join(', ')
+          this.reportInvalid(
+            new ValidationError(
+              this.sheet,
+              cell,
+              `Value "${value}" is not a valid Custom Metric Measurement Unit. Try one of: (${allowed})`,
+            ),
+          )
+        }
+      }
+      if (property === 'restrictedMetricType') {
+        const arr = value.split(',').map((v) => v.trim().toUpperCase())
+        const invalid = arr.filter((v) => !(v in RestrictedMetricType))
+        if (invalid.length === 0) {
+          this.reportValid(cell)
+        } else {
+          const allowed = Object.values(DimensionScope)
+            .map((v) => `"${v}"`)
+            .join(', ')
+          this.reportInvalid(
+            new ValidationError(
+              this.sheet,
+              cell,
+              `Value "${value}" is not a valid Custom Metric Measurement Unit. Try one of: (${allowed})`,
+            ),
+          )
+        }
+        return arr
       }
     }
     return value
@@ -193,11 +268,15 @@ export class ConfigSheet extends Worksheet {
       }
     } else {
       const types = Object.values(EntityType)
-      this.reportInvalid(new ValidationError(
-        this.sheet,
-        entityCell,
-        `Value "${type}" is not a recognized Entity Type. Try one of "${types.join(', ')}"`
-      ))
+      this.reportInvalid(
+        new ValidationError(
+          this.sheet,
+          entityCell,
+          `Value "${type}" is not a recognized Entity Type. Try one of "${types.join(
+            ', ',
+          )}"`,
+        ),
+      )
     }
     return null
   }

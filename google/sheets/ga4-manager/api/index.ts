@@ -108,10 +108,10 @@ function withResponse(
     try {
       const body = await fn(req, res)
       res.send(body)
-    } catch(err) {
+    } catch (err) {
       console.error(err)
       res.status(500).send({
-        message: err.message
+        message: err.message,
       })
     }
   }
@@ -130,7 +130,9 @@ function withReporter(
     try {
       return fn(req, res)
     } finally {
-      await new Promise<void>(resolve => req.body.reporter.waitUntilFlushed(resolve))
+      await new Promise<void>((resolve) =>
+        req.body.reporter.waitUntilFlushed(resolve),
+      )
     }
   }
 }
@@ -159,6 +161,13 @@ function withSheetState(
   return descriptor
 }
 
+interface StatusReport {
+  message: string
+  operations: number
+  success: number
+  failure: number
+}
+
 class RequestDispatcher {
   @cors('POST')
   @validatedBody(requestSchema.default as JSONSchemaType<RequestBody>)
@@ -167,7 +176,7 @@ class RequestDispatcher {
   @withSheet
   @withReporter
   @withSheetState
-  async request(req: Request, _res: Response): Promise<{ message: string, totalOperations?: number }> {
+  async request(req: Request, _res: Response): Promise<StatusReport> {
     const reporter = req.body.reporter
     const ga = new AnalyticsAdmin({
       credentials: req.body.credentials,
@@ -185,8 +194,10 @@ class RequestDispatcher {
     printPlan(plan)
     await ga.executePlan(plan)
     return {
-      message: 'Ok',
-      totalOperations: plan.size,
+      message: reporter.counter.failure === 0 ? 'success' : 'failure',
+      operations: plan.size,
+      success: reporter.counter.success,
+      failure: reporter.counter.failure,
     }
   }
 }

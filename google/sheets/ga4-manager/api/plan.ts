@@ -37,7 +37,7 @@ function getStateFieldDiff(
 ): DiffOperation[] {
   const fieldDiff = diff(a || {}, b || {})
   const filteredDiff = fieldDiff
-    .filter((d) => d.op !== 'remove')
+    .filter((d) => d.op !== 'remove' || d.path.length > 1)
     .reduce((aggr, d) => {
       const nd: DiffOperation = { ...d }
       nd.path = nd.path.filter((p) => !ignoreFields.includes(p)) as Array<
@@ -97,9 +97,15 @@ function isDeletable(item: ConversionEventState | AnalyticsObject): boolean {
 }
 
 function needsReplacing(op: AnalyticsOperation): boolean {
-  if (op.mode === AnalyticsOperationMode.Modify && op?.state?.replacementProps && op.diff) {
+  if (
+    op.mode === AnalyticsOperationMode.Modify &&
+    op?.state?.replacementProps &&
+    op.diff
+  ) {
     const replacementProps = op.state.replacementProps
-    return op.diff.some(diffOp => replacementProps.includes(diffOp.path.join('.')))
+    return op.diff.some((diffOp) =>
+      replacementProps.includes(String(diffOp.path[0])),
+    )
   }
   return false
 }
@@ -190,10 +196,15 @@ export function printPlan(plan: AnalyticsOperationPlan): void {
         for (const d of op.diff) {
           /* Assuming, the path is always one level deep. This will break for
            * more complex paths */
-          const p = d.path.join('.')
+          const p = d.path[0] as string
           const prev = String(op?.state?.[p as keyof typeof op.state])
-          const warn = op?.state.replacementProps?.includes(p) ? ' **forces replacement**' : ''
-          writeLn(`  [${p}] "${prev}" -> "${d.value}"${warn}`)
+          const curr = String(
+            op?.targetState?.[p as keyof typeof op.targetState],
+          )
+          const warn = op?.state.replacementProps?.includes(p)
+            ? ' **forces replacement**'
+            : ''
+          writeLn(`  [${p}] "${prev}" -> "${curr}"${warn}`)
         }
       }
     }

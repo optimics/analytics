@@ -20,6 +20,7 @@ export class CustomMetricsSheet extends Worksheet {
       id: `${property.id}/customMetrics/${cell.value}`,
       parameterName,
       parent: String(property.name),
+      restrictedMetricType: defaultProps.restrictedMetricType || [],
       uiRef: this.getUiRef(cell),
     }
   }

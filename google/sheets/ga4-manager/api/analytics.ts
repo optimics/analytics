@@ -96,7 +96,7 @@ export class AnalyticsAdmin {
         ...metric,
         id,
         parent: property.name,
-        replacementProps: ['scope'],
+        replacementProps: ['scope', 'measurementUnit', 'restrictedMetricType'],
       } as CustomMetricState)
     }
     return map
@@ -179,10 +179,10 @@ export class AnalyticsAdmin {
           name: item.name,
         }),
       modify: async (item: ConversionEventState) => item,
-      async replace (item: ConversionEventState) {
+      async replace(item: ConversionEventState) {
         await this.dispose(item)
         return await this.create(item)
-      }
+      },
     },
     customMetric: {
       create: (item: CustomMetricState) =>
@@ -201,10 +201,10 @@ export class AnalyticsAdmin {
             paths: ['*'],
           },
         }),
-      async replace (item: CustomMetricState) {
+      async replace(item: CustomMetricState) {
         await this.dispose(item)
         return await this.create({ ...item, name: undefined })
-      }
+      },
     },
     customDimension: {
       create: (item: CustomDimensionState) =>
@@ -228,10 +228,10 @@ export class AnalyticsAdmin {
             paths: ['*'],
           },
         }),
-      async replace (item: CustomDimensionState) {
+      async replace(item: CustomDimensionState) {
         await this.dispose(item)
         return await this.create({ ...item, name: undefined })
-      }
+      },
     },
   }
 
