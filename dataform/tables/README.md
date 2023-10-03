@@ -1,8 +1,6 @@
 # `@optimics/dataform-tables`
 
-# Ecom Report Transform
+> This Dataform package is designed to create date formates that can be used
+> for quering data export from Google Analytics 4.
 
-## Overview
-
-This Dataform package is designed to create date formates that can be used
-for quering data export from Google Analytics 4.
+The package is very simple. Please see the inline documentation for details.
