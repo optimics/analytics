@@ -1,5 +1,10 @@
 # UTM Source Filter
 
+![npm](https://img.shields.io/npm/dm/%40optimics/dataform-utm-source-filter)
+![npm (scoped)](https://img.shields.io/npm/v/%40optimics/dataform-utm-source-filter)
+
+> Consolidate your e-shop orders by UTM source
+
 ## Overview
 
 This Dataform package is designed to help e-shops evaluate the contribution of
@@ -34,8 +39,11 @@ following steps:
 To install the `npm` package and add it to your Dataform workspace, follow
 these steps:
 
-1. Go to your Dataform workspace.
-2. Add `@optimics/dataform-utm-source-filter` to your package.json dependencies:
+1. Check the latest version -> ![npm
+   (scoped)](https://img.shields.io/npm/v/%40optimics/dataform-utm-source-filter)
+2. Go to your Dataform workspace.
+2. Add `@optimics/dataform-utm-source-filter` to your package.json dependencies
+   with the current version, like thjis:
 
 ```json
 {
