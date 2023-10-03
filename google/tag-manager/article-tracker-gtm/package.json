@@ -1,6 +1,6 @@
 {
   "name": "@optimics/article-tracker-gtm",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "description": "Report article content consumption data into Data Layer",
   "private": true,
   "keywords": [
