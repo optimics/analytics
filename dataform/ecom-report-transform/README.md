@@ -2,6 +2,11 @@
 
 # Ecom Report Transform
 
+![npm](https://img.shields.io/npm/dm/%40optimics/dataform-ecom-report-transform)
+![npm (scoped)](https://img.shields.io/npm/v/%40optimics/dataform-ecom-report-transform)
+
+> Transform GA4 ecommerce data into reportful tables
+
 ## Overview
 
 This Dataform package is designed to help e-shops evaluate ecommerce data from
@@ -35,13 +40,16 @@ following steps:
 To install the `npm` package and add it to your Dataform workspace, follow
 these steps:
 
-1. Go to your Dataform workspace.
-2. Add `@optimics/dataform-ecom-report-transform` to your package.json dependencies:
+1. Check the latest version -> ![npm
+   (scoped)](https://img.shields.io/npm/v/%40optimics/dataform-ecom-report-transform)
+2. Go to your Dataform workspace.
+3. Add `@optimics/dataform-ecom-report-transform` to your package.json
+   dependencies with the current version, like this:
 
 ```json
 {
     "dependencies": {
-        "@optimics/dataform-ecom-report-transform": "^0.5"
+        "@optimics/dataform-ecom-report-transform": "^0.6"
     }
 }
 ```

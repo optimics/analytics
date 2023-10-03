@@ -9,8 +9,7 @@
 * [@optimics/dataform-ecom-report-transform](./dataform/ecom-report-transform) -
   transform GA4 ecommerce data into reportful tables
 * [@optimics/dataform-utm-source-filter](./dataform/utm-source-filter) -
-  evaluate `utm_source` contribution in conversions
-  evaluate `utm_source` contribution in conversions
+  consolidate your e-shop orders by UTM source
 * [@optimics/ga4-manager](./google/sheets/ga4-manager) - configure your GA4
   custom properties and dimensions from Sheets
 
