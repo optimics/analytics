@@ -6,7 +6,10 @@
   audience consumes article texts and multimedia
 * [@optimics/experiment-runner](./browser/experiment-runner) - run ABCD tests
   on your audience
+* [@optimics/dataform-ecom-report-transform](./dataform/ecom-report-transform) -
+  transform GA4 ecommerce data into reportful tables
 * [@optimics/dataform-utm-source-filter](./dataform/utm-source-filter) -
+  evaluate `utm_source` contribution in conversions
   evaluate `utm_source` contribution in conversions
 * [@optimics/ga4-manager](./google/sheets/ga4-manager) - configure your GA4
   custom properties and dimensions from Sheets
