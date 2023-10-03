@@ -54,19 +54,52 @@
     "paramTableColumns": [
       {
         "param": {
-          "type": "TEXT",
+          "type": "SELECT",
           "name": "event",
           "displayName": "Article Tracker Event",
-          "simpleValueType": true,
+          "macrosInSelect": false,
           "help": "The event name from Article Tracker to subscribe to\n\nhttps://github.com/optimics/analytics/tree/master/browser/article-tracker#user-content-events",
-          "valueHint": "consumptionAchievement",
-          "valueValidators": [
+          "selectItems": [
             {
-              "type": "NON_EMPTY"
+              "value": "consumptionAchievement",
+              "displayValue": "Consumption Achievement"
+            },
+            {
+              "value": "consumptionStateChanged",
+              "displayValue": "Consumption State Changed"
+            },
+            {
+              "value": "consumptionStarted",
+              "displayValue": "Consumption Started"
+            },
+            {
+              "value": "consumptionStartedFirst",
+              "displayValue": "Consumption Started First"
+            },
+            {
+              "value": "consumptionStopped",
+              "displayValue": "Consumption Stopped"
+            },
+            {
+              "value": "elementsAdded",
+              "displayValue": "Elements Added"
+            },
+            {
+              "value": "elementsConsumed",
+              "displayValue": "Elements Consumed"
+            },
+            {
+              "value": "elementsDisplayed",
+              "displayValue": "Elements Displayed"
+            },
+            {
+              "value": "overtime",
+              "displayValue": "Consumption Overtime"
             }
-          ]
+          ],
+          "simpleValueType": true
         },
-        "isUnique": true
+        "isUnique": false
       },
       {
         "param": {
