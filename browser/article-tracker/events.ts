@@ -9,6 +9,35 @@ export interface EventControllerOptions<T> {
   mergeProps?: (keyof T)[]
 }
 
+enum EventHandlerOperator {
+  eq = 'eq',
+  gt = 'gt',
+  gte = 'gte',
+  lt = 'lt',
+  lte = 'lte',
+}
+
+interface EventHandlerCondition {
+  operator: EventHandlerOperator
+  value: number
+}
+
+interface EventHandlerFilter<T> {
+  [key: string]: EventHandlerCondition
+}
+
+interface EventHandlerOptions<T> {
+  once?: boolean
+  conditions?: EventHandlerFilter<T>[]
+}
+
+interface EventHandlerWithOptions<T> extends EventHandlerOptions<T> {
+  fn: EventHandler<T>
+  fired: number
+}
+
+// consumption achieved at least 20
+
 /** Controller that manages subscribing to calls and debouncing the triggers,
  * while merging the call props. This is useful, when you want to minimize the
  * amount of calls, but you wish to pass all the distinct values of the call.
@@ -31,7 +60,7 @@ export class EventController<T> {
   cachedOriginalProps?: T
   defaultProps: Partial<T>
   filter?: EventFilter<T>
-  handlers: EventHandler<T>[] = []
+  handlers: EventHandlerWithOptions<T>[] = []
   mergeProps?: (keyof T)[]
 
   constructor(options: EventControllerOptions<T>) {
@@ -106,12 +135,17 @@ export class EventController<T> {
   now(props: T): void {
     if (this.shouldPass(props)) {
       this.cachedOriginalProps = undefined
-      for (const handler of this.handlers) {
-        handler({
+      this.handlers = this.handlers.reduce((aggr, handler) => {
+        handler.fn({
           ...this.defaultProps,
           ...props,
         })
-      }
+        handler.fired += 1
+        if (!handler.once) {
+          aggr.push(handler)
+        }
+        return aggr
+      }, [] as EventHandlerWithOptions<T>[])
     }
   }
 
@@ -124,7 +158,11 @@ export class EventController<T> {
   }
 
   /** Subscribe to this event */
-  subscribe(handler: EventHandler<T>): void {
-    this.handlers.push(handler)
+  subscribe(fn: EventHandler<T>, options?: Object): void {
+    this.handlers.push({
+      ...options,
+      fired: 0,
+      fn,
+    })
   }
 }
