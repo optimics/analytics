@@ -7,6 +7,7 @@ import { beforeAll } from '@jest/globals'
 
 interface TrackerOptions {
   pageRef: PageRef
+  noAutoTrack?: boolean
 }
 
 // rome-ignore lint/suspicious/noExplicitAny: We do not care about call args
@@ -17,6 +18,7 @@ interface EventHandlersCalls {
 }
 
 interface TrackerRef {
+  track: () => Promise<void>
   waitForAnimationFrame: () => Promise<void>
   waitUntilSettled: () => Promise<void>
   getMetrics: () => Promise<ArticleMetrics>
@@ -27,12 +29,12 @@ interface TrackerRef {
 
 export function configureTracker(options: TrackerOptions): TrackerRef {
   const ref = {} as TrackerRef
-  const { pageRef } = options
+  const { noAutoTrack, pageRef } = options
 
   // Instantiate ArticleTracker
   beforeAll(async () => {
     await ref.waitUntilSettled()
-    await pageRef.page.evaluate(() => {
+    await pageRef.page.evaluate(({ noAutoTrack }) => {
       // @ts-ignore
       const articleEl = window.document.querySelector(
         'main .c-content-inner',
@@ -42,7 +44,9 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
         contentTypes: [base.ArticleParagraph],
         intersectionThreshold: 1,
       })
-      base.at.track()
+      if (!noAutoTrack) {
+        base.at.track()
+      }
       base.eventHandlerCalls = {
         consumptionAchievement: [],
         consumptionStateChanged: [],
@@ -83,7 +87,7 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
       base.at.events.overtime.subscribe((...args: Call) => {
         base.eventHandlerCalls.overtime.push(args)
       })
-    })
+    }, { noAutoTrack })
     await ref.waitUntilSettled()
   }, timeoutDefault)
 
@@ -123,6 +127,12 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
       (type) => window.test.eventHandlerTargets[type],
       type,
     )) as string[]
+  }
+
+  ref.track = async function() {
+    pageRef.page.evaluate(() => {
+       window.test.at.track()
+    })
   }
 
   return ref
