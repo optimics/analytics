@@ -11,7 +11,7 @@ export interface EventControllerOptions<T> {
   mergeProps?: (keyof T)[]
 }
 
-enum EventHandlerOperator {
+export enum EventHandlerOperator {
   eq = 'eq',
   gt = 'gt',
   gte = 'gte',
@@ -19,7 +19,7 @@ enum EventHandlerOperator {
   lte = 'lte',
 }
 
-interface EventHandlerCondition {
+export interface EventHandlerCondition {
   operator: EventHandlerOperator
   value: number
 }
@@ -28,12 +28,12 @@ export interface EventHandlerFilter {
   [key: string]: EventHandlerCondition
 }
 
-interface EventHandlerOptions<T> {
+export interface EventHandlerOptions {
   once?: boolean
   conditions?: EventHandlerFilter[]
 }
 
-interface EventHandlerWithOptions<T> extends EventHandlerOptions<T> {
+interface EventHandlerWithOptions<T> extends EventHandlerOptions {
   fn: EventHandler<T>
   fired: number
 }
@@ -202,7 +202,7 @@ export class EventController<T> {
   }
 
   /** Subscribe to this event */
-  subscribe(fn: EventHandler<T>, options?: EventHandlerOptions<T>): void {
+  subscribe(fn: EventHandler<T>, options?: EventHandlerOptions): void {
     this.handlers.push({
       ...options,
       fired: 0,

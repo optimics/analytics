@@ -85,7 +85,8 @@ describe('ArticleTracker with marianky.html sample', () => {
         expect(metrics).toEqual([
           [
             {
-              achieved: 0.6
+              achieved: 0.6,
+              metrics: expect.anything(),
             }
           ]
         ])
