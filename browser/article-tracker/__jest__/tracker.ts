@@ -51,7 +51,6 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
         consumptionAchievement: [],
         consumptionStateChanged: [],
         consumptionStarted: [],
-        consumptionStartedFirst: [],
         consumptionStopped: [],
         elementsConsumed: [],
         elementsDisplayed: [],
@@ -77,9 +76,6 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
       })
       base.at.events.consumptionStarted.subscribe((...args: Call) => {
         base.eventHandlerCalls.consumptionStarted.push(args)
-      })
-      base.at.events.consumptionStartedFirst.subscribe((...args: Call) => {
-        base.eventHandlerCalls.consumptionStartedFirst.push(args)
       })
       base.at.events.consumptionStopped.subscribe((...args: Call) => {
         base.eventHandlerCalls.consumptionStopped.push(args)

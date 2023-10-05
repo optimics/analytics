@@ -18,32 +18,35 @@ export interface ArticleTrackerOptions {
   intersectionThreshold?: number
 }
 
-export interface ConsumptionAchievementProps {
-  achieved: number
+export interface MetricsEvent {
+  metrics: ArticleMetrics
+}
+
+export interface OvertimeProps extends MetricsEvent {
+  overtime: number
 }
 
 export interface ConsumptionStateProps {
   consuming: boolean
 }
 
-export interface TargetEventProps {
-  targets: IArticleElement[]
+export interface ConsumptionAchievementProps extends MetricsEvent {
+  achieved: number
 }
 
-export interface OvertimeEventProps {
-  overtime: number
+export interface TargetEventProps {
+  targets: IArticleElement[]
 }
 
 export interface EventHandlers {
   consumptionAchievement: EventController<ConsumptionAchievementProps>
   consumptionStateChanged: EventController<ConsumptionStateProps>
-  consumptionStarted: EventController<void>
-  consumptionStartedFirst: EventController<void>
-  consumptionStopped: EventController<void>
+  consumptionStarted: EventController<MetricsEvent>
+  consumptionStopped: EventController<MetricsEvent>
   elementsAdded: EventController<TargetEventProps>
   elementsConsumed: EventController<TargetEventProps>
   elementsDisplayed: EventController<TargetEventProps>
-  overtime: EventController<OvertimeEventProps>
+  overtime: EventController<OvertimeProps>
 }
 
 export type EventHandlerName = keyof EventHandlers
@@ -64,7 +67,6 @@ type Timer = ReturnType<typeof setTimeout>
 export class ArticleTracker {
   achievedMax = 0
   achievementTimer?: Timer
-  consumptionStartFired = false
   content?: IArticleElement[]
   contentTypes: typeof ArticleElement[]
   el: HTMLElement
@@ -259,14 +261,11 @@ export class ArticleTracker {
 
   observeInternalEvents(): void {
     this.events.consumptionStateChanged.subscribe(({ consuming }) => {
+      const metrics = this.getMetrics()
       if (consuming) {
-        this.events.consumptionStarted.now()
-        if (!this.consumptionStartFired) {
-          this.consumptionStartFired = true
-          this.events.consumptionStartedFirst.now()
-        }
+        this.events.consumptionStarted.now({ metrics })
       } else {
-        this.events.consumptionStopped.now()
+        this.events.consumptionStopped.now({ metrics })
       }
     })
   }
@@ -317,9 +316,8 @@ export class ArticleTracker {
         cacheOriginalProps: true,
         filter: (props, original) => props.consuming === original?.consuming,
       }),
-      consumptionStarted: new EventController<void>(handlerOptions),
-      consumptionStartedFirst: new EventController<void>(handlerOptions),
-      consumptionStopped: new EventController<void>(handlerOptions),
+      consumptionStarted: new EventController<MetricsEvent>(handlerOptions),
+      consumptionStopped: new EventController<MetricsEvent>(handlerOptions),
       elementsAdded: new EventController<TargetEventProps>(
         targetHandlerOptions,
       ),
@@ -329,7 +327,7 @@ export class ArticleTracker {
       elementsConsumed: new EventController<TargetEventProps>(
         targetHandlerOptions,
       ),
-      overtime: new EventController<OvertimeEventProps>(handlerOptions),
+      overtime: new EventController<OvertimeProps>(handlerOptions),
     }
   }
 
@@ -358,12 +356,13 @@ export class ArticleTracker {
   }
 
   reportAchievement(): void {
-    const achieved = this.getAchivedConsumption()
+    const metrics = this.getMetrics()
     // Avoid reporting the same achievement twice
-    if (achieved > this.achievedMax) {
-      this.achievedMax = achieved
+    if (metrics.achieved > this.achievedMax) {
+      this.achievedMax = metrics.achieved
       this.events.consumptionAchievement.debounce({
-        achieved,
+        achieved: metrics.achieved,
+        metrics
       })
     }
   }
@@ -373,7 +372,10 @@ export class ArticleTracker {
     this.overtimeTimer = setTimeout(() => {
       const overtime = this.getOvertimeQuotient()
       if (overtime > 0) {
-        this.events.overtime.now({ overtime })
+        this.events.overtime.now({
+          overtime,
+          metrics: this.getMetrics()
+        })
       }
       this.watchOvertime()
     }, this.estimateSlowestTime())

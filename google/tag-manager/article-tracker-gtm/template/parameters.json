@@ -73,10 +73,6 @@
               "displayValue": "Consumption Started"
             },
             {
-              "value": "consumptionStartedFirst",
-              "displayValue": "Consumption Started First"
-            },
-            {
               "value": "consumptionStopped",
               "displayValue": "Consumption Stopped"
             },
@@ -114,6 +110,55 @@
               "type": "NON_EMPTY"
             }
           ]
+        },
+        "isUnique": false
+      },
+      {
+        "param": {
+          "type": "TEXT",
+          "name": "achievedAtLeast",
+          "displayName": "Minimal article consumption",
+          "simpleValueType": true,
+          "valueHint": "",
+          "help": "This event will fire only if the article has reached at least specified total consumption percentage.",
+          "valueValidators": [
+            {
+              "type": "DECIMAL"
+            }
+          ],
+          "enablingConditions": [
+            {
+              "paramName": "event",
+              "paramValue": "consumptionAchievement",
+              "type": "EQUALS"
+            },
+            {
+              "paramName": "event",
+              "paramValue": "consumptionStarted",
+              "type": "EQUALS"
+            },
+            {
+              "paramName": "event",
+              "paramValue": "consumptionStopped",
+              "type": "EQUALS"
+            },
+            {
+              "paramName": "event",
+              "paramValue": "overtime",
+              "type": "EQUALS"
+            }
+          ]
+        },
+        "isUnique": false
+      },
+      {
+        "param": {
+          "type": "CHECKBOX",
+          "name": "once",
+          "checkboxText": "Fire once",
+          "simpleValueType": true,
+          "help": "The selected event connector will be fired only once and then never again",
+          "alwaysInSummary": false
         },
         "isUnique": false
       },
