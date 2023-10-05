@@ -28,7 +28,7 @@ describe('ArticleTracker with marianky.html sample', () => {
     },
   })
 
-  describe('on article with reader singleto event handler', () => {
+  describe('on article with event handler requiring 50 % achievement', () => {
     const pageRef = configureTestPage({
       pageUrl: sourceFile,
       scriptUrls: ['/index.js'],
@@ -42,13 +42,21 @@ describe('ArticleTracker with marianky.html sample', () => {
         window.test.at.events.consumptionAchievement.subscribe((...args: Call) => {
           window.test.achievementHandler.push(args)
         }, {
-          once: true
+          once: true,
+          conditions: [
+            {
+              '$.achieved': {
+                operator: 'gte',
+                value: 0.5,
+              }
+            }
+          ]
         })
       })
       await tracker.track()
     })
 
-    describe('after scrolling to the end during 120 seconds', () => {
+    describe('after scrolling to the third paragraph', () => {
       let metrics: ArticleMetrics
 
       async function viewParagraph(index: number, time: number): Promise<void> {
@@ -63,6 +71,8 @@ describe('ArticleTracker with marianky.html sample', () => {
         await viewParagraph(1, pTime)
         // paragraph 2 is empty in marianky sample
         await viewParagraph(2, pTime)
+        await viewParagraph(3, pTime)
+        await viewParagraph(4, pTime)
       }, timeoutDefault)
 
       beforeAll(async () => {
@@ -71,8 +81,14 @@ describe('ArticleTracker with marianky.html sample', () => {
         }) 
       }, timeoutDefault)
 
-      it('consumptionAchievement is fired only once', async () => {
-        expect(metrics).toHaveLength(1)
+      it('consumptionAchievement is fired after achieving at least 50 %', async () => {
+        expect(metrics).toEqual([
+          [
+            {
+              achieved: 0.6
+            }
+          ]
+        ])
       })
     })
   })
