@@ -13,8 +13,8 @@ function exec(cmd, options) {
     return execSync(cmd, options)
   } catch(e) {
     if (e.stdout) {
-      console.error('stdout', e.stdout)
-      console.error('stderr', e.stderr)
+      console.error('stdout', e.stdout?.toString())
+      console.error('stderr', e.stderr?.toString())
     }
     throw e
   }
