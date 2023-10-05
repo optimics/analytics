@@ -31,5 +31,8 @@
   },
   "bugs": {
     "url": "https://github.com/optimics/analytics/issues"
+  },
+  "dependencies": {
+    "jsonpath": "^1.1.1"
   }
 }

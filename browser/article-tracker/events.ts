@@ -1,3 +1,5 @@
+import jp from 'jsonpath'
+
 export type EventFilter<T> = (props: T, originalProps?: T) => boolean
 export type EventHandler<T> = (props: T) => void
 
@@ -22,13 +24,13 @@ interface EventHandlerCondition {
   value: number
 }
 
-interface EventHandlerFilter<T> {
+export interface EventHandlerFilter {
   [key: string]: EventHandlerCondition
 }
 
 interface EventHandlerOptions<T> {
   once?: boolean
-  conditions?: EventHandlerFilter<T>[]
+  conditions?: EventHandlerFilter[]
 }
 
 interface EventHandlerWithOptions<T> extends EventHandlerOptions<T> {
@@ -136,6 +138,7 @@ export class EventController<T> {
     if (this.shouldPass(props)) {
       this.cachedOriginalProps = undefined
       this.handlers = this.handlers.reduce((aggr, handler) => {
+        if (this.shouldTrigger(handler, props)) {
         handler.fn({
           ...this.defaultProps,
           ...props,
@@ -144,9 +147,50 @@ export class EventController<T> {
         if (!handler.once) {
           aggr.push(handler)
         }
+        } else {
+          aggr.push(handler)
+        }
         return aggr
       }, [] as EventHandlerWithOptions<T>[])
     }
+  }
+
+  meetsCondition(props: T, keyPath: string, condition: EventHandlerCondition): boolean {
+    const [value] = jp.query(props, keyPath)
+    if (condition.operator === 'eq') {
+      return condition.value === value
+    }
+    if (condition.operator === 'gt') {
+      return value > condition.value
+    }
+    if (condition.operator === 'gte') {
+      return value >= condition.value
+    }
+    if (condition.operator === 'lt') {
+      return value < condition.value
+    }
+    if (condition.operator === 'lte') {
+      return value <= condition.value
+    }
+    return false
+  }
+
+  matchesFilter(props: T, conditions: EventHandlerFilter): boolean {
+    let resolution = true
+    const queries = Object.entries(conditions)
+    for (const [key, condition] of queries) {
+      resolution = resolution && this.meetsCondition(props, key, condition)
+    }
+    return resolution
+  }
+
+  shouldTrigger(handler: EventHandlerWithOptions<T>, props: T): boolean {
+    if (props && handler.conditions) {
+      return handler.conditions.some(
+        (conditions) => this.matchesFilter(props, conditions)
+      )
+    }
+    return true
   }
 
   /** Run filter first, to see if an event should be fired */
@@ -158,7 +202,7 @@ export class EventController<T> {
   }
 
   /** Subscribe to this event */
-  subscribe(fn: EventHandler<T>, options?: Object): void {
+  subscribe(fn: EventHandler<T>, options?: EventHandlerOptions<T>): void {
     this.handlers.push({
       ...options,
       fired: 0,

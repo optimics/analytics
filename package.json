@@ -24,6 +24,7 @@
     "@optimics/repo": "^0.8.5",
     "@optimics/webpack": "^0.8.5",
     "@sinonjs/fake-timers": "^10.3.0",
+    "@types/jsonpath": "^0.2.1",
     "@types/node": "^20.5.1",
     "@types/sinonjs__fake-timers": "^8.1.2",
     "babel-plugin-transform-import-meta": "^2.2.0",
