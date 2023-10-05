@@ -47,6 +47,7 @@ export function configureBrowser(options: BrowserOptions): BrowserRef {
 interface ScrollToElementOptions {
   behavior?: 'smooth' | 'instant'
   scrollPadding?: number
+  timeout?: number
 }
 
 export interface PageRef {
@@ -134,6 +135,7 @@ export function configureTestPage(options: PageOptions): PageRef {
   ): Promise<void> {
     const behavior = options?.behavior || 'instant'
     const scrollPadding = options?.scrollPadding || 0
+    const timeout = options?.timeout || 100
     await ref.page.evaluate(
       (selector, nth, behavior, scrollPadding) => {
         const element = document.querySelectorAll(selector)[nth]
@@ -170,9 +172,11 @@ export function configureTestPage(options: PageOptions): PageRef {
       scrollPadding,
     )
     /* Wait for the viewport scroll to propagate */
-    await new Promise((resolve) =>
-      setTimeout(resolve, behavior === 'smooth' ? 1000 : 200),
-    )
+    if (behavior === 'smooth' || timeout) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, timeout || 1000)
+      )
+    }
   }
 
   return ref

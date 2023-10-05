@@ -13,5 +13,6 @@ for (const project of config.projects) {
 
 // Avoid overloading system with Puppeteer contexts
 config.maxWorkers = '50%'
+config.workerIdleMemoryLimit = '300MB'
 
 export default config

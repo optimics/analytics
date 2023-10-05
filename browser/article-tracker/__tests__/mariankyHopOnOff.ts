@@ -33,11 +33,9 @@ describe('ArticleTracker with marianky.html sample', () => {
 
   describe('after scrolling down to the third paragraph and then away from the article', () => {
     beforeAll(async () => {
-      await pageRef.scrollToElement('div.c-rte > p', 2)
+      await pageRef.scrollToElement('div.c-rte > p', 2, { timeout: 0 })
       // jumping to footer will remove the article from viewport
       await pageRef.scrollToElement('footer', 0)
-      // wait for the debounced events
-      await pageRef.timeout(1000)
     })
 
     describe('immediately', () => {
