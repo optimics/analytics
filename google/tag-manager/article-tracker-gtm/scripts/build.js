@@ -62,8 +62,16 @@ function cloneRepo() {
 }
 
 function configureGit() {
-  exec('git config --global user.email robot.deploy@optimics.cz')
-  exec('git config --global user.name "Optimics Robot"')
+  try {
+    exec('git config --global user.email')
+  } catch(e) {
+    exec('git config --global user.email robot.deploy@optimics.cz')
+  }
+  try {
+    exec('git config --global user.name')
+  } catch(e) {
+    exec('git config --global user.name "Optimics Robot"')
+  }
 }
 
 function commitTemplate(version) {
@@ -78,8 +86,12 @@ function addAll() {
   exec('git add -A', { cwd: repoDir })
 }
 
+function hasAnyOutput(cmd, options) {
+  return Boolean(exec(cmd, options).toString().trim())
+}
+
 function didAnythingChange() {
-  return Boolean(exec('git diff --staged', { cwd: repoDir }).toString().trim())
+  return hasAnyOutput('git diff --staged', { cwd: repoDir })
 }
 
 cloneRepo()
