@@ -24,7 +24,6 @@ interface ready for reporting.
   * [`consumptionAchievement`](#user-content-consumptionachievement)
   * [`consumptionStateChanged`](#user-content-consumptionstatechanged)
   * [`consumptionStarted`](#user-content-consumptionstarted)
-  * [`consumptionStartedFirst`](#user-content-consumptionstartedfirst)
   * [`consumptionStopped`](#user-content-consumptionstopped)
   * [`elementsDisplayed`](#user-content-elementsdisplayed)
   * [`elementsConsumed`](#user-content-elementsconsumed)
@@ -261,20 +260,6 @@ elements being consumed".
 
 ```javascript
 articleTracker.on('consumptionStarted', ({ articleTracker }) => {
-  console.log(articleTracker.getMetrics())
-})
-```
-
-### `consumptionStartedFirst`
-
-Fired when the Article Tracker changes state from "no elements being consumed"
-to "some elements being consumed" for the first time only.
-
-* [Debounced event](#user-content-debouncedevent) by
-  [consumptionStateChanged](#user-content-consumptionstatechanged)
-
-```javascript
-articleTracker.on('consumptionStartedFirst', ({ articleTracker }) => {
   console.log(articleTracker.getMetrics())
 })
 ```
