@@ -47,42 +47,25 @@ export function configureTracker(options: TrackerOptions): TrackerRef {
       if (!noAutoTrack) {
         base.at.track()
       }
-      base.eventHandlerCalls = {
-        consumptionAchievement: [],
-        consumptionStateChanged: [],
-        consumptionStarted: [],
-        consumptionStopped: [],
-        elementsConsumed: [],
-        elementsDisplayed: [],
-        overtime: [],
+      base.eventHandlerCalls = {}
+      base.eventHandlerTargets = {}
+      function listen(callbackName: string): void {
+        base.eventHandlerCalls[callbackName] = []
+        base.eventHandlerTargets[callbackName] = []
+        base.at.events[callbackName].subscribe((...args: Call) => {
+          base.eventHandlerCalls[callbackName].push(args)
+          if (args[0].targets) {
+            base.eventHandlerTargets[callbackName].push(...args[0].targets)
+          }
+        })
       }
-      base.eventHandlerTargets = {
-        elementsConsumed: [],
-        elementsDisplayed: [],
-      }
-      base.at.events.elementsDisplayed.subscribe((...args: Call) => {
-        base.eventHandlerCalls.elementsDisplayed.push(args)
-        base.eventHandlerTargets.elementsDisplayed.push(...args[0].targets)
-      })
-      base.at.events.elementsConsumed.subscribe((...args: Call) => {
-        base.eventHandlerCalls.elementsConsumed.push(args)
-        base.eventHandlerTargets.elementsConsumed.push(...args[0].targets)
-      })
-      base.at.events.consumptionAchievement.subscribe((...args: Call) => {
-        base.eventHandlerCalls.consumptionAchievement.push(args)
-      })
-      base.at.events.consumptionStateChanged.subscribe((...args: Call) => {
-        base.eventHandlerCalls.consumptionStateChanged.push(args)
-      })
-      base.at.events.consumptionStarted.subscribe((...args: Call) => {
-        base.eventHandlerCalls.consumptionStarted.push(args)
-      })
-      base.at.events.consumptionStopped.subscribe((...args: Call) => {
-        base.eventHandlerCalls.consumptionStopped.push(args)
-      })
-      base.at.events.overtime.subscribe((...args: Call) => {
-        base.eventHandlerCalls.overtime.push(args)
-      })
+      listen('consumptionAchievement')
+      listen('consumptionStarted')
+      listen('consumptionStateChanged')
+      listen('consumptionStopped')
+      listen('elementsConsumed')
+      listen('elementsDisplayed')
+      listen('overtime')
     }, { noAutoTrack })
     await ref.waitUntilSettled()
   }, timeoutDefault)
