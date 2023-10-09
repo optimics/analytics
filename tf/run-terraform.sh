@@ -30,12 +30,7 @@ gcloud auth activate-service-account --key-file=$cred_file_path
 terraform init --backend-config "bucket=$TF_VAR_BUCKET_TERRAFORM"
 
 if [[ "$workspace" != "" ]]; then
-  set +e
-  terraform workspace select $workspace
-  if [[ "$?" != "0" ]]; then
-    terraform workspace new $workspace
-  fi
-  set -e
+  terraform workspace select --or-create $workspace
 fi
 
 terraform apply --input=false --auto-approve
