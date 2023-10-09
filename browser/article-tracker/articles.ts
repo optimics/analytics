@@ -131,11 +131,6 @@ export class ArticleTracker {
     return 0
   }
 
-  /** Returns percentage of content, that was consumed 0 - 1*/
-  getConsumption(): number {
-    return 0
-  }
-
   parseContent(onlyAdditions = false): IArticleElement[] {
     const src = this.contentTypes.flatMap((contentType) => {
       let els = contentType.getAll(this.el)
