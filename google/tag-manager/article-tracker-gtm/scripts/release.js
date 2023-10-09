@@ -11,6 +11,18 @@ const packageJsonPath = join(baseDir, 'package.json')
 const packageJson = JSON.parse(readFileSync(packageJsonPath).toString())
 const version = packageJson.version
 
+function exec(cmd, options) {
+  try {
+    return execSync(cmd, options)
+  } catch(e) {
+    if (e.stdout) {
+      console.error('stdout', e.stdout?.toString())
+      console.error('stderr', e.stderr?.toString())
+    }
+    throw e
+  }
+}
+
 function hasAnyOutput(cmd, options) {
   return Boolean(exec(cmd, options).toString().trim())
 }
