@@ -175,6 +175,7 @@ function trackArticle(options: TrackArticleOptions): void {
         })
       }, connector.options)
     }
+    at.track()
   }
 }
 
