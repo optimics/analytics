@@ -5,6 +5,13 @@ interface ElementEventControllers {
   consumptionStateChanged: EventController<void>
 }
 
+export enum ElementArchetype {
+  audio = 'audio',
+  image = 'image',
+  text = 'text',
+  video = 'video',
+}
+
 export interface IArticleElement {
   achieved: number
   consumable: boolean
@@ -26,6 +33,7 @@ export interface IArticleElement {
 export abstract class ArticleElement implements IArticleElement {
   static selector: string
   static typeName: string
+  static archetype: ElementArchetype
 
   consuming = false
   consumptionStartedAt?: number

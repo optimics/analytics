@@ -1,8 +1,9 @@
-import { VisualArticleElement } from './elements.js'
+import { ElementArchetype, VisualArticleElement } from './elements.js'
 
 export class ArticleParagraph extends VisualArticleElement {
   static selector = 'p'
   static typeName = 'paragraph'
+  static archetype = ElementArchetype.text
 
   fastestMultiplier = 0.2
   slowestMultiplier = 0.3
@@ -40,4 +41,5 @@ export class ArticleParagraph extends VisualArticleElement {
 export class ArticleHeading extends ArticleParagraph {
   static selector = 'h1,h2,h3,h4,h5,h6'
   static typeName = 'heading'
+  static archetype = ElementArchetype.text
 }
