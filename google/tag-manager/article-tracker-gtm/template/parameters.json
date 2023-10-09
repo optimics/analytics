@@ -228,11 +228,6 @@
           "valueHint": "",
           "help": "This event will fire only if the specified content type or archetype has reached at least specified total consumption percentage.",
           "alwaysInSummary": false,
-          "valueValidators": [
-            {
-              "type": "DECIMAL"
-            }
-          ],
           "enablingConditions": [
             {
               "paramName": "event",
