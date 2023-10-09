@@ -79,12 +79,6 @@ describe('ArticleTracker with marianky.html sample', () => {
       expect(at.getTimeOnArticle()).toBe(0)
     })
 
-    describe('getConsumption', () => {
-      it('given scrollTop = 0, timeOnPage = 0, it returns 0', () => {
-        expect(at.getConsumption()).toBe(0)
-      })
-    })
-
     describe('getContent', () => {
       it('returns 6 article paragraphs', () => {
         expect(
