@@ -21,5 +21,5 @@ function push() {
   execSync('git push --tags', { cwd: repoDir })
 }
 
-push()
 tagVersion(version)
+push()
