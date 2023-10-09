@@ -283,5 +283,20 @@
     "simpleValueType": true,
     "help": "Extra properties, that should be added to all of the Article Tracker events. Encoded in JSON.",
     "valueHint": "{\"content_title\": \"{{Content Title}}\"}"
+  },
+  {
+    "type": "TEXT",
+    "name": "intersectionThreshold",
+    "defaultValue": "0.75",
+    "displayName": "Intersection Threshold",
+    "simpleValueType": true,
+    "valueHint": "",
+    "help": "Percentage between 0 and 1 describing the minimal visible content surface, to be considered consumable. Default is 0.75, meaning for example that, if 75 % of a paragraph is visible, it is considered consumable.",
+    "alwaysInSummary": true,
+    "valueValidators": [
+      {
+        "type": "DECIMAL"
+      }
+    ]
   }
 ]

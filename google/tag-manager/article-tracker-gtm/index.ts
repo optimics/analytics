@@ -53,6 +53,7 @@ interface TrackArticleOptions {
   extraProps: string
   resolveContentTypes: ContentTypeSerialized[]
   selector: string
+  intersectionThreshold?: number
   trackDefaultContentTypes?: boolean
 }
 
@@ -138,6 +139,16 @@ function resolveContentType(type: ContentTypeSerialized): typeof ArticleElement 
   throw new Error(`Resolved ContentType "${type}", but could not determine it's type`)
 }
 
+function parsePercentage(value?: string|number): number|undefined {
+  if (typeof value === 'number') {
+    return value
+  }
+  if (typeof value === 'string') {
+    return parseFloat(value)
+  }
+  return undefined
+}
+
 function trackArticle(options: TrackArticleOptions): void {
   const el = document.querySelector(options.selector)
   if (el) {
@@ -149,7 +160,8 @@ function trackArticle(options: TrackArticleOptions): void {
     const contentTypes = contentTypePaths.map(resolveContentType)
     const eventConnectors = options.connectedEvents.map(parseEventConnector)
     const at = new ArticleTracker(el as HTMLElement, {
-      contentTypes
+      contentTypes,
+      intersectionThreshold: parsePercentage(options.intersectionThreshold),
     })
     window.articleTracker.tracker = at
     for (const connector of eventConnectors) {
