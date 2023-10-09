@@ -11,24 +11,10 @@ const packageJsonPath = join(baseDir, 'package.json')
 const packageJson = JSON.parse(readFileSync(packageJsonPath).toString())
 const version = packageJson.version
 
-function exec(cmd, options) {
-  try {
-    return execSync(cmd, options)
-  } catch(e) {
-    if (e.stdout) {
-      console.error('stdout', e.stdout?.toString())
-      console.error('stderr', e.stderr?.toString())
-    }
-    throw e
-  }
-}
-
-function hasAnyOutput(cmd, options) {
-  return Boolean(exec(cmd, options).toString().trim())
-}
-
 function tagVersion(version) {
-  if (!hasAnyOutput(`git show v${version}`, { cwd: repoDir })) {
+  try {
+    execSync(`git show v${version}`, { cwd: repoDir })
+  } catch(_e) {
     execSync(`git tag v${version}`, { cwd: repoDir })
   }
 }

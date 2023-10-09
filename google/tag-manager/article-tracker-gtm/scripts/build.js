@@ -64,12 +64,12 @@ function cloneRepo() {
 function configureGit() {
   try {
     exec('git config --global user.email')
-  } catch(e) {
+  } catch(_e) {
     exec('git config --global user.email robot.deploy@optimics.cz')
   }
   try {
     exec('git config --global user.name')
-  } catch(e) {
+  } catch(_e) {
     exec('git config --global user.name "Optimics Robot"')
   }
 }
