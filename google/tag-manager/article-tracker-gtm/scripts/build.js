@@ -102,9 +102,10 @@ addAll()
 if (didAnythingChange()) {
   configureGit()
   commitTemplate(version)
-  buildMetadata(baseDir, packageJsonPath, metadataFile)
-  addAll()
 }
+
+buildMetadata(baseDir, packageJsonPath, metadataFile)
+addAll()
 
 if (didAnythingChange()) {
   commitMetadata(version)
