@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/optimics/analytics/compare/v0.7.0...v0.7.1) (2023-10-09)
+
+
+### Bug Fixes
+
+* bind total usage metrics filters ([56512f6](https://github.com/optimics/analytics/commit/56512f6f5fc7e65ba62d0a7adce91437a9c2b0ce))
+* define element archetype ([46ced26](https://github.com/optimics/analytics/commit/46ced2638287318c58fddad3d95e060f3ea07d71))
+* deoverflow ci builds ([b8c5299](https://github.com/optimics/analytics/commit/b8c5299cc5ee81bdba4dcd146adea00b1fae7058))
+* fire only after conditional check ([85ce0a5](https://github.com/optimics/analytics/commit/85ce0a59580338f7a428d986863b195c47ead813))
+* fire subscription only once ([7ba00cd](https://github.com/optimics/analytics/commit/7ba00cdfc1e8dd306bc38a5f5f71ff36aa4e333d))
+* track content types individually ([cc93986](https://github.com/optimics/analytics/commit/cc9398644ffc23f2054db3623474ae59678b1afd))
+
+
+
+
+
 # [0.7.0](https://github.com/optimics/analytics/compare/v0.6.0...v0.7.0) (2023-10-03)
 
 
