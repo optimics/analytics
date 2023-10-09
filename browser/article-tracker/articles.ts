@@ -174,7 +174,7 @@ export class ArticleTracker {
   getContentMetrics(): Record<string, ContentTypeMetrics> {
     const metrics: Record<string, ContentTypeMetrics> = {}
     for (const type of this.contentTypes) {
-      const items = this.getContent().filter((i) => i instanceof type)
+      const items = this.getContent().filter((i) => i?.constructor === type)
       const base = items[0]
       if (base) {
         const consumable = items.filter((i) => i.consumable)
