@@ -1,7 +1,9 @@
-import { VisualArticleElement } from './elements.js'
+import { ElementArchetype, VisualArticleElement } from './elements.js'
 
 export class ArticleImage extends VisualArticleElement {
   static selector = 'img, picture'
+  static typeName = 'image'
+  static archetype = ElementArchetype.image
 
   estimateFastestTime(): number {
     return 1000
