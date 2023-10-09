@@ -21,7 +21,7 @@ export enum EventHandlerOperator {
 
 export interface EventHandlerCondition {
   operator: EventHandlerOperator
-  value: number
+  value: number | string
 }
 
 export interface EventHandlerFilter {

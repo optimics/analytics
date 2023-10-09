@@ -83,7 +83,7 @@ import { ArticleTracker, ArticleParagraph, ArticleElement } from '@optimics/arti
 
 class ArticleVideo extends ArticleElement {
   static selector = '.my-video-player'
-  static typeName = 'videos'
+  type = 'videos'
 
   getMetadata() {
     /* In this example, we assume, that video length is stored inside the DOM
@@ -222,6 +222,20 @@ The EventHandler is a function, that returns void and always receives props
 objects with at least `articleTracker` instance. All of the events are
 debounced, so they do not trigger too often.
 
+To subscribe to ArticleTracker event, use the following subscription pattern:
+
+```
+function handler() {
+  doSomething()
+}
+articleTracker.consumptionAchievement.subscribe(handler, options)
+```
+
+Supported events are described below. The `options` are optional and may be ommited.
+
+* `once` - when true, the event handler will be triggered only once and then unbound
+* `conditions` - [filter the callbacks](#user-content-event-filtering)
+
 ### `consumptionAchievement`
 
 Reports progress of consumption achievement. Currently triggered together with
@@ -319,6 +333,10 @@ articleTracker.on('overtime', ({ articleTracker }) => {
   console.log(articleTracker.getMetrics())
 })
 ```
+
+## Event Filtering
+
+
 
 ## Testing
 

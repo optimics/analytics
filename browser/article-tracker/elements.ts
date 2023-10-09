@@ -14,6 +14,7 @@ export enum ElementArchetype {
 
 export interface IArticleElement {
   achieved: number
+  archetype: ElementArchetype
   consumable: boolean
   consumed: boolean
   consuming: boolean
@@ -27,13 +28,15 @@ export interface IArticleElement {
   markDisplayed(): void
   markInViewport(): void
   markNotInViewport(): void
+  type: string
   wordCount?: number
 }
 
 export abstract class ArticleElement implements IArticleElement {
   static selector: string
-  static typeName: string
-  static archetype: ElementArchetype
+
+  abstract archetype: ElementArchetype
+  abstract type: string
 
   consuming = false
   consumptionStartedAt?: number

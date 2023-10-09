@@ -2,11 +2,11 @@ import { ElementArchetype, VisualArticleElement } from './elements.js'
 
 export class ArticleParagraph extends VisualArticleElement {
   static selector = 'p'
-  static typeName = 'paragraph'
-  static archetype = ElementArchetype.text
 
+  archetype = ElementArchetype.text
   fastestMultiplier = 0.2
   slowestMultiplier = 0.3
+  type = 'paragraph'
 
   get consumable(): boolean {
     // Only articles with text content are consumable
@@ -40,6 +40,6 @@ export class ArticleParagraph extends VisualArticleElement {
 
 export class ArticleHeading extends ArticleParagraph {
   static selector = 'h1,h2,h3,h4,h5,h6'
-  static typeName = 'heading'
-  static archetype = ElementArchetype.text
+  archetype = ElementArchetype.text
+  type = 'heading'
 }
