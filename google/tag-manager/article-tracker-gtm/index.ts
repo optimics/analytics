@@ -3,10 +3,11 @@ import type { EventHandlerFilter, EventHandlerName, EventHandlerOptions } from '
 import {
   ArticleElement,
   ArticleHeading,
+  ArticleImage,
   ArticleParagraph,
   ArticleTracker,
   EventHandlerOperator,
-  VisualArticleElement
+  VisualArticleElement,
 } from '@optimics/article-tracker'
 
 type Props = Record<string, string|number|boolean|null|undefined>
@@ -132,6 +133,7 @@ function resolveContentType(type: ContentTypeSerialized): typeof ArticleElement 
     }
     return src({
       ArticleElement,
+      ArticleImage,
       ArticleParagraph,
       VisualArticleElement,
     })
