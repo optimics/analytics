@@ -73,28 +73,8 @@ describe('ArticleTracker with empty.html sample', () => {
         expect(metrics).toHaveProperty('estimates.slowest', 0)
       })
 
-      it('content.paragraph.detected is 0', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.detected', 0)
-      })
-
-      it('content.paragraph.displayed is 0', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.displayed', 0)
-      })
-
-      it('content.paragraph.consumableElements is 0', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.consumedElements', 0)
-      })
-
-      it('content.paragraph.consumedElements is 0', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.consumedElements', 0)
-      })
-
-      it('content.paragraph.estimates.fastest is 0', () => {
-        expect(metrics).toHaveProperty('content.paragraph.estimates.fastest', 0)
-      })
-
-      it('content.paragraph.estimates.slowest is 0', () => {
-        expect(metrics).toHaveProperty('content.paragraph.estimates.slowest', 0)
+      it('content.paragraph is not defined', async () => {
+        expect(metrics).not.toHaveProperty('content.paragraph')
       })
 
       it('does not trigger consumptionStateChanged', async () => {
@@ -120,12 +100,8 @@ describe('ArticleTracker with empty.html sample', () => {
         expect(metrics).toHaveProperty('consuming', false)
       })
 
-      it('content.paragraph.consumedElements is 0', async () => {
-        expect(metrics).toHaveProperty('content.paragraph.consumedElements', 0)
-      })
-
-      it('content.paragraph.timeTotal is 0', async () => {
-        expect(metrics.content.paragraph.timeTotal).toBe(0)
+      it('content.paragraph is not defined', async () => {
+        expect(metrics).not.toHaveProperty('content.paragraph')
       })
 
       it('does not trigger consumptionStateChanged', async () => {

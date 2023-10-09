@@ -5,6 +5,7 @@ import type {
   TimeEstimates,
 } from './metrics.js'
 
+import { ElementArchetype } from './elements.js'
 import { EventController } from './events.js'
 
 function toSeconds(time: number): number {
@@ -34,6 +35,12 @@ export interface ConsumptionAchievementProps extends MetricsEvent {
   achieved: number
 }
 
+export interface TypeConsumptionAchievementProps extends ConsumptionAchievementProps {
+  archetype: string
+  archetypeAchieved: number
+  type: string
+}
+
 export interface TargetEventProps {
   targets: IArticleElement[]
 }
@@ -47,6 +54,7 @@ export interface EventHandlers {
   elementsConsumed: EventController<TargetEventProps>
   elementsDisplayed: EventController<TargetEventProps>
   overtime: EventController<OvertimeProps>
+  typeConsumptionAchievement: EventController<TypeConsumptionAchievementProps>
 }
 
 export type EventHandlerName = keyof EventHandlers
@@ -153,7 +161,7 @@ export class ArticleTracker {
   }
 
   formatAchievedPercents(val: number): number {
-    return parseFloat(Number(val).toFixed(2))
+    return val ? parseFloat(Number(val).toFixed(2)) : 0
   }
 
   getTimeEstimates(items: IArticleElement[]): TimeEstimates {
@@ -167,25 +175,28 @@ export class ArticleTracker {
     const metrics: Record<string, ContentTypeMetrics> = {}
     for (const type of this.contentTypes) {
       const items = this.getContent().filter((i) => i instanceof type)
-      const consumable = items.filter((i) => i.consumable)
-      metrics[type.typeName] = {
-        achieved: this.formatAchievedPercents(
-          consumable.length > 0
-            ? sum(consumable, (item) => item.achieved) / consumable.length
-            : 0,
-        ),
-        consumed:
-          consumable.length > 0
-            ? consumable.every((item) => item.consumed)
-            : false,
-        consuming: consumable.some((i) => i.consuming),
-        consumableElements: consumable.length,
-        consumedElements: items.filter((i) => i.consumed).length,
-        detected: items.length,
-        displayed: items.filter((i) => i.displayed).length,
-        estimates: this.getTimeEstimates(items),
-        timeTotal: toSeconds(sum(items, (item) => item.consumptionTimeTotal)),
-        wordCount: sum(items, item => item.wordCount || 0),
+      const base = items[0]
+      if (base) {
+        const consumable = items.filter((i) => i.consumable)
+        metrics[base.type] = {
+          achieved: this.formatAchievedPercents(
+            consumable.length > 0
+              ? sum(consumable, (item) => item.achieved) / consumable.length
+              : 0,
+          ),
+          consumed:
+            consumable.length > 0
+              ? consumable.every((item) => item.consumed)
+              : false,
+          consuming: consumable.some((i) => i.consuming),
+          consumableElements: consumable.length,
+          consumedElements: items.filter((i) => i.consumed).length,
+          detected: items.length,
+          displayed: items.filter((i) => i.displayed).length,
+          estimates: this.getTimeEstimates(items),
+          timeTotal: toSeconds(sum(items, (item) => item.consumptionTimeTotal)),
+          wordCount: sum(items, item => item.wordCount || 0),
+        }
       }
     }
     return metrics
@@ -209,7 +220,7 @@ export class ArticleTracker {
   getMetrics(): ArticleMetrics {
     const content = this.getContentMetrics()
     const cv = Object.values(content)
-    const consumed = cv.every((c) => c.consumed)
+    const consumed = cv.length > 0 && cv.every((c) => c.consumed)
     const timeTotal = this.getTimeOnArticle()
     const slowest = this.estimateSlowestTime()
     const wordCount = sum(cv, item => item.wordCount || 0)
@@ -274,7 +285,7 @@ export class ArticleTracker {
       this.events.elementsConsumed.debounce({
         targets: [target],
       })
-      this.reportAchievement()
+      this.reportAchievement(target)
     })
     target.events.consumptionStateChanged.subscribe(() => {
       this.events.consumptionStateChanged.debounce({
@@ -323,6 +334,7 @@ export class ArticleTracker {
         targetHandlerOptions,
       ),
       overtime: new EventController<OvertimeProps>(handlerOptions),
+      typeConsumptionAchievement: new EventController<TypeConsumptionAchievementProps>(handlerOptions),
     }
   }
 
@@ -350,11 +362,29 @@ export class ArticleTracker {
     })
   }
 
-  reportAchievement(): void {
+  getArchetypeAchievement(archetype: ElementArchetype): number {
+    const consumable = this.getContent().filter(i => i.consumable && i.archetype === archetype)
+    return this.formatAchievedPercents(
+      consumable.length > 0
+        ? sum(consumable, (item) => item.achieved) / consumable.length
+        : 0,
+    )
+  }
+
+  reportAchievement(target?: IArticleElement): void {
     const metrics = this.getMetrics()
     // Avoid reporting the same achievement twice
     if (metrics.achieved > this.achievedMax) {
       this.achievedMax = metrics.achieved
+      if (target) {
+        this.events.typeConsumptionAchievement.debounce({
+          achieved: metrics.achieved,
+          archetype: target.archetype,
+          archetypeAchieved: this.getArchetypeAchievement(target.archetype),
+          type: target.type,
+          metrics,
+        })
+      }
       this.events.consumptionAchievement.debounce({
         achieved: metrics.achieved,
         metrics

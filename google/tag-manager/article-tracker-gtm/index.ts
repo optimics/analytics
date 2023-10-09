@@ -27,11 +27,14 @@ declare global {
 }
 
 interface EventConnectorSerialized {
+  achievedAtLeast?: number
+  contentArchetype?: string
+  contentType?: string
+  contentTypeAchievedAtLeast?: number
   event: EventHandlerName
   gtmEvent: string
   once?: boolean
   props?: string
-  achievedAtLeast?: number
 }
 
 interface EventConenctor {
@@ -53,7 +56,6 @@ interface TrackArticleOptions {
   trackDefaultContentTypes?: boolean
 }
 
-
 function parseEventConnector(connector: EventConnectorSerialized): EventConenctor {
   const props = connector.props ? JSON.parse(connector.props) as Props : undefined
   const filter = {} as EventHandlerFilter
@@ -61,6 +63,31 @@ function parseEventConnector(connector: EventConnectorSerialized): EventConencto
     filter['$.achieved'] = {
       operator: EventHandlerOperator.gte,
       value: connector.achievedAtLeast,
+    }
+  }
+  const { contentArchetype, contentType, contentTypeAchievedAtLeast } = connector
+  if (contentArchetype) {
+    filter['$.archetype'] = {
+      operator: EventHandlerOperator.eq,
+      value: contentArchetype
+    }
+    if (contentTypeAchievedAtLeast && !contentType) {
+      filter['$.archetypeAchieved'] = {
+        operator: EventHandlerOperator.eq,
+        value: contentTypeAchievedAtLeast,
+      }
+    }
+  }
+  if (contentType) {
+    filter['$.type'] = {
+      operator: EventHandlerOperator.eq,
+      value: contentType
+    }
+    if (contentTypeAchievedAtLeast) {
+      filter[`$.metrics.${contentType}.achieved`] = {
+        operator: EventHandlerOperator.eq,
+        value: contentTypeAchievedAtLeast,
+      }
     }
   }
   const conditions = Object.keys(filter).length >= 1 ? [filter] : undefined

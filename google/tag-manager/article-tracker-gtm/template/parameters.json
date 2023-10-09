@@ -65,8 +65,12 @@
               "displayValue": "Consumption Achievement"
             },
             {
-              "value": "consumptionStateChanged",
-              "displayValue": "Consumption State Changed"
+              "value": "typeConsumptionAchievement",
+              "displayValue": "Type Consumption Achievement"
+            },
+            {
+              "value": "overtime",
+              "displayValue": "Consumption Overtime"
             },
             {
               "value": "consumptionStarted",
@@ -75,6 +79,10 @@
             {
               "value": "consumptionStopped",
               "displayValue": "Consumption Stopped"
+            },
+            {
+              "value": "consumptionStateChanged",
+              "displayValue": "Consumption State Changed"
             },
             {
               "value": "elementsAdded",
@@ -87,10 +95,6 @@
             {
               "value": "elementsDisplayed",
               "displayValue": "Elements Displayed"
-            },
-            {
-              "value": "overtime",
-              "displayValue": "Consumption Overtime"
             }
           ],
           "simpleValueType": true
@@ -115,12 +119,71 @@
       },
       {
         "param": {
+          "type": "SELECT",
+          "name": "contentArchetype",
+          "displayName": "Content Archetype",
+          "simpleValueType": true,
+          "valueHint": "",
+          "help": "This event will fire only for selected content archetype.",
+          "alwaysInSummary": false,
+          "selectItems": [
+            {
+              "value": "",
+              "displayValue": "Any"
+            },
+            {
+              "value": "audio",
+              "displayValue": "Audio"
+            },
+            {
+              "value": "image",
+              "displayValue": "Image"
+            },
+            {
+              "value": "text",
+              "displayValue": "Text"
+            },
+            {
+              "value": "video",
+              "displayValue": "Video"
+            }
+          ],
+          "enablingConditions": [
+            {
+              "paramName": "event",
+              "paramValue": "typeConsumptionAchievement",
+              "type": "EQUALS"
+            }
+          ]
+        }
+      },
+      {
+        "param": {
+          "type": "TEXT",
+          "name": "contentType",
+          "displayName": "Content Type",
+          "simpleValueType": true,
+          "valueHint": "",
+          "help": "This event will fire only for selected content type.",
+          "alwaysInSummary": false,
+          "enablingConditions": [
+            {
+              "paramName": "event",
+              "paramValue": "typeConsumptionAchievement",
+              "type": "EQUALS"
+            }
+          ]
+        }
+      },
+      {
+        "param": {
           "type": "TEXT",
           "name": "achievedAtLeast",
           "displayName": "Minimal article consumption",
           "simpleValueType": true,
           "valueHint": "",
           "help": "This event will fire only if the article has reached at least specified total consumption percentage.",
+          "alwaysInSummary": false,
           "valueValidators": [
             {
               "type": "DECIMAL"
@@ -130,6 +193,11 @@
             {
               "paramName": "event",
               "paramValue": "consumptionAchievement",
+              "type": "EQUALS"
+            },
+            {
+              "paramName": "event",
+              "paramValue": "typeConsumptionAchievement",
               "type": "EQUALS"
             },
             {
@@ -145,6 +213,30 @@
             {
               "paramName": "event",
               "paramValue": "overtime",
+              "type": "EQUALS"
+            }
+          ]
+        },
+        "isUnique": false
+      },
+      {
+        "param": {
+          "type": "TEXT",
+          "name": "contentTypeAchievedAtLeast",
+          "displayName": "Minimal (arche)type consumption",
+          "simpleValueType": true,
+          "valueHint": "",
+          "help": "This event will fire only if the specified content type or archetype has reached at least specified total consumption percentage.",
+          "alwaysInSummary": false,
+          "valueValidators": [
+            {
+              "type": "DECIMAL"
+            }
+          ],
+          "enablingConditions": [
+            {
+              "paramName": "event",
+              "paramValue": "typeConsumptionAchievement",
               "type": "EQUALS"
             }
           ]
