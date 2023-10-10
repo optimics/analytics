@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/optimics/analytics/compare/v0.7.1...v0.7.2) (2023-10-10)
+
+
+### Bug Fixes
+
+* allow extending article image ([4a538d4](https://github.com/optimics/analytics/commit/4a538d42aadd1e164694f1a05e59b7f5a7197a96))
+* avoid validating disabled fields ([2adc3c5](https://github.com/optimics/analytics/commit/2adc3c578b15a792aeedae0acaecb07c46233c43))
+* do not validate unrequired property ([d494807](https://github.com/optimics/analytics/commit/d4948076ec97718e255ce3b03a8c173b7a3922e9))
+* start article tracking on tag load ([b14354c](https://github.com/optimics/analytics/commit/b14354ca712919cf35a8f516ed194e72a0be581c))
+* validate achievement is at least something ([47c324a](https://github.com/optimics/analytics/commit/47c324ad81a869e4ad70a672221923e16a6534a7))
+
+
+
+
+
 ## [0.7.1](https://github.com/optimics/analytics/compare/v0.7.0...v0.7.1) (2023-10-09)
 
 

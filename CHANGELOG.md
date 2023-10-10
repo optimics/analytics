@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/optimics/analytics/compare/v0.7.1...v0.7.2) (2023-10-10)
+
+
+### Bug Fixes
+
+* allow extending article image ([4a538d4](https://github.com/optimics/analytics/commit/4a538d42aadd1e164694f1a05e59b7f5a7197a96))
+* avoid validating disabled fields ([2adc3c5](https://github.com/optimics/analytics/commit/2adc3c578b15a792aeedae0acaecb07c46233c43))
+* do not use intraday tables ([b546763](https://github.com/optimics/analytics/commit/b5467631e2087b205d6ccd3692deb730ed7255d7))
+* do not validate unrequired property ([d494807](https://github.com/optimics/analytics/commit/d4948076ec97718e255ce3b03a8c173b7a3922e9))
+* filter exact content types ([55ea5a2](https://github.com/optimics/analytics/commit/55ea5a2818ff5a4b19ecee5acc2a3399e9edd689))
+* start article tracking on tag load ([b14354c](https://github.com/optimics/analytics/commit/b14354ca712919cf35a8f516ed194e72a0be581c))
+* use yesteday, not tomorrow ([e3d597b](https://github.com/optimics/analytics/commit/e3d597b0a04291794b1bf2d9325820bd9e9876b1))
+* validate achievement is at least something ([47c324a](https://github.com/optimics/analytics/commit/47c324ad81a869e4ad70a672221923e16a6534a7))
+
+
+
+
+
 ## [0.7.1](https://github.com/optimics/analytics/compare/v0.7.0...v0.7.1) (2023-10-09)
 
 
