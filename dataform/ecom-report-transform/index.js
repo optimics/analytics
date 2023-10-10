@@ -13,7 +13,7 @@ const {
  * @return string
  */
 function getEcomQuery({ ga4Dataset, rangeCap }) {
-  const yesterday = getNumericDateFormat(-1)
+  const yesterday = getNumericDateFormat(1)
   const yesterdayTable = getEventsName(yesterday)
   const rangeCapDate = rangeCap ? getNumericDateFormat(rangeCap) : undefined
 
