@@ -1,7 +1,7 @@
 const { getEventParam } = require('./eventParams.js')
 const {
   getNumericDateFormat,
-  getHistoricalTableName,
+  getEventsName,
 } = require('@optimics/dataform-tables')
 
 /** Return intraday table specific for utm source customers as a string
@@ -14,7 +14,7 @@ const {
  */
 function getEcomQuery({ ga4Dataset, rangeCap }) {
   const yesterday = getNumericDateFormat(-1)
-  const yesterdayTable = getHistoricalTableName(1)
+  const yesterdayTable = getEventsName(yesterday)
   const rangeCapDate = rangeCap ? getNumericDateFormat(rangeCap) : undefined
 
   function ref(sourceName) {

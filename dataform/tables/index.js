@@ -37,6 +37,8 @@ function getHistoricalTableName(daysAgo) {
 
 module.exports = {
   formatDate,
+  getEventsName,
   getHistoricalTableName,
+  getIntradayEventsName,
   getNumericDateFormat,
 }
