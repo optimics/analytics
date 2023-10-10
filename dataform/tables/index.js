@@ -18,10 +18,10 @@ function getNumericDateFormat(daysAgo) {
  * @returns string
  */
 function getHistoricalTableName(daysAgo) {
-  const prefix_universal = 'events_'
-  const prefix_intraday = daysAgo === 1 ? 'intraday_' : ''
+  const prefixUniversal = 'events_'
+  const prefixIntraday = daysAgo === 1 ? 'intraday_' : ''
   const formattedDate = getNumericDateFormat(daysAgo)
-  return `${prefix_universal}${prefix_intraday}${formattedDate}`
+  return `${prefixUniversal}${prefixIntraday}${formattedDate}`
 }
 
 module.exports = {
