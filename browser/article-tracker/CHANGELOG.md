@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/optimics/analytics/compare/v0.7.1...v0.7.2) (2023-10-10)
+
+
+### Bug Fixes
+
+* allow extending article image ([4a538d4](https://github.com/optimics/analytics/commit/4a538d42aadd1e164694f1a05e59b7f5a7197a96))
+* filter exact content types ([55ea5a2](https://github.com/optimics/analytics/commit/55ea5a2818ff5a4b19ecee5acc2a3399e9edd689))
+
+
+
+
+
 ## [0.7.1](https://github.com/optimics/analytics/compare/v0.7.0...v0.7.1) (2023-10-09)
 
 
