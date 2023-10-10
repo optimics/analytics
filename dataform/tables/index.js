@@ -14,15 +14,25 @@ function getNumericDateFormat(daysAgo) {
 }
   
 const eventsPrefix = 'events_'
+const intradayPrefix = 'intraday_'
+
+function getEventsName(formattedDate) {
+  return `${eventsPrefix}${formattedDate}`
+}
+
+function getIntradayEventsName(formattedDate) {
+  return `${eventsPrefix}${intradayPrefix}${formattedDate}`
+}
 
 /** Construct GA4 table name based on the date
  * @param {number} daysAgo
  * @returns string
  */
 function getHistoricalTableName(daysAgo) {
-  const prefixIntraday = daysAgo === 1 ? 'intraday_' : ''
   const formattedDate = getNumericDateFormat(daysAgo)
-  return `${eventsPrefix}${prefixIntraday}${formattedDate}`
+  return daysAgo === 1
+    ? getIntradayEventsName(formattedDate)
+    : getEventsName(formatDate)
 }
 
 module.exports = {
