@@ -67,7 +67,8 @@ function parseEventConnector(connector: EventConnectorSerialized): EventConencto
       value: connector.achievedAtLeast,
     }
   }
-  const { contentArchetype, contentType, contentTypeAchievedAtLeast } = connector
+  const { contentArchetype, contentType } = connector
+  const contentTypeAchievedAtLeast = parsePercentage(connector.contentTypeAchievedAtLeast)
   if (contentArchetype) {
     filter['$.archetype'] = {
       operator: EventHandlerOperator.eq,
@@ -75,7 +76,7 @@ function parseEventConnector(connector: EventConnectorSerialized): EventConencto
     }
     if (contentTypeAchievedAtLeast && !contentType) {
       filter['$.archetypeAchieved'] = {
-        operator: EventHandlerOperator.eq,
+        operator: EventHandlerOperator.gte,
         value: contentTypeAchievedAtLeast,
       }
     }
@@ -87,7 +88,7 @@ function parseEventConnector(connector: EventConnectorSerialized): EventConencto
     }
     if (contentTypeAchievedAtLeast) {
       filter[`$.metrics.${contentType}.achieved`] = {
-        operator: EventHandlerOperator.eq,
+        operator: EventHandlerOperator.gte,
         value: contentTypeAchievedAtLeast,
       }
     }
