@@ -39,6 +39,7 @@ describe('ArticleTracker with marianky.html sample', () => {
     beforeAll(async () => {
       await pageRef.page.evaluate(() => {
         window.test.achievementHandler = []
+        window.test.archetypeHandler = []
         window.test.at.events.consumptionAchievement.subscribe((...args: Call) => {
           window.test.achievementHandler.push(args)
         }, {
@@ -52,12 +53,26 @@ describe('ArticleTracker with marianky.html sample', () => {
             }
           ]
         })
+        window.test.at.events.typeConsumptionAchievement.subscribe((...args: Call) => {
+          window.test.archetypeHandler.push(args)
+        }, {
+          once: true,
+          conditions: [
+            {
+              '$.archetypeAchieved': {
+                operator: 'gte',
+                value: 0.5,
+              }
+            }
+          ]
+        })
       })
       await tracker.track()
     })
 
     describe('after scrolling to the third paragraph', () => {
       let metrics: ArticleMetrics
+      let archetypeHandler: ArticleMetrics
 
       async function viewParagraph(index: number, time: number): Promise<void> {
         await pageRef.scrollToElement('div.c-rte > p', index)
@@ -79,6 +94,9 @@ describe('ArticleTracker with marianky.html sample', () => {
         metrics = await pageRef.page.evaluate(() => {
           return window.test.achievementHandler
         }) 
+        archetypeHandler = await pageRef.page.evaluate(() => {
+          return window.test.archetypeHandler
+        })
       }, timeoutDefault)
 
       it('consumptionAchievement is fired after achieving at least 50 %', async () => {
@@ -87,6 +105,20 @@ describe('ArticleTracker with marianky.html sample', () => {
             {
               achieved: 0.6,
               metrics: expect.anything(),
+            }
+          ]
+        ])
+      })
+
+      it('typeConsumptionAchievement is fired after achieving at least 50 %', async () => {
+        expect(archetypeHandler).toEqual([
+          [
+            {
+              achieved: 0.6,
+              archetypeAchieved: 0.6,
+              archetype: 'text',
+              metrics: expect.anything(),
+              type: 'paragraph',
             }
           ]
         ])
