@@ -12,16 +12,17 @@ function getNumericDateFormat(daysAgo) {
   date.setDate(date.getDate() - daysAgo)
   return formatDate(date)
 }
+  
+const eventsPrefix = 'events_'
 
 /** Construct GA4 table name based on the date
  * @param {number} daysAgo
  * @returns string
  */
 function getHistoricalTableName(daysAgo) {
-  const prefixUniversal = 'events_'
   const prefixIntraday = daysAgo === 1 ? 'intraday_' : ''
   const formattedDate = getNumericDateFormat(daysAgo)
-  return `${prefixUniversal}${prefixIntraday}${formattedDate}`
+  return `${eventsPrefix}${prefixIntraday}${formattedDate}`
 }
 
 module.exports = {
