@@ -152,6 +152,14 @@ function parsePercentage(value?: string|number): number|undefined {
   return undefined
 }
 
+interface ExtraProps {
+  [key: string]: string | number | null | ExtraProps | ExtraProps[]
+}
+
+function parseExtraProps(props: string): ExtraProps {
+  return JSON.parse(props)
+}
+
 function trackArticle(options: TrackArticleOptions): void {
   const el = document.querySelector(options.selector)
   if (el) {
@@ -162,6 +170,7 @@ function trackArticle(options: TrackArticleOptions): void {
     ] : resolveContentTypes
     const contentTypes = contentTypePaths.map(resolveContentType)
     const eventConnectors = options.connectedEvents.map(parseEventConnector)
+    const extraProps = parseExtraProps(options.extraProps)
     const at = new ArticleTracker(el as HTMLElement, {
       contentTypes,
       intersectionThreshold: parsePercentage(options.intersectionThreshold),
@@ -171,6 +180,7 @@ function trackArticle(options: TrackArticleOptions): void {
       // rome-ignore lint/suspicious/noExplicitAny: Universal handler can take any props
       at.events[connector.event].subscribe((props: any) => {
         window.dataLayer.push({
+          ...extraProps,
           ...connector.props,
           ...props,
           event: connector.gtmEvent,
