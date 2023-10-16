@@ -120,13 +120,14 @@ const defaultContentTypes: Record<string, typeof ArticleElement> = {
   ArticleParagraph,
 }
 
-function resolveContentType(type: ContentTypeSerialized): typeof ArticleElement {
+function resolveContentType(type: ContentTypeSerialized): typeof ArticleElement | null {
   if (type.path in defaultContentTypes) {
     return defaultContentTypes[type.path]
   }
   const src = resolvePath(window, type.path)
   if (!src) {
-    throw new Error(`Failed to resolve ContentType path "${type}"`)
+    console.warn(`Failed to resolve ContentType path "${type}"`)
+    return null
   }
   if (src instanceof Function) {
     if (src.prototype instanceof ArticleElement) {
@@ -139,7 +140,8 @@ function resolveContentType(type: ContentTypeSerialized): typeof ArticleElement 
       VisualArticleElement,
     })
   }
-  throw new Error(`Resolved ContentType "${type}", but could not determine it's type`)
+  console.warn(`Resolved ContentType "${type}", but could not determine it's type`)
+  return null
 }
 
 function parsePercentage(value?: string|number): number|undefined {
@@ -168,7 +170,7 @@ function trackArticle(options: TrackArticleOptions): void {
       ...Object.keys(defaultContentTypes).map(path => ({ path })),
       ...resolveContentTypes
     ] : resolveContentTypes
-    const contentTypes = contentTypePaths.map(resolveContentType)
+    const contentTypes = contentTypePaths.map(resolveContentType).filter(Boolean) as (typeof ArticleElement)[]
     const eventConnectors = options.connectedEvents.map(parseEventConnector)
     const extraProps = parseExtraProps(options.extraProps)
     const at = new ArticleTracker(el as HTMLElement, {
