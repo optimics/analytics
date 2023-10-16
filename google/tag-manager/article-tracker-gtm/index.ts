@@ -87,7 +87,7 @@ function parseEventConnector(connector: EventConnectorSerialized): EventConencto
       value: contentType
     }
     if (contentTypeAchievedAtLeast) {
-      filter[`$.metrics.${contentType}.achieved`] = {
+      filter[`$.metrics.content.${contentType}.achieved`] = {
         operator: EventHandlerOperator.gte,
         value: contentTypeAchievedAtLeast,
       }
