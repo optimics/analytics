@@ -158,8 +158,8 @@ interface ExtraProps {
   [key: string]: string | number | null | ExtraProps | ExtraProps[]
 }
 
-function parseExtraProps(props: string): ExtraProps {
-  return JSON.parse(props)
+function parseExtraProps(props: string): ExtraProps{
+  return props ? JSON.parse(props) : null
 }
 
 function trackArticle(options: TrackArticleOptions): void {
