@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.4](https://github.com/optimics/analytics/compare/v0.7.3...v0.7.4) (2024-03-28)
+
+**Note:** Version bump only for package @optimics/dataform-ecom-report-transform
+
+
+
+
+
 ## [0.7.2](https://github.com/optimics/analytics/compare/v0.7.1...v0.7.2) (2023-10-10)
 
 
