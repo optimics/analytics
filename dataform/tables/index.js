@@ -32,7 +32,7 @@ function getHistoricalTableName(daysAgo) {
   const formattedDate = getNumericDateFormat(daysAgo)
   return daysAgo === 1
     ? getIntradayEventsName(formattedDate)
-    : getEventsName(formatDate)
+    : getEventsName(formattedDate)
 }
 
 module.exports = {
