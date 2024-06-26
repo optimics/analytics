@@ -1,5 +1,3 @@
-import jp from 'jsonpath'
-
 export type EventFilter<T> = (props: T, originalProps?: T) => boolean
 export type EventHandler<T> = (props: T) => void
 
@@ -154,9 +152,22 @@ export class EventController<T> {
       }, [] as EventHandlerWithOptions<T>[])
     }
   }
+  
+  getPropertyValue(props: Record<string, unknown>, keyPath: string): string | number {
+    const keyPathBreak = keyPath.split('.')
+    const keyPathCurrent = keyPathBreak.shift();
+    if (keyPathCurrent) {
+      const value = props[keyPathCurrent];
+      if (value && typeof value === 'object') {
+        return this.getPropertyValue(value as Record<string, unknown>, keyPathBreak.join('.'));
+      }
+      return value as string
+    }
+    return '';
+  }
 
   meetsCondition(props: T, keyPath: string, condition: EventHandlerCondition): boolean {
-    const [value] = jp.query(props, keyPath)
+    const value = this.getPropertyValue(props as Record<string, unknown>, keyPath.replace(/^\$\./, ''))
     if (condition.operator === 'eq') {
       return condition.value === value
     }
